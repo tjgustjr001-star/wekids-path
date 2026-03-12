@@ -6,6 +6,6 @@ public class A {
 		System.out.println("hotfix1");
 		System.out.println("Dfdk");
 		System.out.println("master");
-		
+		System.out.println("hotfix1");
 	}
 }
