@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 서비스 / 시큐리티 컴포넌트 -->
+    <context:component-scan base-package="com.spring.service, com.spring.security, com.spring.config"/>
+
+    <!-- MyBatis DAO 인터페이스 스캔 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.spring.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- DataSource -->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.0.28:1521:xe"/>
+        <property name="username" value="path001"/>
+        <property name="password" value="path001"/>
+        <property name="initialSize" value="5"/>
+        <property name="maxTotal" value="20"/>
+        <property name="maxIdle" value="10"/>
+        <property name="minIdle" value="5"/>
+    </bean>
+
+    <!-- PasswordEncoder -->
+    <bean id="passwordEncoder"
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <!-- SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath*:com/spring/mapper/**/*.xml"/>
+    </bean>
+
+    <!-- SqlSessionTemplate -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+
+</beans>

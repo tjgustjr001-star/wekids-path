@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+.student-shell .user-symbol {
+    background: #f5f6f8;
+}
+
+.student-shell .sidebar-menu:hover {
+    background: #f8fafc;
+}
+
+.student-shell .sidebar-menu.active {
+    background: #ffffff;
+    border-color: #edf0f3;
+    box-shadow: var(--shadow-sm);
+}

@@ -1,0 +1,146 @@
+@charset "UTF-8";
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f5f6f8;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    color: #111827;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.settings-page {
+    width: 100%;
+    max-width: 680px;
+    margin: 28px auto 60px;
+    padding: 0 16px;
+}
+
+.settings-header-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    padding: 26px 28px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
+}
+
+.settings-header-card h1 {
+    margin: 0 0 8px;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.settings-header-card p {
+    margin: 0;
+    font-size: 18px;
+    color: #6b7280;
+}
+
+.settings-section {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    margin-bottom: 18px;
+}
+
+.section-title {
+    padding: 14px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #4b5563;
+    background: #fbfbfc;
+    border-bottom: 1px solid #eef1f4;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 22px;
+    border-bottom: 1px solid #f0f2f5;
+    transition: background-color 0.2s ease;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-item:hover {
+    background: #fafafa;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.item-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e8f8f1;
+    color: #1dbf73;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.item-desc {
+    font-size: 13px;
+    color: #7b8494;
+}
+
+.item-arrow {
+    color: #c4c9d1;
+    font-size: 14px;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .settings-header-card h1 {
+        font-size: 30px;
+    }
+
+    .settings-header-card p {
+        font-size: 15px;
+    }
+
+    .setting-item {
+        padding: 16px 18px;
+    }
+
+    .item-name {
+        font-size: 15px;
+    }
+
+    .item-desc {
+        font-size: 12px;
+    }
+}
