@@ -11,19 +11,17 @@
            http://www.springframework.org/schema/mvc
            https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <!-- Controller scan -->
+    <!-- Controller + Java Config -->
     <context:component-scan base-package="com.spring.controller"/>
 
-    <!-- @Controller, @GetMapping 등 -->
     <mvc:annotation-driven/>
 
-    <!-- static resources -->
     <mvc:resources mapping="/resources/**" location="/resources/"/>
 
-    <!-- JSP View Resolver -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-
+	<bean id="multipartResolver"
+      class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
 </beans>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.StudentLearnDAO">
+
+    <resultMap id="studentLearnItemMap" type="com.spring.dto.student.StudentLearnItemDTO">
+        <result property="id" column="ID"/>
+        <result property="classId" column="CLASS_ID"/>
+        <result property="studentId" column="STUDENT_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="type" column="TYPE"/>
+        <result property="required" column="REQUIRED"/>
+        <result property="status" column="STATUS"/>
+        <result property="deadline" column="DEADLINE"/>
+        <result property="duration" column="DURATION"/>
+        <result property="progress" column="PROGRESS"/>
+        <result property="content" column="CONTENT"/>
+        <result property="textContent" column="TEXT_CONTENT"/>
+        <result property="linkUrl" column="LINK_URL"/>
+        <result property="startDate" column="START_DATE"/>
+    </resultMap>
+
+    <select id="selectStudentLearnList" parameterType="map" resultMap="studentLearnItemMap">
+        SELECT
+            LC.LEARN_ID AS ID,
+            LL.CLASS_ID,
+            #{studentId} AS STUDENT_ID,
+            LC.TITLE,
+            CASE
+                WHEN LC.ATTACH_URL IS NOT NULL
+                     AND (INSTR(LOWER(LC.ATTACH_URL), 'http://') = 1
+                       OR INSTR(LOWER(LC.ATTACH_URL), 'https://') = 1) THEN 'link'
+                WHEN LC.GUIDE_POINT IS NOT NULL THEN 'text'
+                ELSE 'video'
+            END AS TYPE,
+            CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
+            CASE
+                WHEN LP.STATUS = 'COMPLETED' THEN '완료'
+                WHEN LP.STATUS IS NOT NULL THEN '진행중'
+                ELSE '미시작'
+            END AS STATUS,
+            TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
+            NVL(TO_CHAR(LC.TARGET_TIME), '0') || '분' AS DURATION,
+            CASE
+                WHEN LP.STATUS = 'COMPLETED' THEN 100
+                WHEN LP.STATUS IS NOT NULL THEN NVL(LP.PROGRESS_RATE, 50)
+                ELSE 0
+            END AS PROGRESS,
+            LC.CONTENT,
+            LC.GUIDE_POINT AS TEXT_CONTENT,
+            LC.ATTACH_URL AS LINK_URL,
+            TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE
+        FROM LEARN_LIST LL
+        JOIN LEARN_CONT LC
+          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+        LEFT JOIN LEARN_PRO LP
+          ON LP.LEARN_ID = LC.LEARN_ID
+         AND LP.STUDENT_ID = #{studentId}
+        WHERE LL.CLASS_ID = #{classId}
+          AND NVL(LC.DELETE_YN, 0) = 0
+        ORDER BY LC.START_DATE DESC, LC.LEARN_ID DESC
+    </select>
+
+</mapper>

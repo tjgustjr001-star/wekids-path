@@ -20,7 +20,7 @@
 	<div class="login-page">
 		<div class="login-container">
 			<div class="login-card">
-
+		
 				<div class="login-header">
 					<a href="${pageContext.request.contextPath}/"
 						class="login-logo-link"> <span class="login-logo-circle">
@@ -30,7 +30,7 @@
 					<h1 class="login-title">환영합니다!</h1>
 					<p class="login-subtitle">아이디와 비밀번호를 입력해주세요.</p>
 				</div>
-
+				
 				<c:if test="${param.error == '1'}">
 					<div class="login-alert login-alert-error">
 						<div class="alert-icon">
@@ -78,8 +78,8 @@
 				</c:if>
 
 				<form class="login-form"
-					action="${pageContext.request.contextPath}/auth/login_success"
-					method="post">
+					    action="${pageContext.request.contextPath}/auth/login"
+					    method="post">
 
 					<div class="form-group">
 						<label for="login_id">아이디</label>

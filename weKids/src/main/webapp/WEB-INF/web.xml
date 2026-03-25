@@ -7,7 +7,6 @@
 
     <display-name>wekids</display-name>
 
-    <!-- Root Context -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:com/spring/context/root-context.xml</param-value>
@@ -17,7 +16,6 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-    <!-- Encoding Filter -->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -36,7 +34,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- DispatcherServlet -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>action</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -45,6 +52,13 @@
             <param-value>classpath:com/spring/context/servlet-context.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+
+        <multipart-config>
+            <location>C:/temp</location>
+            <max-file-size>10485760</max-file-size>
+            <max-request-size>52428800</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
 
     <servlet-mapping>

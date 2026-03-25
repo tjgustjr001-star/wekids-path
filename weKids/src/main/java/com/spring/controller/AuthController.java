@@ -1,6 +1,5 @@
 package com.spring.controller;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.cmd.ParentRegisterCommand;
-import com.spring.dto.MemberVO;
 import com.spring.service.AuthService;
 
 @Controller
@@ -41,43 +39,6 @@ public class AuthController {
     @ResponseBody
     public String parentLinkCodeCheck(@RequestParam("parent_link_code") String parentLinkCode) {
         return "ABCD1234".equalsIgnoreCase(parentLinkCode) ? "valid" : "invalid";
-    }
-
-    @PostMapping("/login_success")
-    public String loginSuccess(@RequestParam("login_id") String login_id,
-                               @RequestParam("pwd") String pwd,
-                               HttpSession session,
-                               RedirectAttributes rttr) throws Exception {
-
-        MemberVO member = authService.login(login_id, pwd);
-
-        if (member == null) {
-            return "redirect:/auth/login?error=1";
-        }
-
-        session.setAttribute("loginUser", member);
-
-        String roleCode = member.getRole_code();
-
-        if ("ADMIN".equals(roleCode)) {
-            return "redirect:/admin";
-        } else if ("STUDENT".equals(roleCode)) {
-            return "redirect:/student";
-        } else if ("PARENT".equals(roleCode)) {
-            return "redirect:/parent";
-        } else if ("TEACHER".equals(roleCode)) {
-            return "redirect:/teacher";
-        }
-
-        session.invalidate();
-        rttr.addFlashAttribute("msg", "권한 정보가 올바르지 않습니다.");
-        return "redirect:/auth/login?error=1";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/auth/login?logout=1";
     }
 
     @PostMapping("/parent-register")

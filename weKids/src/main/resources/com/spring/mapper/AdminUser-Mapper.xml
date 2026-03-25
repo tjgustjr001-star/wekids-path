@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.admin.AdminUserDAO">
+
+	<resultMap id="AdminUserListResultMap" type="com.spring.dto.admin.AdminUserListDTO">
+		<result property="memberId" column="member_id"/>
+		<result property="name" column="name"/>
+		<result property="loginId" column="login_id"/>
+		<result property="email" column="email"/>
+		<result property="roleCode" column="role_code"/>
+		<result property="roleName" column="role_name"/>
+		<result property="connectionStatus" column="connection_status"/>
+		<result property="lastLoginAt" column="last_login_at"/>
+		<result property="accountStatus" column="account_status"/>
+	</resultMap>
+
+	<resultMap id="AdminUserDetailResultMap" type="com.spring.dto.admin.AdminUserDetailDTO">
+		<result property="memberId" column="member_id"/>
+		<result property="name" column="name"/>
+		<result property="loginId" column="login_id"/>
+		<result property="email" column="email"/>
+		<result property="roleCode" column="role_code"/>
+		<result property="roleName" column="role_name"/>
+		<result property="accountStatus" column="account_status"/>
+		<result property="lastLoginAt" column="last_login_at"/>
+		<result property="createdAt" column="created_at"/>
+		<result property="classInfo" column="class_info"/>
+		<result property="connectionStatus" column="connection_status"/>
+	</resultMap>
+
+	<select id="selectUserList" resultMap="AdminUserListResultMap">
+	SELECT *
+	FROM (
+		SELECT
+			m.member_id,
+			s.student_name AS name,
+			m.login_id,
+			m.email,
+			'STUDENT' AS role_code,
+			'학생' AS role_name,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.student_id = s.student_id
+					  AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			m.account_status
+		FROM member m
+			JOIN student s ON m.member_id = s.student_id
+		WHERE m.account_status != 'DELETED'
+
+		UNION ALL
+
+		SELECT
+			m.member_id,
+			p.parent_name AS name,
+			m.login_id,
+			m.email,
+			'PARENT' AS role_code,
+			'학부모' AS role_name,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.parent_id = p.parent_id
+					  AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			m.account_status
+		FROM member m
+			JOIN parent p ON m.member_id = p.parent_id
+		WHERE m.account_status != 'DELETED'
+	)
+	ORDER BY member_id
+</select>
+
+	<select id="selectUserDetailById" parameterType="int" resultMap="AdminUserDetailResultMap">
+	SELECT *
+	FROM (
+		SELECT
+			m.member_id,
+			s.student_name AS name,
+			m.login_id,
+			m.email,
+			'STUDENT' AS role_code,
+			'학생' AS role_name,
+			m.account_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
+			NVL((
+				SELECT LISTAGG(c.class_name, ', ') WITHIN GROUP (ORDER BY c.class_id)
+				FROM student_class sc
+					JOIN class c ON sc.class_id = c.class_id
+				WHERE sc.student_id = s.student_id
+			), '-') AS class_info,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.student_id = s.student_id
+					  AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status
+		FROM member m
+			JOIN student s ON m.member_id = s.student_id
+		WHERE m.member_id = #{memberId}
+
+		UNION ALL
+
+		SELECT
+			m.member_id,
+			p.parent_name AS name,
+			m.login_id,
+			m.email,
+			'PARENT' AS role_code,
+			'학부모' AS role_name,
+			m.account_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
+			NVL((
+				SELECT LISTAGG(c.class_name, ', ') WITHIN GROUP (ORDER BY c.class_id)
+				FROM student_parent sp
+					JOIN student_class sc ON sp.student_id = sc.student_id
+					JOIN class c ON sc.class_id = c.class_id
+				WHERE sp.parent_id = p.parent_id
+				  AND sp.link_status = 1
+			), '-') AS class_info,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.parent_id = p.parent_id
+					  AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status
+		FROM member m
+			JOIN parent p ON m.member_id = p.parent_id
+		WHERE m.member_id = #{memberId}
+	)
+</select>
+	<update id="updateUserStatus" parameterType="map">
+		UPDATE member
+		SET account_status = #{accountStatus},
+		    updated_at = SYSDATE
+		WHERE member_id = #{memberId}
+	</update>
+<select id="selectNextMemberId" resultType="int">
+	SELECT NVL(MAX(member_id), 1000) + 1
+	FROM member
+</select>
+
+<select id="selectNextAuthorityId" resultType="int">
+	SELECT NVL(MAX(authority_id), 2000) + 1
+	FROM authority
+</select>
+
+<insert id="insertStudentMember" parameterType="map">
+	INSERT INTO member (
+		member_id,
+		login_id,
+		pwd,
+		email,
+		account_status,
+		login_fail_count,
+		last_login_at,
+		locked_at,
+		pwd_changed_at,
+		created_at,
+		updated_at
+	) VALUES (
+		#{memberId},
+		#{registDTO.loginId},
+		#{registDTO.initialPassword},
+		#{registDTO.email},
+		'ACTIVE',
+		0,
+		SYSDATE,
+		NULL,
+		SYSDATE,
+		SYSDATE,
+		SYSDATE
+	)
+</insert>
+
+<insert id="insertStudentAuthority" parameterType="map">
+	INSERT INTO authority (
+		authority_id,
+		member_id,
+		role_code,
+		role_name
+	) VALUES (
+		#{authorityId},
+		#{memberId},
+		'STUDENT',
+		'학생'
+	)
+</insert>
+
+<insert id="insertStudent" parameterType="map">
+	INSERT INTO student (
+		student_id,
+		student_name,
+		birth,
+		gender,
+		phone,
+		profile_image,
+		intro,
+		created_at,
+		updated_at,
+		parent_link_code
+	) VALUES (
+		#{memberId},
+		#{registDTO.studentName},
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		SYSDATE,
+		SYSDATE,
+		'LINK-' || #{memberId}
+	)
+</insert>
+</mapper>

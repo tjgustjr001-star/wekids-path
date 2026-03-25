@@ -1,6 +1,7 @@
 package com.spring.dto;
 
 import java.util.Date;
+import java.util.List;
 
 public class MemberVO {
 
@@ -8,7 +9,6 @@ public class MemberVO {
     private String login_id;
     private String pwd;
     private String email;
-    private int role;
     private String role_code;
     private String role_name;
     private String account_status;
@@ -19,6 +19,8 @@ public class MemberVO {
     private Date created_at;
     private Date updated_at;
 
+    private List<AuthorityVO> authorities;
+    
     public int getMember_id() {
         return member_id;
     }
@@ -49,14 +51,6 @@ public class MemberVO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
     }
 
     public String getRole_code() {
@@ -129,5 +123,13 @@ public class MemberVO {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public List<AuthorityVO> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<AuthorityVO> authorities) {
+        this.authorities = authorities;
     }
 }
