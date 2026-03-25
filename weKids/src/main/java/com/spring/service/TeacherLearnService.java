@@ -3,6 +3,7 @@ package com.spring.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnManageDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
 
@@ -21,4 +22,7 @@ public interface TeacherLearnService {
     void restoreTeacherLearn(int teacherId, int classId, int learnId) throws Exception;
 
     void removeTeacherLearn(int teacherId, int classId, int learnId) throws Exception;
+    
+
+    List<TeacherLearnDifficultyDTO> getTeacherLearnDifficultyList(int teacherId, int classId, int learnId) throws Exception;
 }

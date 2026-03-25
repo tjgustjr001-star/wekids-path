@@ -20,6 +20,8 @@ public class StudentLearnItemDTO {
     private String linkUrl;       // 링크형일 때
     private String startDate;     // yyyy-MM-dd
 
+    private String lastPosition; //마지막학습위치
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -61,4 +63,8 @@ public class StudentLearnItemDTO {
 
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) { this.startDate = startDate; }
+    
+    public String getLastPosition() { return lastPosition; }
+    public void setLastPosition(String lastPosition) { this.lastPosition = lastPosition; }
+    
 }

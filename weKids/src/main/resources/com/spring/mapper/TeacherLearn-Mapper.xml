@@ -39,18 +39,13 @@
             LL.CLASS_ID,
             LL.TEACHER_ID,
             LC.TITLE,
-            CASE
-                WHEN LC.ATTACH_URL IS NOT NULL AND (INSTR(LOWER(LC.ATTACH_URL), 'http://') = 1 OR INSTR(LOWER(LC.ATTACH_URL), 'https://') = 1) THEN '링크'
-                WHEN LC.ATTACH_URL IS NOT NULL THEN '파일'
-                WHEN LC.GUIDE_POINT IS NOT NULL THEN '지문읽기'
-                ELSE '영상'
-            END AS TYPE,
+            LC.LEARN_TYPE AS TYPE,
             CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
             CASE
-			    WHEN LC.END_DATE IS NOT NULL AND SYSDATE > LC.END_DATE THEN '마감'
-			    WHEN LC.START_DATE IS NOT NULL AND SYSDATE &lt; LC.START_DATE THEN '대기중'
-			    ELSE '운영중'
-			END AS STATUS,
+                WHEN LC.END_DATE IS NOT NULL AND SYSDATE > LC.END_DATE THEN '마감'
+                WHEN LC.START_DATE IS NOT NULL AND SYSDATE &lt;  LC.START_DATE THEN '대기중'
+                ELSE '운영중'
+            END AS STATUS,
             TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE,
             TO_CHAR(LC.END_DATE, 'YYYY-MM-DD') AS END_DATE,
             TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
@@ -66,12 +61,11 @@
                       AND SC.END_DATE IS NULL
                 ) || '명)' AS TARGET,
             (
-                SELECT COUNT(*)
-                FROM LEARN_FBD LF
-                JOIN LEARN_PRO LP
-                  ON LF.PROGRESS_ID = LP.PROGRESS_ID
-                WHERE LP.LEARN_ID = LC.LEARN_ID
-                  AND NVL(LF.DIFFICULT_YN, 0) = 1
+                SELECT COUNT(DISTINCT LP.STUDENT_ID)
+				FROM LEARN_FBD LF
+				JOIN LEARN_PRO LP ON LF.PROGRESS_ID = LP.PROGRESS_ID
+				WHERE LP.LEARN_ID = LC.LEARN_ID
+				  AND NVL(LF.DIFFICULT_YN, 0) = 1
             ) AS DIFFICULT_COUNT,
             CASE WHEN NVL(LC.DELETE_YN, 0) = 1 THEN 1 ELSE 0 END AS DELETED,
             TO_CHAR(LC.DELETED_AT, 'YYYY-MM-DD HH24:MI') AS DELETED_AT,
@@ -137,72 +131,65 @@
     </select>
 
     <select id="selectTeacherLearnDetail" parameterType="map" resultMap="teacherLearnManageMap">
-        SELECT *
-        FROM (
-            SELECT
-                LC.LEARN_ID AS ID,
-                LL.LEARN_LIST_ID,
-                LL.CLASS_ID,
-                LL.TEACHER_ID,
-                LC.TITLE,
-                CASE
-                    WHEN LC.ATTACH_URL IS NOT NULL AND (INSTR(LOWER(LC.ATTACH_URL), 'http://') = 1 OR INSTR(LOWER(LC.ATTACH_URL), 'https://') = 1) THEN '링크'
-                    WHEN LC.ATTACH_URL IS NOT NULL THEN '파일'
-                    WHEN LC.GUIDE_POINT IS NOT NULL THEN '지문읽기'
-                    ELSE '영상'
-                END AS TYPE,
-                CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
-                CASE
-                    WHEN LC.END_DATE IS NOT NULL AND SYSDATE > LC.END_DATE THEN '마감'
-                    WHEN LC.START_DATE IS NOT NULL AND SYSDATE &lt; LC.START_DATE THEN '대기중'
-                    ELSE '운영중'
-                END AS STATUS,
-                TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE,
-                TO_CHAR(LC.END_DATE, 'YYYY-MM-DD') AS END_DATE,
-                TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
-                NVL(LC.TARGET_TIME, 0) AS DURATION,
-                LC.ATTACH_URL AS LINK_URL,
-                LC.CONTENT,
-                LC.GUIDE_POINT AS TEXT_CONTENT,
-                '전체 (' ||
-                    (
-                        SELECT COUNT(*)
-                        FROM STUDENT_CLASS SC
-                        WHERE SC.CLASS_ID = LL.CLASS_ID
-                          AND SC.END_DATE IS NULL
-                    ) || '명)' AS TARGET,
+        SELECT
+            LC.LEARN_ID AS ID,
+            LL.LEARN_LIST_ID,
+            LL.CLASS_ID,
+            LL.TEACHER_ID,
+            LC.TITLE,
+            LC.LEARN_TYPE AS TYPE,
+            CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
+            CASE
+                WHEN LC.END_DATE IS NOT NULL AND SYSDATE > LC.END_DATE THEN '마감'
+                WHEN LC.START_DATE IS NOT NULL AND SYSDATE &lt; LC.START_DATE THEN '대기중'
+                ELSE '운영중'
+            END AS STATUS,
+            TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            TO_CHAR(LC.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+            TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
+            NVL(LC.TARGET_TIME, 0) AS DURATION,
+            LC.ATTACH_URL AS LINK_URL,
+            LC.CONTENT,
+            LC.GUIDE_POINT AS TEXT_CONTENT,
+            '전체 (' ||
                 (
                     SELECT COUNT(*)
-                    FROM LEARN_FBD LF
-                    JOIN LEARN_PRO LP
-                      ON LF.PROGRESS_ID = LP.PROGRESS_ID
-                    WHERE LP.LEARN_ID = LC.LEARN_ID
-                      AND NVL(LF.DIFFICULT_YN, 0) = 1
-                ) AS DIFFICULT_COUNT,
-                CASE WHEN NVL(LC.DELETE_YN, 0) = 1 THEN 1 ELSE 0 END AS DELETED,
-                TO_CHAR(LC.DELETED_AT, 'YYYY-MM-DD HH24:MI') AS DELETED_AT,
-                0 AS COMPLETED_COUNT,
-                0 AS IN_PROGRESS_COUNT,
-                0 AS NOT_STARTED_COUNT,
-                0 AS COMPLETION_RATE,
-                0 AS TOTAL_STUDENT_COUNT
-            FROM LEARN_LIST LL
-            JOIN LEARN_CONT LC
-              ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
-            WHERE LL.CLASS_ID = #{classId}
-              AND LL.TEACHER_ID = #{teacherId}
-              AND LC.LEARN_ID = #{learnId}
-        )
+                    FROM STUDENT_CLASS SC
+                    WHERE SC.CLASS_ID = LL.CLASS_ID
+                      AND SC.END_DATE IS NULL
+                ) || '명)' AS TARGET,
+            (
+                SELECT COUNT(DISTINCT LP.STUDENT_ID)
+				FROM LEARN_FBD LF
+				JOIN LEARN_PRO LP ON LF.PROGRESS_ID = LP.PROGRESS_ID
+				WHERE LP.LEARN_ID = LC.LEARN_ID
+				  AND NVL(LF.DIFFICULT_YN, 0) = 1
+            ) AS DIFFICULT_COUNT,
+            CASE WHEN NVL(LC.DELETE_YN, 0) = 1 THEN 1 ELSE 0 END AS DELETED,
+            TO_CHAR(LC.DELETED_AT, 'YYYY-MM-DD HH24:MI') AS DELETED_AT,
+            0 AS COMPLETED_COUNT,
+            0 AS IN_PROGRESS_COUNT,
+            0 AS NOT_STARTED_COUNT,
+            0 AS COMPLETION_RATE,
+            0 AS TOTAL_STUDENT_COUNT
+        FROM LEARN_LIST LL
+        JOIN LEARN_CONT LC
+          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+        WHERE LL.CLASS_ID = #{classId}
+          AND LL.TEACHER_ID = #{teacherId}
+          AND LC.LEARN_ID = #{learnId}
     </select>
 
-    <select id="selectNextLearnListId" resultType="int">
-        SELECT NVL(MAX(LEARN_LIST_ID), 0) + 1 FROM LEARN_LIST
-    </select>
-
-    <select id="selectNextLearnId" resultType="int">
-        SELECT NVL(MAX(LEARN_ID), 0) + 1 FROM LEARN_CONT
-    </select>
-
+	<select id="selectNextLearnListId" resultType="int">
+	    SELECT NVL(MAX(LEARN_LIST_ID), 0) + 1
+	    FROM LEARN_LIST
+	</select>
+	
+	<select id="selectNextLearnId" resultType="int">
+	    SELECT NVL(MAX(LEARN_ID), 0) + 1
+	    FROM LEARN_CONT
+	</select>
+	
     <insert id="insertLearnList" parameterType="map">
         INSERT INTO LEARN_LIST (
             LEARN_LIST_ID,
@@ -218,48 +205,50 @@
             #{teacherId},
             #{dto.title},
             TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
-            TO_DATE(SUBSTR(#{dto.deadline}, 1, 10), 'YYYY-MM-DD'),
+            TO_DATE(SUBSTR(REPLACE(#{dto.deadline}, 'T', ' '), 1, 10), 'YYYY-MM-DD'),
             SYSDATE
         )
     </insert>
 
-    <insert id="insertLearnCont" parameterType="map">
-        INSERT INTO LEARN_CONT (
-            LEARN_ID,
-            LEARN_LIST_ID,
-            TITLE,
-            CONTENT,
-            REQUIRED_YN,
-            START_DATE,
-            END_DATE,
-            TARGET_TIME,
-            GUIDE_POINT,
-            ATTACH_URL,
-            DELETE_YN,
-            DELETED_AT,
-            CREATED_AT
-        ) VALUES (
-            #{learnId},
-            #{learnListId},
-            #{dto.title},
-            #{dto.content},
-            CASE WHEN #{dto.required} = 'true' THEN 1 ELSE 0 END,
-            TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
-            TO_DATE(SUBSTR(#{dto.deadline}, 1, 16), 'YYYY-MM-DD"T"HH24:MI'),
-            #{dto.duration},
-            #{dto.textContent},
-            #{dto.linkUrl},
-            0,
-            NULL,
-            SYSDATE
-        )
-    </insert>
+	<insert id="insertLearnCont" parameterType="map">
+	    INSERT INTO LEARN_CONT (
+	        LEARN_ID,
+	        LEARN_LIST_ID,
+	        TITLE,
+	        LEARN_TYPE,
+	        CONTENT,
+	        REQUIRED_YN,
+	        START_DATE,
+	        END_DATE,
+	        TARGET_TIME,
+	        GUIDE_POINT,
+	        ATTACH_URL,
+	        DELETE_YN,
+	        DELETED_AT,
+	        CREATED_AT
+	    ) VALUES (
+	        #{learnId, jdbcType=NUMERIC},
+	        #{learnListId, jdbcType=NUMERIC},
+	        #{dto.title, jdbcType=VARCHAR},
+	        #{dto.type, jdbcType=VARCHAR},
+	        #{dto.content, jdbcType=CLOB},
+	        CASE WHEN #{dto.required, jdbcType=VARCHAR} = 'true' THEN 1 ELSE 0 END,
+	        TO_DATE(#{dto.startDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),
+	        TO_DATE(REPLACE(#{dto.deadline, jdbcType=VARCHAR}, 'T', ' '), 'YYYY-MM-DD HH24:MI'),
+	        #{dto.duration, jdbcType=NUMERIC},
+	        #{dto.textContent, jdbcType=VARCHAR},
+	        #{dto.linkUrl, jdbcType=VARCHAR},
+	        0,
+	        NULL,
+	        SYSDATE
+	    )
+	</insert>
 
     <update id="updateLearnList" parameterType="map">
         UPDATE LEARN_LIST
            SET TITLE = #{dto.title},
                START_DATE = TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
-               END_DATE = TO_DATE(SUBSTR(#{dto.deadline}, 1, 10), 'YYYY-MM-DD')
+               END_DATE = TO_DATE(SUBSTR(REPLACE(#{dto.deadline}, 'T', ' '), 1, 10), 'YYYY-MM-DD')
          WHERE CLASS_ID = #{classId}
            AND TEACHER_ID = #{teacherId}
            AND LEARN_LIST_ID = (
@@ -269,24 +258,25 @@
            )
     </update>
 
-    <update id="updateLearnCont" parameterType="map">
-        UPDATE LEARN_CONT
-           SET TITLE = #{dto.title},
-               CONTENT = #{dto.content},
-               REQUIRED_YN = CASE WHEN #{dto.required} = 'true' THEN 1 ELSE 0 END,
-               START_DATE = TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
-               END_DATE = TO_DATE(SUBSTR(#{dto.deadline}, 1, 16), 'YYYY-MM-DD"T"HH24:MI'),
-               TARGET_TIME = #{dto.duration},
-               GUIDE_POINT = #{dto.textContent},
-               ATTACH_URL = #{dto.linkUrl}
-         WHERE LEARN_ID = #{learnId}
-           AND LEARN_LIST_ID IN (
-               SELECT LEARN_LIST_ID
-               FROM LEARN_LIST
-               WHERE CLASS_ID = #{classId}
-                 AND TEACHER_ID = #{teacherId}
-           )
-    </update>
+	<update id="updateLearnCont" parameterType="map">
+	    UPDATE LEARN_CONT
+	       SET TITLE = #{dto.title, jdbcType=VARCHAR},
+	           LEARN_TYPE = #{dto.type, jdbcType=VARCHAR},
+	           CONTENT = #{dto.content, jdbcType=CLOB},
+	           REQUIRED_YN = CASE WHEN #{dto.required, jdbcType=VARCHAR} = 'true' THEN 1 ELSE 0 END,
+	           START_DATE = TO_DATE(#{dto.startDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),
+	           END_DATE = TO_DATE(REPLACE(#{dto.deadline, jdbcType=VARCHAR}, 'T', ' '), 'YYYY-MM-DD HH24:MI'),
+	           TARGET_TIME = #{dto.duration, jdbcType=NUMERIC},
+	           GUIDE_POINT = #{dto.textContent, jdbcType=VARCHAR},
+	           ATTACH_URL = #{dto.linkUrl, jdbcType=VARCHAR}
+	     WHERE LEARN_ID = #{learnId, jdbcType=NUMERIC}
+	       AND LEARN_LIST_ID IN (
+	           SELECT LEARN_LIST_ID
+	           FROM LEARN_LIST
+	           WHERE CLASS_ID = #{classId, jdbcType=NUMERIC}
+	             AND TEACHER_ID = #{teacherId, jdbcType=NUMERIC}
+	       )
+	</update>
 
     <update id="softDeleteLearn" parameterType="map">
         UPDATE LEARN_CONT
@@ -353,5 +343,49 @@
                )
          )
     </delete>
+
+	<resultMap id="teacherLearnDifficultyMap" type="com.spring.dto.teacher.TeacherLearnDifficultyDTO">
+	    <result property="learnFbdId" column="LEARN_FBD_ID"/>
+	    <result property="progressId" column="PROGRESS_ID"/>
+	    <result property="studentId" column="STUDENT_ID"/>
+	    <result property="studentName" column="STUDENT_NAME"/>
+	    <result property="profileImage" column="PROFILE_IMAGE"/>
+	    <result property="feedbackContent" column="FEEDBACK_CONTENT"/>
+	    <result property="createdAt" column="CREATED_AT"/>
+	    <result property="updatedAt" column="UPDATED_AT"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="progressRate" column="PROGRESS_RATE"/>
+	</resultMap>
+	
+	<select id="selectTeacherLearnDifficultyList" parameterType="map" resultMap="teacherLearnDifficultyMap">
+	    SELECT
+	        LF.LEARN_FBD_ID,
+	        LF.PROGRESS_ID,
+	        LP.STUDENT_ID,
+	        S.STUDENT_NAME,
+	        S.PROFILE_IMAGE,
+	        LF.FEEDBACK_CONTENT,
+	        TO_CHAR(LF.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+	        TO_CHAR(LF.UPDATED_AT, 'YYYY-MM-DD HH24:MI') AS UPDATED_AT,
+	        LP.STATUS,
+	        NVL(LP.PROGRESS_RATE, 0) AS PROGRESS_RATE
+	    FROM LEARN_FBD LF
+	    JOIN LEARN_PRO LP
+	      ON LF.PROGRESS_ID = LP.PROGRESS_ID
+	    JOIN LEARN_CONT LC
+	      ON LP.LEARN_ID = LC.LEARN_ID
+	    JOIN LEARN_LIST LL
+	      ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+	    JOIN STUDENT S
+	      ON LP.STUDENT_ID = S.STUDENT_ID
+	    WHERE LL.CLASS_ID = #{classId}
+	      AND LL.TEACHER_ID = #{teacherId}
+	      AND LP.LEARN_ID = #{learnId}
+	      AND NVL(LF.DIFFICULT_YN, 0) = 1
+	    ORDER BY LF.UPDATED_AT DESC, LF.LEARN_FBD_ID DESC
+	</select>
+	
+
+
 
 </mapper>

@@ -21,6 +21,7 @@ import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
+import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
 import com.spring.dto.teacher.TeacherStudentManageDTO;
 import com.spring.dto.teacher.TeacherStudentObservationSaveDTO;
@@ -420,6 +421,20 @@ public class TeacherPageController {
 
         teacherLearnService.modifyTeacherLearn(loginUser.getMember_id(), classId, learnId, dto);
         return "redirect:/teacher/classes/" + classId + "/learns";
+    }
+    
+    @PostMapping("/teacher/classes/{classId}/learns/{learnId}/difficulties")
+    @ResponseBody
+    public List<TeacherLearnDifficultyDTO> teacherLearnDifficultyList(@PathVariable("classId") int classId,
+                                                                      @PathVariable("learnId") int learnId,
+                                                                      HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+
+        if (loginUser == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        return teacherLearnService.getTeacherLearnDifficultyList(loginUser.getMember_id(), classId, learnId);
     }
     
 	/* 휴지통으로 */

@@ -6,7 +6,7 @@ public class TeacherLearnSaveDTO {
     private String type;
     private String required;
     private String status;
-    private int duration;
+    private Integer duration;
     private String startDate;
     private String deadline;
     private String linkUrl;
@@ -25,8 +25,8 @@ public class TeacherLearnSaveDTO {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public int getDuration() { return duration; }
-    public void setDuration(int duration) { this.duration = duration; }
+    public Integer getDuration() { return duration; }
+    public void setDuration(Integer duration) { this.duration = duration; }
 
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) { this.startDate = startDate; }

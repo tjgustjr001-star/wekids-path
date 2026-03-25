@@ -15,17 +15,18 @@
     <div class="learning-card-list" id="learningCardList">
         <c:forEach var="learning" items="${learnList}">
             <div class="learning-card"
-			     data-learning-id="${learning.id}"
-			     data-title="${learning.title}"
-			     data-type="${learning.type}"
-			     data-required="${learning.required}"
-			     data-status="${learning.status}"
-			     data-deadline="${learning.deadline}"
-			     data-duration="${learning.duration}"
-			     data-progress="${learning.progress}"
-			     data-content="${learning.content}"
-			     data-text-content="${learning.textContent}"
-			     data-link-url="${learning.linkUrl}">
+		     data-learning-id="${learning.id}"
+		     data-title="${learning.title}"
+		     data-type="${learning.type}"
+		     data-required="${learning.required}"
+		     data-status="${learning.status}"
+		     data-deadline="${learning.deadline}"
+		     data-duration="${learning.duration}"
+		     data-progress="${learning.progress}"
+		     data-content="${learning.content}"
+		     data-text-content="${learning.textContent}"
+		     data-link-url="${learning.linkUrl}"
+		     data-last-position="${learning.lastPosition}">
 
                 <div class="learning-card-inner">
                     <div class="learning-card-left">
@@ -227,4 +228,8 @@
 
 <div class="learning-toast-container" id="learningToastContainer"></div>
 
+<script>
+    window.appContextPath = '${pageContext.request.contextPath}';
+    window.studentClassId = '${classId}';
+</script>
 <script src="${pageContext.request.contextPath}/resources/js/student/student-learn.js"></script>

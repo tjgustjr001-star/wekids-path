@@ -7,8 +7,6 @@
 
     <resultMap id="studentLearnItemMap" type="com.spring.dto.student.StudentLearnItemDTO">
         <result property="id" column="ID"/>
-        <result property="classId" column="CLASS_ID"/>
-        <result property="studentId" column="STUDENT_ID"/>
         <result property="title" column="TITLE"/>
         <result property="type" column="TYPE"/>
         <result property="required" column="REQUIRED"/>
@@ -20,20 +18,19 @@
         <result property="textContent" column="TEXT_CONTENT"/>
         <result property="linkUrl" column="LINK_URL"/>
         <result property="startDate" column="START_DATE"/>
+        <result property="lastPosition" column="LAST_POSITION"/>
     </resultMap>
 
     <select id="selectStudentLearnList" parameterType="map" resultMap="studentLearnItemMap">
         SELECT
             LC.LEARN_ID AS ID,
-            LL.CLASS_ID,
-            #{studentId} AS STUDENT_ID,
-            LC.TITLE,
-            CASE
-                WHEN LC.ATTACH_URL IS NOT NULL
-                     AND (INSTR(LOWER(LC.ATTACH_URL), 'http://') = 1
-                       OR INSTR(LOWER(LC.ATTACH_URL), 'https://') = 1) THEN 'link'
-                WHEN LC.GUIDE_POINT IS NOT NULL THEN 'text'
-                ELSE 'video'
+            LC.TITLE AS TITLE,
+            CASE LC.LEARN_TYPE
+                WHEN '영상' THEN 'video'
+                WHEN '지문읽기' THEN 'text'
+                WHEN '링크' THEN 'link'
+                WHEN '파일' THEN 'link'
+                ELSE 'link'
             END AS TYPE,
             CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
             CASE
@@ -42,25 +39,33 @@
                 ELSE '미시작'
             END AS STATUS,
             TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
-            NVL(TO_CHAR(LC.TARGET_TIME), '0') || '분' AS DURATION,
-            CASE
-                WHEN LP.STATUS = 'COMPLETED' THEN 100
-                WHEN LP.STATUS IS NOT NULL THEN NVL(LP.PROGRESS_RATE, 50)
-                ELSE 0
-            END AS PROGRESS,
-            LC.CONTENT,
+            NVL(LC.TARGET_TIME, 0) AS DURATION,
+            NVL(LP.PROGRESS_RATE, 0) AS PROGRESS,
+            LC.CONTENT AS CONTENT,
             LC.GUIDE_POINT AS TEXT_CONTENT,
             LC.ATTACH_URL AS LINK_URL,
-            TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE
-        FROM LEARN_LIST LL
+            TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            NVL(LP.LAST_POSITION, '0') AS LAST_POSITION
+        FROM STUDENT_CLASS SC
+        JOIN LEARN_LIST LL
+          ON LL.CLASS_ID = SC.CLASS_ID
         JOIN LEARN_CONT LC
-          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+          ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
         LEFT JOIN LEARN_PRO LP
           ON LP.LEARN_ID = LC.LEARN_ID
          AND LP.STUDENT_ID = #{studentId}
-        WHERE LL.CLASS_ID = #{classId}
+        WHERE SC.STUDENT_ID = #{studentId}
+          AND SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
           AND NVL(LC.DELETE_YN, 0) = 0
-        ORDER BY LC.START_DATE DESC, LC.LEARN_ID DESC
+        ORDER BY
+            CASE
+                WHEN LP.STATUS = 'COMPLETED' THEN 3
+                WHEN LP.STATUS IS NOT NULL THEN 2
+                ELSE 1
+            END,
+            LC.START_DATE DESC,
+            LC.LEARN_ID DESC
     </select>
 
 </mapper>

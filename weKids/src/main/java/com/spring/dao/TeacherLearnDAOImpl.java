@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnManageDTO;
 
 public class TeacherLearnDAOImpl implements TeacherLearnDAO {
@@ -87,4 +88,13 @@ public class TeacherLearnDAOImpl implements TeacherLearnDAO {
     public void deleteLearnListIfNoChildren(Map<String, Object> paramMap) throws SQLException {
         session.delete("TeacherLearn-Mapper.deleteLearnListIfNoChildren", paramMap);
     }
+
+	@Override
+	public List<TeacherLearnDifficultyDTO> selectTeacherLearnDifficultyList(Map<String, Object> paramMap)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+    
+    
 }

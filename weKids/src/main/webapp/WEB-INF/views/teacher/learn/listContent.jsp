@@ -160,8 +160,8 @@
                                                     </button>
 
                                                     <div class="row-menu-dropdown">
-                                                        <button type="button" class="row-menu-item edit-open-btn">수정</button>
                                                         <button type="button" class="row-menu-item detail-open-btn">상세</button>
+                                                        <button type="button" class="row-menu-item edit-open-btn">수정</button>
                                                         <button type="button" class="row-menu-item danger row-delete-btn">삭제</button>
                                                     </div>
                                                 </div>
@@ -315,8 +315,9 @@
             <p class="modal-sub-title">
                 <strong id="difficultLearnTitle">학습 자료명</strong>에 대해 어려움을 표시한 학생 목록입니다.
             </p>
+
             <div class="difficult-student-list" id="difficultStudentList">
-                <div class="teacher-empty-box">어려움 학생 데이터는 2차 연동 대상입니다.</div>
+                <div class="teacher-empty-box">학생 목록을 불러오는 중입니다.</div>
             </div>
         </div>
         <div class="teacher-modal-footer">

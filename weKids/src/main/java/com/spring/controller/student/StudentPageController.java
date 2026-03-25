@@ -226,6 +226,32 @@ public class StudentPageController {
         return "common/layout/studentLayout";
     }
 
+    @PostMapping("/student/classes/{classId}/learns/{learnId}/video-progress")
+    @ResponseBody
+    public String saveVideoProgress(@PathVariable("classId") int classId,
+                                    @PathVariable("learnId") int learnId,
+                                    @RequestParam("currentSecond") int currentSecond,
+                                    @RequestParam("durationSecond") int durationSecond,
+                                    @RequestParam("progressRate") int progressRate,
+                                    HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "FAIL";
+        }
+
+        studentLearnProgressService.saveVideoProgress(
+                loginUser.getMember_id(),
+                classId,
+                learnId,
+                currentSecond,
+                durationSecond,
+                progressRate
+        );
+
+        return "OK";
+    }
+    
     @PostMapping("/student/classes/{classId}/learns/{learnId}/start")
     @ResponseBody
     public String startLearning(@PathVariable("classId") int classId,

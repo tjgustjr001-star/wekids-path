@@ -16,7 +16,7 @@ public class TeacherLearnManageDTO {
     private String endDate;
     private String deadline;
 
-    private int duration;
+    private Integer duration;
     private String linkUrl;
     private String content;
     private String textContent;
@@ -24,11 +24,8 @@ public class TeacherLearnManageDTO {
     private String target;
     private int difficultCount;
     private boolean deleted;
-
     private String deletedAt;
 
-
-    
     private int completedCount;
     private int inProgressCount;
     private int notStartedCount;
@@ -68,8 +65,8 @@ public class TeacherLearnManageDTO {
     public String getDeadline() { return deadline; }
     public void setDeadline(String deadline) { this.deadline = deadline; }
 
-    public int getDuration() { return duration; }
-    public void setDuration(int duration) { this.duration = duration; }
+    public Integer getDuration() { return duration; }
+    public void setDuration(Integer duration) { this.duration = duration; }
 
     public String getLinkUrl() { return linkUrl; }
     public void setLinkUrl(String linkUrl) { this.linkUrl = linkUrl; }
@@ -88,14 +85,9 @@ public class TeacherLearnManageDTO {
 
     public boolean isDeleted() { return deleted; }
     public void setDeleted(boolean deleted) { this.deleted = deleted; }
-    
-    public String getDeletedAt() {
-        return deletedAt;
-    }
 
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+    public String getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(String deletedAt) { this.deletedAt = deletedAt; }
 
     public int getCompletedCount() { return completedCount; }
     public void setCompletedCount(int completedCount) { this.completedCount = completedCount; }
