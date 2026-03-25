@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const textCompleteBtn = document.getElementById('learningTextCompleteBtn');
     const linkCompleteBtn = document.getElementById('learningLinkCompleteBtn');
     const completeBtn = document.getElementById('learningCompleteBtn');
+    const saveBtn = document.getElementById('learningSaveBtn');
 
     const difficultyIntroPanel = document.getElementById('difficultyIntroPanel');
     const difficultyFormPanel = document.getElementById('difficultyFormPanel');
@@ -48,6 +49,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         return new Promise(function (resolve) {
             const existing = document.getElementById('youtube-iframe-api');
+
             if (!existing) {
                 const tag = document.createElement('script');
                 tag.id = 'youtube-iframe-api';
@@ -168,6 +170,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         card.dataset.status = learning.status;
         card.dataset.progress = String(learning.progress || 0);
+        card.dataset.lastPosition = String(learning.lastPosition || '0');
 
         const statusBadge = card.querySelector('.learning-status-badge');
         const actionBtn = card.querySelector('.open-learning-btn');
@@ -212,40 +215,40 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-	function resetDifficultyPanel() {
-	    selectedDifficultyReason = '';
+    function resetDifficultyPanel() {
+        selectedDifficultyReason = '';
 
-	    difficultyReasonButtons.forEach(function (btn) {
-	        btn.classList.remove('active');
-	    });
+        difficultyReasonButtons.forEach(function (btn) {
+            btn.classList.remove('active');
+        });
 
-	    if (difficultyMessageInput) {
-	        difficultyMessageInput.value = '';
-	        difficultyMessageInput.style.display = 'none';
-	        difficultyMessageInput.classList.remove('show');
-	    }
+        if (difficultyMessageInput) {
+            difficultyMessageInput.value = '';
+            difficultyMessageInput.style.display = 'none';
+            difficultyMessageInput.classList.remove('show');
+        }
 
-	    if (difficultyIntroPanel) {
-	        difficultyIntroPanel.style.display = 'block';
-	    }
+        if (difficultyIntroPanel) {
+            difficultyIntroPanel.style.display = 'block';
+        }
 
-	    if (difficultyFormPanel) {
-	        difficultyFormPanel.style.display = 'none';
-	    }
-	}
+        if (difficultyFormPanel) {
+            difficultyFormPanel.style.display = 'none';
+        }
+    }
 
-	function destroyYoutubePlayer() {
-	    if (ytSaveTimer) {
-	        clearInterval(ytSaveTimer);
-	        ytSaveTimer = null;
-	    }
+    function destroyYoutubePlayer() {
+        if (ytSaveTimer) {
+            clearInterval(ytSaveTimer);
+            ytSaveTimer = null;
+        }
 
-	    if (ytPlayer && typeof ytPlayer.destroy === 'function') {
-	        ytPlayer.destroy();
-	    }
+        if (ytPlayer && typeof ytPlayer.destroy === 'function') {
+            ytPlayer.destroy();
+        }
 
-	    ytPlayer = null;
-	}
+        ytPlayer = null;
+    }
 
     function openModal() {
         if (modalOverlay) {
@@ -305,6 +308,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     function createYoutubePlayer(learning) {
         const videoId = extractYoutubeVideoId(learning.linkUrl);
+
         if (!videoId || !videoContent) {
             videoContent.innerHTML = '<div class="learning-video-empty">유효한 유튜브 주소가 아닙니다.</div>';
             return;
@@ -329,6 +333,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 events: {
                     onReady: function (event) {
                         const lastPosition = Number(learning.lastPosition || 0);
+
                         if (lastPosition > 0) {
                             try {
                                 event.target.seekTo(lastPosition, true);
@@ -364,47 +369,47 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 10000);
     }
 
-	function saveYoutubeProgress() {
-	    if (!ytPlayer || !currentLearning || currentLearning.type !== 'video') {
-	        return Promise.resolve();
-	    }
+    function saveYoutubeProgress() {
+        if (!ytPlayer || !currentLearning || currentLearning.type !== 'video') {
+            return Promise.resolve();
+        }
 
-	    const duration = Math.floor(ytPlayer.getDuration ? ytPlayer.getDuration() : 0);
-	    const current = Math.floor(ytPlayer.getCurrentTime ? ytPlayer.getCurrentTime() : 0);
+        const duration = Math.floor(ytPlayer.getDuration ? ytPlayer.getDuration() : 0);
+        const current = Math.floor(ytPlayer.getCurrentTime ? ytPlayer.getCurrentTime() : 0);
 
-	    if (!duration || duration <= 0) {
-	        return Promise.resolve();
-	    }
+        if (!duration || duration <= 0) {
+            return Promise.resolve();
+        }
 
-	    const progressRate = Math.min(100, Math.floor((current / duration) * 100));
+        const progressRate = Math.min(100, Math.floor((current / duration) * 100));
 
-	    currentLearning.lastPosition = String(current);
-	    currentLearning.progress = progressRate;
-	    currentLearning.status = progressRate >= 90 ? '완료' : '진행중';
+        currentLearning.lastPosition = String(current);
+        currentLearning.progress = progressRate;
+        currentLearning.status = progressRate >= 90 ? '완료' : '진행중';
 
-	    setProgress(progressRate);
-	    updateCardUI(selectedCard, currentLearning);
+        setProgress(progressRate);
+        updateCardUI(selectedCard, currentLearning);
 
-	    return postForm(
-	        contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/video-progress',
-	        {
-	            currentSecond: current,
-	            durationSecond: duration,
-	            progressRate: progressRate
-	        }
-	    ).then(function () {
-	        if (progressRate >= 90 && !autoCompleted) {
-	            autoCompleted = true;
-	            currentLearning.status = '완료';
-	            currentLearning.progress = 100;
-	            setProgress(100);
-	            updateCardUI(selectedCard, currentLearning);
-	            showToast('영상 학습이 완료 처리되었습니다.', 'success');
-	        }
-	    }).catch(function () {
-	        showToast('영상 진행 저장 중 오류가 발생했습니다.', 'error');
-	    });
-	}
+        return postForm(
+            contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/video-progress',
+            {
+                currentSecond: current,
+                durationSecond: duration,
+                progressRate: progressRate
+            }
+        ).then(function () {
+            if (progressRate >= 90 && !autoCompleted) {
+                autoCompleted = true;
+                currentLearning.status = '완료';
+                currentLearning.progress = 100;
+                setProgress(100);
+                updateCardUI(selectedCard, currentLearning);
+                showToast('영상 학습이 완료 처리되었습니다.', 'success');
+            }
+        }).catch(function () {
+            showToast('영상 진행 저장 중 오류가 발생했습니다.', 'error');
+        });
+    }
 
     function openLearning(card) {
         if (!card) return;
@@ -427,13 +432,18 @@ window.addEventListener('DOMContentLoaded', function () {
             lastPosition: card.dataset.lastPosition || '0'
         };
 
-        if (modalTitle) modalTitle.textContent = currentLearning.title;
+        if (modalTitle) {
+            modalTitle.textContent = currentLearning.title;
+        }
+
         if (modalTypeBadge) {
             modalTypeBadge.textContent =
                 currentLearning.type === 'video' ? '영상 학습' :
                 currentLearning.type === 'text' ? '지문 읽기' :
-                '링크 학습';
+                currentLearning.type === 'link' ? '링크 학습' :
+                '파일 학습';
         }
+
         if (modalRequiredBadge) {
             modalRequiredBadge.textContent = currentLearning.required ? '필수' : '선택';
         }
@@ -444,11 +454,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
         postForm(contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/start', {})
             .then(function () {
-                if (currentLearning.status === '미시작') {
+                if (currentLearning && currentLearning.status === '미시작') {
                     currentLearning.status = '진행중';
                     updateCardUI(selectedCard, currentLearning);
                 }
-            });
+            })
+            .catch(function () {});
 
         if (currentLearning.type === 'video') {
             createYoutubePlayer(currentLearning);
@@ -456,27 +467,31 @@ window.addEventListener('DOMContentLoaded', function () {
 
         openModal();
     }
-	
-	function saveAndCloseLearning() {
-	    if (!currentLearning) {
-	        closeModal();
-	        return;
-	    }
 
-	    saveYoutubeProgress().finally(function () {
-	        if (currentLearning.status === '미시작') {
-	            currentLearning.status = '진행중';
-	        }
+    function saveAndCloseLearning() {
+        if (!currentLearning) {
+            closeModal();
+            return;
+        }
 
-	        updateCardUI(selectedCard, currentLearning);
-	        showToast('진행 상태를 저장하고 학습창을 닫았습니다.', 'success');
+        saveYoutubeProgress()
+            .then(function () {
+                if (currentLearning && currentLearning.status === '미시작') {
+                    currentLearning.status = '진행중';
+                }
 
-	        setTimeout(function () {
-	            closeModal();
-	        }, 150);
-	    });
-	}
-	
+                updateCardUI(selectedCard, currentLearning);
+                showToast('진행 상태를 저장하고 학습창을 닫았습니다.', 'success');
+
+                setTimeout(function () {
+                    closeModal();
+                }, 150);
+            })
+            .catch(function () {
+                showToast('진행 상태 저장 중 오류가 발생했습니다.', 'error');
+            });
+    }
+
     function completeLearning() {
         if (!currentLearning) return;
 
@@ -496,13 +511,15 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', closeModal);
+        modalCloseBtn.addEventListener('click', function () {
+            saveAndCloseLearning();
+        });
     }
 
     if (modalOverlay) {
         modalOverlay.addEventListener('click', function (e) {
             if (e.target === modalOverlay) {
-                closeModal();
+                saveAndCloseLearning();
             }
         });
     }
@@ -519,13 +536,13 @@ window.addEventListener('DOMContentLoaded', function () {
             openLearning(card);
         });
     });
-	
-	if (saveBtn) {
-	    saveBtn.addEventListener('click', function () {
-	        saveAndCloseLearning();
-	    });
-	}
-	
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function () {
+            saveAndCloseLearning();
+        });
+    }
+
     if (textCompleteBtn) {
         textCompleteBtn.addEventListener('click', completeLearning);
     }
@@ -538,69 +555,70 @@ window.addEventListener('DOMContentLoaded', function () {
         completeBtn.addEventListener('click', completeLearning);
     }
 
-	if (difficultyOpenBtn) {
-	    difficultyOpenBtn.addEventListener('click', function () {
-	        if (difficultyIntroPanel) {
-	            difficultyIntroPanel.style.display = 'none';
-	        }
+    if (difficultyOpenBtn) {
+        difficultyOpenBtn.addEventListener('click', function () {
+            if (difficultyIntroPanel) {
+                difficultyIntroPanel.style.display = 'none';
+            }
 
-	        if (difficultyFormPanel) {
-	            difficultyFormPanel.style.display = 'block';
+            if (difficultyFormPanel) {
+                difficultyFormPanel.style.display = 'block';
 
-	            setTimeout(function () {
-	                difficultyFormPanel.scrollIntoView({
-	                    behavior: 'smooth',
-	                    block: 'start'
-	                });
-	            }, 50);
-	        }
-	    });
-	}
+                setTimeout(function () {
+                    difficultyFormPanel.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 50);
+            }
+        });
+    }
 
-	if (difficultyBackBtn) {
-	    difficultyBackBtn.addEventListener('click', function () {
-	        if (difficultyIntroPanel) {
-	            difficultyIntroPanel.style.display = 'block';
-	        }
+    if (difficultyBackBtn) {
+        difficultyBackBtn.addEventListener('click', function () {
+            if (difficultyIntroPanel) {
+                difficultyIntroPanel.style.display = 'block';
+            }
 
-	        if (difficultyFormPanel) {
-	            difficultyFormPanel.style.display = 'none';
-	        }
+            if (difficultyFormPanel) {
+                difficultyFormPanel.style.display = 'none';
+            }
 
-	        selectedDifficultyReason = '';
-	        difficultyReasonButtons.forEach(function (btn) {
-	            btn.classList.remove('active');
-	        });
+            selectedDifficultyReason = '';
 
-	        if (difficultyMessageInput) {
-	            difficultyMessageInput.value = '';
-	            difficultyMessageInput.style.display = 'none';
-	            difficultyMessageInput.classList.remove('show');
-	        }
-	    });
-	}
+            difficultyReasonButtons.forEach(function (btn) {
+                btn.classList.remove('active');
+            });
 
-	difficultyReasonButtons.forEach(function (btn) {
-	    btn.addEventListener('click', function () {
-	        difficultyReasonButtons.forEach(function (item) {
-	            item.classList.remove('active');
-	        });
+            if (difficultyMessageInput) {
+                difficultyMessageInput.value = '';
+                difficultyMessageInput.style.display = 'none';
+                difficultyMessageInput.classList.remove('show');
+            }
+        });
+    }
 
-	        btn.classList.add('active');
-	        selectedDifficultyReason = btn.dataset.reason || '';
+    difficultyReasonButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            difficultyReasonButtons.forEach(function (item) {
+                item.classList.remove('active');
+            });
 
-	        if (difficultyMessageInput) {
-	            if (selectedDifficultyReason === '기타 (선생님께 남길 말)') {
-	                difficultyMessageInput.style.display = 'block';
-	                difficultyMessageInput.classList.add('show');
-	            } else {
-	                difficultyMessageInput.style.display = 'none';
-	                difficultyMessageInput.classList.remove('show');
-	                difficultyMessageInput.value = '';
-	            }
-	        }
-	    });
-	});
+            btn.classList.add('active');
+            selectedDifficultyReason = btn.dataset.reason || btn.dataset.tag || '';
+
+            if (difficultyMessageInput) {
+                if (selectedDifficultyReason === '기타 (선생님께 남길 말)') {
+                    difficultyMessageInput.style.display = 'block';
+                    difficultyMessageInput.classList.add('show');
+                } else {
+                    difficultyMessageInput.style.display = 'none';
+                    difficultyMessageInput.classList.remove('show');
+                    difficultyMessageInput.value = '';
+                }
+            }
+        });
+    });
 
     if (difficultySubmitBtn) {
         difficultySubmitBtn.addEventListener('click', function () {
@@ -612,6 +630,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             let feedbackContent = selectedDifficultyReason;
+
             if (selectedDifficultyReason === '기타 (선생님께 남길 말)') {
                 if (!difficultyMessageInput || !difficultyMessageInput.value.trim()) {
                     showToast('선생님께 남길 말을 입력해주세요.', 'error');
