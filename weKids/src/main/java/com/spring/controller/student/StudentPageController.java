@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
@@ -21,6 +22,7 @@ import com.spring.dto.NoticeVO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
+import com.spring.service.StudentLearnProgressService;
 import com.spring.service.StudentLearnService;
 
 import jakarta.servlet.http.HttpSession;
@@ -36,6 +38,9 @@ public class StudentPageController {
 
     @Autowired
     private StudentLearnService studentLearnService;
+    
+    @Autowired
+    private StudentLearnProgressService studentLearnProgressService;
     
     @GetMapping("/student")
     public String studentHome(Model model) {
@@ -221,6 +226,54 @@ public class StudentPageController {
         return "common/layout/studentLayout";
     }
 
+    @PostMapping("/student/classes/{classId}/learns/{learnId}/start")
+    @ResponseBody
+    public String startLearning(@PathVariable("classId") int classId,
+                                @PathVariable("learnId") int learnId,
+                                HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "FAIL";
+        }
+
+        studentLearnProgressService.startLearning(loginUser.getMember_id(), classId, learnId);
+        return "OK";
+    }
+
+    @PostMapping("/student/classes/{classId}/learns/{learnId}/complete")
+    @ResponseBody
+    public String completeLearning(@PathVariable("classId") int classId,
+                                   @PathVariable("learnId") int learnId,
+                                   HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "FAIL";
+        }
+
+        studentLearnProgressService.completeLearning(loginUser.getMember_id(), classId, learnId);
+        return "OK";
+    }
+
+    @PostMapping("/student/classes/{classId}/learns/{learnId}/difficulty")
+    @ResponseBody
+    public String saveDifficulty(@PathVariable("classId") int classId,
+                                 @PathVariable("learnId") int learnId,
+                                 @RequestParam(value = "feedbackContent", required = false) String feedbackContent,
+                                 HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "FAIL";
+        }
+
+        studentLearnProgressService.saveDifficultyFeedback(
+                loginUser.getMember_id(), classId, learnId, feedbackContent);
+
+        return "OK";
+    }
+    
     @GetMapping("/student/classes/{classId}/assignments")
     public String studentAssignmentList(@PathVariable("classId") int classId,
                                         Model model,
