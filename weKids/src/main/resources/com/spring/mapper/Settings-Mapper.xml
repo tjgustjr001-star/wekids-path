@@ -340,7 +340,7 @@
 		m.CREATED_AT AS created_at,
 		p.PARENT_NAME AS name,
 		p.BIRTH AS birth,
-		NULL AS gender,
+		p.GENDER AS gender,
 		p.INTRO AS intro,
 		p.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
@@ -359,7 +359,7 @@
 		m.CREATED_AT AS created_at,
 		t.TEACHER_NAME AS name,
 		t.BIRTH AS birth,
-		NULL AS gender,
+		t.GENDER AS gender,
 		t.INTRO AS intro,
 		t.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
@@ -384,6 +384,7 @@
 		UPDATE PARENT
 		SET PARENT_NAME = #{name},
 		BIRTH = #{birth},
+		GENDER = #{gender},
 		INTRO = #{intro},
 		PROFILE_IMAGE = #{profile_image}
 		WHERE PARENT_ID = #{member_id}
@@ -394,6 +395,7 @@
 		UPDATE TEACHER
 		SET TEACHER_NAME = #{name},
 		BIRTH = #{birth},
+		GENDER = #{gender},
 		INTRO = #{intro},
 		PROFILE_IMAGE = #{profile_image}
 		WHERE TEACHER_ID = #{member_id}
@@ -432,7 +434,7 @@
 		m.CREATED_AT AS created_at,
 		p.PARENT_NAME AS name,
 		p.BIRTH AS birth,
-		NULL AS gender,
+		p.GENDER AS gender,
 		p.INTRO AS intro,
 		p.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
@@ -453,7 +455,7 @@
 		m.CREATED_AT AS created_at,
 		t.TEACHER_NAME AS name,
 		t.BIRTH AS birth,
-		NULL AS gender,
+		t.GENDER AS gender,
 		t.INTRO AS intro,
 		t.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
