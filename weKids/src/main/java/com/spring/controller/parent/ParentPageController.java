@@ -1,3 +1,4 @@
+
 package com.spring.controller.parent;
 
 import java.util.ArrayList;
@@ -5,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
+import com.spring.dto.ParentChildVO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
+import com.spring.service.SettingsService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -32,6 +34,9 @@ public class ParentPageController {
 	
     @Autowired
     private ClassService classService;
+
+    @Autowired
+    private SettingsService settingsService;
 	
     @GetMapping("/parent")
     public String parentHome(Model model) {
@@ -86,13 +91,21 @@ public class ParentPageController {
     }
 
     @GetMapping("/parent/children")
-    public String parentChildrenList(Model model) {
+    public String parentChildrenList(Model model, HttpSession session) throws Exception {
         model.addAttribute("pageTitle", "자녀 목록");
         model.addAttribute("currentUri", "/parent/children");
-        model.addAttribute("contentPage", "/WEB-INF/views/parent/children/listContent.jsp");
+        model.addAttribute("contentPage", "/WEB-INF/views/settings/childLinkParent.jsp");
 
         setParentLayoutBase(model);
-        model.addAttribute("childrenList", createChildrenList());
+
+        MemberVO loginUser = getLoginUser(session);
+
+        if (loginUser != null) {
+            List<ParentChildVO> childList = settingsService.getLinkedChildren(loginUser.getMember_id());
+            model.addAttribute("childList", childList);
+        } else {
+            model.addAttribute("childList", List.of());
+        }
 
         return "common/layout/parentLayout";
     }
@@ -416,13 +429,6 @@ public class ParentPageController {
         );
     }
 
-    private List<Map<String, Object>> createChildrenList() {
-        return Arrays.asList(
-                createChildCard("1", "김지훈", "2026학년도 3학년 2반", "3학년", 1, "김", "오늘 08:30", 100, 75, 2),
-                createChildCard("2", "김서연", "2026학년도 1학년 3반", "1학년", 15, "김", "어제 16:42", 80, 100, 0)
-        );
-    }
-
     private List<Map<String, Object>> createChildDetailList() {
         return Arrays.asList(
                 createChildDetail("1", "김지훈", "2026학년도 3학년 2반", "3학년", 1, "김", "오늘 08:30",
@@ -452,23 +458,6 @@ public class ParentPageController {
                                 createSubjectProgress("통합(봄)", 70, "pink")
                         ))
         );
-    }
-
-    private Map<String, Object> createChildCard(String id, String name, String className, String grade, int number,
-                                                String initial, String lastAccess, int learningProgress,
-                                                int assignmentProgress, int pendingItems) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", id);
-        map.put("name", name);
-        map.put("className", className);
-        map.put("grade", grade);
-        map.put("number", number);
-        map.put("initial", initial);
-        map.put("lastAccess", lastAccess);
-        map.put("learningProgress", learningProgress);
-        map.put("assignmentProgress", assignmentProgress);
-        map.put("pendingItems", pendingItems);
-        return map;
     }
 
     private Map<String, Object> createChildDetail(String id, String name, String className, String grade, int number,

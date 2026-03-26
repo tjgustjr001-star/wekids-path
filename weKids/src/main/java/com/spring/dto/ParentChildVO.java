@@ -1,3 +1,4 @@
+
 package com.spring.dto;
 
 import java.util.Date;
@@ -13,6 +14,8 @@ public class ParentChildVO {
     private Date unlinkedAt;
 
     private String studentName;
+    private String parentName;
+    private String email;
     private String profileImage;
     private String parentLinkCode;
 
@@ -85,6 +88,18 @@ public class ParentChildVO {
     }
     public void setStudentName(String studentName) {
         this.studentName = studentName;
+    }
+    public String getParentName() {
+        return parentName;
+    }
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     public String getProfileImage() {
         return profileImage;
@@ -170,4 +185,5 @@ public class ParentChildVO {
     public void setUnconfirmedNoticeCount(int unconfirmedNoticeCount) {
         this.unconfirmedNoticeCount = unconfirmedNoticeCount;
     }
+
 }

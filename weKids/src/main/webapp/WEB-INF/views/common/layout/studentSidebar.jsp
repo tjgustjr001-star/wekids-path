@@ -8,7 +8,14 @@
 
     <div class="sidebar-user-box">
         <div class="sidebar-user-icon">
-            <span class="user-symbol"></span>
+            <c:choose>
+                <c:when test="${not empty currentUserProfileImageUrl}">
+                    <img src="${pageContext.request.contextPath}${currentUserProfileImageUrl}" alt="프로필 사진" class="sidebar-profile-image">
+                </c:when>
+                <c:otherwise>
+                    <span class="user-symbol"></span>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <div class="sidebar-user-info">
@@ -84,4 +91,5 @@
             </c:otherwise>
         </c:choose>
     </nav>
+
 </aside>

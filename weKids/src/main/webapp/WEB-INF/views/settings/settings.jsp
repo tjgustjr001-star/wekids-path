@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
@@ -6,28 +7,34 @@
     <meta charset="UTF-8">
     <title>설정</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/main.css">
-
-    <!-- 아이콘 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
 <div class="settings-page">
 
-    <!-- 상단 카드 -->
     <div class="settings-header-card">
         <h1>설정</h1>
         <p>개인정보 및 환경설정을 관리하세요.</p>
     </div>
 
-    <!-- 계정 설정 -->
+    <c:choose>
+        <c:when test="${role eq 'PARENT' or role eq 'ROLE_PARENT'}">
+            <c:set var="profilePath" value="/parent/settings/profile"/>
+        </c:when>
+        <c:when test="${role eq 'TEACHER' or role eq 'ROLE_TEACHER'}">
+            <c:set var="profilePath" value="/teacher/settings/profile"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="profilePath" value="/student/settings/profile"/>
+        </c:otherwise>
+    </c:choose>
+
     <div class="settings-section">
         <div class="section-title">계정 설정</div>
 
-        <!-- 내 정보 -->
-        <a class="setting-item" href="${pageContext.request.contextPath}/settings/personal-info">
+        <a class="setting-item" href="${pageContext.request.contextPath}${profilePath}">
             <div class="item-left">
                 <div class="item-icon">
                     <i class="fa-regular fa-user"></i>
@@ -42,8 +49,7 @@
             </div>
         </a>
 
-        <!-- 계정 정보 -->
-        <a class="setting-item" href="${pageContext.request.contextPath}/settings/info">
+        <a class="setting-item" href="${pageContext.request.contextPath}${baseSettingsPath}/info">
             <div class="item-left">
                 <div class="item-icon">
                     <i class="fa-solid fa-key"></i>
@@ -58,9 +64,8 @@
             </div>
         </a>
 
-        <!-- 학생 전용 -->
         <c:if test="${role eq 'STUDENT' or role eq 'ROLE_STUDENT'}">
-            <a class="setting-item" href="${pageContext.request.contextPath}/student/settings/child-link">
+            <a class="setting-item" href="${pageContext.request.contextPath}/settings/child-link">
                 <div class="item-left">
                     <div class="item-icon">
                         <i class="fa-solid fa-children"></i>
@@ -76,9 +81,8 @@
             </a>
         </c:if>
 
-        <!-- 학부모 전용 🔥 (수정된 부분) -->
         <c:if test="${role eq 'PARENT' or role eq 'ROLE_PARENT'}">
-            <a class="setting-item" href="${pageContext.request.contextPath}/parent/settings/child-link">
+            <a class="setting-item" href="${pageContext.request.contextPath}/parent/children">
                 <div class="item-left">
                     <div class="item-icon">
                         <i class="fa-solid fa-children"></i>
@@ -93,10 +97,8 @@
                 </div>
             </a>
         </c:if>
-
     </div>
 
-    <!-- 알림 설정 -->
     <div class="settings-section">
         <div class="section-title">알림 설정</div>
 
@@ -116,7 +118,6 @@
         </a>
     </div>
 
-    <!-- 고객센터 -->
     <div class="settings-section">
         <div class="section-title">고객센터</div>
 
@@ -154,4 +155,5 @@
 </div>
 
 </body>
+
 </html>

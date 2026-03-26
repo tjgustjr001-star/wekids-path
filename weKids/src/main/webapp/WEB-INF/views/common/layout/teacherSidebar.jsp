@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -8,7 +9,14 @@
 
     <div class="sidebar-user-box">
         <div class="sidebar-user-icon">
-            <span class="user-symbol"></span>
+            <c:choose>
+                <c:when test="${not empty currentUserProfileImageUrl}">
+                    <img src="${pageContext.request.contextPath}${currentUserProfileImageUrl}" alt="프로필 사진" class="sidebar-profile-image">
+                </c:when>
+                <c:otherwise>
+                    <span class="user-symbol"></span>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <div class="sidebar-user-info">
@@ -45,7 +53,7 @@
                 <a href="${pageContext.request.contextPath}/teacher/classes/${classId}/manage"
                    class="sidebar-menu ${currentUri eq '/teacher/classes/'.concat(classId).concat('/manage') ? 'active' : ''}">
                     <span class="menu-icon settings-mini-icon"></span>
-                    <span>클래스 설정</span>
+                    <span>클래스 관리</span>
                 </a>
 
                 <a href="${pageContext.request.contextPath}/teacher/classes/${classId}/students"
@@ -96,4 +104,5 @@
             </c:otherwise>
         </c:choose>
     </nav>
+
 </aside>

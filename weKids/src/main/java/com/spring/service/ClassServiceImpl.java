@@ -1,5 +1,6 @@
 package com.spring.service;
 
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -186,5 +187,6 @@ public class ClassServiceImpl implements ClassService {
         }
 
         classDAO.endStudentClass(teacherId, studentClassId);
+
     }
 }

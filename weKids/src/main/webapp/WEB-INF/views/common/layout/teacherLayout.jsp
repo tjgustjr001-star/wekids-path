@@ -15,7 +15,9 @@
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/teacher-layout.css">
    
 </head>
+
 <body data-context-path="${pageContext.request.contextPath}">
+
     <div class="app-shell teacher-shell">
     <%@ include file="/WEB-INF/views/common/layout/teacherSidebar.jsp" %>
 

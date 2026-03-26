@@ -1,3 +1,4 @@
+
 package com.spring.dto;
 
 import java.util.Date;
@@ -9,6 +10,7 @@ public class MemberVO {
     private String login_id;
     private String pwd;
     private String email;
+    private String phone;
     private String role_code;
     private String role_name;
     private String account_status;
@@ -20,7 +22,14 @@ public class MemberVO {
     private Date updated_at;
 
     private List<AuthorityVO> authorities;
-    
+
+    // profile fields
+    private String name;
+    private Date birth;
+    private String gender;
+    private String intro;
+    private String profile_image;
+
     public int getMember_id() {
         return member_id;
     }
@@ -51,6 +60,14 @@ public class MemberVO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getRole_code() {
@@ -132,4 +149,45 @@ public class MemberVO {
     public void setAuthorities(List<AuthorityVO> authorities) {
         this.authorities = authorities;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getBirth() {
+        return birth;
+    }
+
+    public void setBirth(Date birth) {
+        this.birth = birth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getIntro() {
+        return intro;
+    }
+
+    public void setIntro(String intro) {
+        this.intro = intro;
+    }
+
+    public String getProfile_image() {
+        return profile_image;
+    }
+
+    public void setProfile_image(String profile_image) {
+        this.profile_image = profile_image;
+    }
 }
+

@@ -1,15 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>자녀 관리</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/childLinkParent.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<body>
+
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/childLinkParent.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <div class="parent-link-page">
 
@@ -29,8 +24,9 @@
             <c:when test="${not empty childList}">
                 <c:forEach var="child" items="${childList}">
                     <div class="child-card"
-                         onclick="location.href='${pageContext.request.contextPath}/parent/settings/child-link/detail?studentId=${child.studentId}'"
+                         onclick="location.href='${pageContext.request.contextPath}/parent/children/${child.studentId}'"
                          style="cursor:pointer;">
+
                         <div class="child-card-top">
                             <div class="child-profile">
                                 <div class="child-avatar">
@@ -51,13 +47,32 @@
                                     </div>
 
                                     <div class="child-meta">
-                                        학생 ID: <c:out value="${child.studentId}" />
+                                        <c:choose>
+                                            <c:when test="${child.year > 0}">
+                                                <c:out value="${child.year}" />학년도
+                                                <c:out value="${child.grade}" />학년
+                                                <c:out value="${child.classNo}" />반
+                                            </c:when>
+                                            <c:otherwise>
+                                                학생 ID: <c:out value="${child.studentId}" />
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="child-arrow">
-                                <i class="fa-solid fa-chevron-right"></i>
+                            <div class="child-card-actions">
+                                <form method="post"
+                                      action="${pageContext.request.contextPath}/parent/settings/child-link/remove"
+                                      onsubmit="event.stopPropagation(); return confirm('정말 자녀 연동을 해제하시겠습니까?');"
+                                      style="margin:0;">
+                                    <input type="hidden" name="studentId" value="${child.studentId}">
+                                    <button type="submit"
+                                            class="unlink-btn"
+                                            onclick="event.stopPropagation();">
+                                        연동 해제
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
@@ -65,20 +80,44 @@
                             <div class="progress-item">
                                 <div class="progress-label-row">
                                     <span>학습 진도</span>
-                                    <span>100%</span>
+                                    <span>
+                                        <c:choose>
+                                            <c:when test="${child.learningProgressRate > 0}">
+                                                <c:out value="${child.learningProgressRate}" />%
+                                            </c:when>
+                                            <c:otherwise>0%</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </div>
                                 <div class="progress-bar green">
-                                    <div class="progress-fill" style="width:100%;"></div>
+                                    <div class="progress-fill"
+                                         style="width:
+                                         <c:choose>
+                                             <c:when test='${child.learningProgressRate > 0}'>${child.learningProgressRate}</c:when>
+                                             <c:otherwise>0</c:otherwise>
+                                         </c:choose>%;"></div>
                                 </div>
                             </div>
 
                             <div class="progress-item">
                                 <div class="progress-label-row">
                                     <span>과제 제출</span>
-                                    <span>75%</span>
+                                    <span>
+                                        <c:choose>
+                                            <c:when test="${child.assignmentRate > 0}">
+                                                <c:out value="${child.assignmentRate}" />%
+                                            </c:when>
+                                            <c:otherwise>0%</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </div>
                                 <div class="progress-bar yellow">
-                                    <div class="progress-fill" style="width:75%;"></div>
+                                    <div class="progress-fill"
+                                         style="width:
+                                         <c:choose>
+                                             <c:when test='${child.assignmentRate > 0}'>${child.assignmentRate}</c:when>
+                                             <c:otherwise>0</c:otherwise>
+                                         </c:choose>%;"></div>
                                 </div>
                             </div>
 
@@ -161,7 +200,7 @@
       action="${pageContext.request.contextPath}/parent/settings/child-link/connect"
       method="post"
       style="display:none;">
-    <input type="hidden" name="code" id="hiddenConnectCode">
+    <input type="hidden" name="linkCode" id="hiddenConnectCode">
 </form>
 
 <script src="${pageContext.request.contextPath}/resources/js/settings/childLinkParent.js"></script>
@@ -185,5 +224,3 @@
 </script>
 </c:if>
 
-</body>
-</html>

@@ -149,6 +149,7 @@
         LEFT JOIN TEACHER T
           ON T.TEACHER_ID = TC.TEACHER_ID
         WHERE SC.STUDENT_ID = #{studentId}
+
   		AND SC.END_DATE IS NULL
         ORDER BY C.CREATED_AT DESC
     </select>

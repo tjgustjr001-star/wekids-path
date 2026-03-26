@@ -564,6 +564,7 @@
                         목록으로
                     </a>
 
+
                     <form method="post"
                           action="${pageContext.request.contextPath}/parent/settings/child-link/remove"
                           onsubmit="return confirm('정말 자녀 연동을 해제하시겠습니까?');"
@@ -571,6 +572,7 @@
                         <input type="hidden" name="studentId" value="${child.studentId}">
                         <button type="submit" class="unlink-btn">자녀 연동 해제</button>
                     </form>
+
                 </div>
             </div>
 

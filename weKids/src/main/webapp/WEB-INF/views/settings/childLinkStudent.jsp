@@ -1,5 +1,7 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -12,7 +14,8 @@
 
 <div class="link-page">
     <div class="top-back">
-        <a href="${pageContext.request.contextPath}/student/settings">
+        <!-- 🔥 수정 -->
+        <a href="${pageContext.request.contextPath}${baseSettingsPath}">
             <i class="fa-solid fa-arrow-left"></i> 설정으로 돌아가기
         </a>
     </div>
@@ -22,31 +25,33 @@
             <h2>보호자 초대 코드</h2>
             <p>
                 보호자 연결 코드를 발급하여 부모님께 전달해주세요.
-                보호님이 이 코드를 보호자 등록 후 사용하면 자동으로 연동됩니다.
+                부모님이 이 코드를 보호자 등록 후 사용하면 자동으로 연동됩니다.
             </p>
         </div>
 
-        <div class="section-title">현재 발급 상태</div>
+        <div class="section-title">연결된 보호자</div>
 
         <c:choose>
-            <c:when test="${not empty linkInfo and not empty linkInfo.parentLinkCode}">
-                <div class="linked-parent-box">
-                    <div class="status-icon">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <div class="status-text">
-                        <div class="status-name">보호자 연결 코드 발급 완료</div>
-                        <div class="status-sub">현재 코드: ${linkInfo.parentLinkCode}</div>
-                        <div class="status-date">
-                            최근 갱신일:
-                            <c:out value="${linkInfo.updatedAt}" />
+            <c:when test="${not empty parentList}">
+                <c:forEach var="parent" items="${parentList}">
+                    <div class="linked-parent-box">
+                        <div class="status-icon">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="status-text">
+                            <div class="status-name">${parent.parentName}</div>
+                            <div class="status-sub">${parent.email}</div>
+                            <div class="status-date">
+                                연결일:
+                                <fmt:formatDate value="${parent.linkedAt}" pattern="yyyy년 M월 d일" />
+                            </div>
                         </div>
                     </div>
-                </div>
+                </c:forEach>
             </c:when>
             <c:otherwise>
                 <div class="empty-status-box">
-                    아직 발급된 보호자 연결 코드가 없습니다.
+                    아직 연결된 보호자가 없습니다.
                 </div>
             </c:otherwise>
         </c:choose>
@@ -141,7 +146,8 @@
 
 <script>
 function generateCode() {
-    fetch('${pageContext.request.contextPath}/student/settings/child-link/generate', {
+    // 🔥 핵심 수정
+    fetch('${pageContext.request.contextPath}${baseSettingsPath}/link/generate', {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -184,4 +190,5 @@ function copyCode() {
 </script>
 
 </body>
+
 </html>

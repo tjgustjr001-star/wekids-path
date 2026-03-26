@@ -104,4 +104,36 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+<<<<<<< HEAD
+=======
+});
+document.querySelectorAll('.unlink-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const studentId = this.dataset.studentId;
+
+        if (!confirm("정말 연동을 해제하시겠습니까?")) return;
+
+        fetch('${pageContext.request.contextPath}/parent/settings/unlink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                '${_csrf.headerName}': '${_csrf.token}'
+            },
+            body: 'studentId=' + encodeURIComponent(studentId)
+        })
+        .then(res => res.text())
+        .then(result => {
+            if (result === 'success') {
+                alert('연동이 해제되었습니다.');
+                location.reload();
+            } else {
+                alert('연동 해제 실패');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('오류가 발생했습니다.');
+        });
+    });
+>>>>>>> refs/remotes/origin/brunch1
 });
