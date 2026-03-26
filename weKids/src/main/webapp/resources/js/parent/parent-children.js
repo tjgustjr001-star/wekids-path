@@ -104,8 +104,8 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-<<<<<<< HEAD
-=======
+
+
 });
 document.querySelectorAll('.unlink-btn').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -135,5 +135,5 @@ document.querySelectorAll('.unlink-btn').forEach(btn => {
             alert('오류가 발생했습니다.');
         });
     });
->>>>>>> refs/remotes/origin/brunch1
+
 });
