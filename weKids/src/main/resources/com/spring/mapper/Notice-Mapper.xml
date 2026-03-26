@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.NoticeDAO">
+
+    <resultMap id="noticeResultMap" type="com.spring.dto.NoticeVO">
+        <id property="noticeId" column="notice_id"/>
+        <result property="classId" column="class_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="confirmYn" column="confirm_yn"/>
+        <result property="target" column="target"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="writerName" column="writer_name"/>
+        <result property="className" column="class_name"/>
+        <result property="confirmedYn" column="confirmed_yn"/>
+    </resultMap>
+
+    <resultMap id="attachResultMap" type="com.spring.dto.AttachVO">
+        <id property="ano" column="ano"/>
+        <result property="pno" column="pno"/>
+        <result property="uploadPath" column="uploadpath"/>
+        <result property="fileName" column="filename"/>
+        <result property="fileType" column="filetype"/>
+        <result property="attacher" column="attacher"/>
+        <result property="regDate" column="regdate"/>
+    </resultMap>
+
+	<sql id="visibleNoticeWhere">
+	    n.status = 'Y'
+	    AND n.class_id = #{classId}
+	    AND (
+	        (#{roleCode} = 'TEACHER' AND n.class_id IN (
+	            SELECT tc.class_id
+	            FROM teacher_class tc
+	            WHERE tc.teacher_id = #{memberId}
+	        ))
+	        OR
+	        (#{roleCode} = 'STUDENT' AND n.class_id IN (
+	            SELECT sc.class_id
+	            FROM student_class sc
+	            WHERE sc.student_id = #{memberId}
+	        ) AND n.target IN ('ALL', 'STUDENT'))
+	        OR
+	        (#{roleCode} = 'PARENT' AND n.class_id IN (
+	            SELECT sc.class_id
+	            FROM student_parent sp
+	            JOIN student_class sc ON sp.student_id = sc.student_id
+	            WHERE sp.parent_id = #{memberId}
+	        ) AND n.target IN ('ALL', 'PARENT'))
+	    )
+	</sql>
+
+    <select id="selectNoticeList" parameterType="map" resultMap="noticeResultMap">
+        SELECT
+            n.notice_id,
+            n.class_id,
+            n.member_id,
+            n.title,
+            n.content,
+            n.confirm_yn,
+            n.target,
+            n.status,
+            n.created_at,
+            n.updated_at,
+            c.class_name,
+            NVL(t.teacher_name, '-') AS writer_name,
+            cf.confirmed_yn
+        FROM notice n
+            LEFT JOIN class c ON c.class_id = n.class_id
+            LEFT JOIN teacher t ON t.teacher_id = n.member_id
+            LEFT JOIN notice_confirm cf ON cf.notice_id = n.notice_id AND cf.member_id = #{memberId}
+        WHERE
+            <include refid="visibleNoticeWhere"/>
+        ORDER BY n.notice_id DESC
+    </select>
+
+    <select id="selectUnreadRequiredNoticeList" parameterType="map" resultMap="noticeResultMap">
+        SELECT
+            n.notice_id,
+            n.class_id,
+            n.member_id,
+            n.title,
+            n.content,
+            n.confirm_yn,
+            n.target,
+            n.status,
+            n.created_at,
+            n.updated_at,
+            c.class_name,
+            NVL(t.teacher_name, '-') AS writer_name,
+            cf.confirmed_yn
+        FROM notice n
+            LEFT JOIN class c ON c.class_id = n.class_id
+            LEFT JOIN teacher t ON t.teacher_id = n.member_id
+            LEFT JOIN notice_confirm cf ON cf.notice_id = n.notice_id AND cf.member_id = #{memberId}
+        WHERE
+            <include refid="visibleNoticeWhere"/>
+            AND n.confirm_yn = 1
+            AND NVL(cf.confirmed_yn, 0) = 0
+        ORDER BY n.notice_id DESC
+    </select>
+
+    <select id="selectNoticeDetail" parameterType="map" resultMap="noticeResultMap">
+	    SELECT
+	        n.notice_id,
+	        n.class_id,
+	        n.member_id,
+	        n.title,
+	        n.content,
+	        n.confirm_yn,
+	        n.target,
+	        n.status,
+	        n.created_at,
+	        n.updated_at,
+	        c.class_name,
+	        NVL(t.teacher_name, '-') AS writer_name,
+	        cf.confirmed_yn
+	    FROM notice n
+	        LEFT JOIN class c ON c.class_id = n.class_id
+	        LEFT JOIN teacher t ON t.teacher_id = n.member_id
+	        LEFT JOIN notice_confirm cf ON cf.notice_id = n.notice_id AND cf.member_id = #{memberId}
+	    WHERE n.notice_id = #{noticeId}
+	      AND <include refid="visibleNoticeWhere"/>
+	</select>
+
+    <select id="selectTeacherClassId" parameterType="int" resultType="int">
+        SELECT MIN(class_id)
+        FROM teacher_class
+        WHERE teacher_id = #{memberId}
+    </select>
+
+    <select id="selectNoticeSeqNext" resultType="int">
+        SELECT NVL(MAX(notice_id), 0) + 1
+        FROM notice
+    </select>
+
+    <insert id="insertNotice" parameterType="com.spring.dto.NoticeVO">
+        INSERT INTO notice (
+            notice_id, class_id, member_id, title, content,
+            confirm_yn, target, status, created_at, updated_at
+        ) VALUES (
+            #{noticeId}, #{classId}, #{memberId}, #{title}, #{content},
+            #{confirmYn}, #{target}, 'Y', SYSDATE, SYSDATE
+        )
+    </insert>
+
+    <update id="updateNotice" parameterType="com.spring.dto.NoticeVO">
+	    UPDATE notice
+	    SET title = #{title},
+	        content = #{content},
+	        confirm_yn = #{confirmYn},
+	        target = #{target},
+	        updated_at = SYSDATE
+	    WHERE notice_id = #{noticeId}
+	      AND class_id = #{classId}
+	</update>
+
+    <update id="deleteNotice" parameterType="map">
+	    UPDATE notice
+	    SET status = 'N',
+	        updated_at = SYSDATE
+	    WHERE notice_id = #{noticeId}
+	      AND class_id = #{classId}
+	</update>
+
+    <insert id="mergeConfirm" parameterType="map">
+        MERGE INTO notice_confirm c
+        USING dual
+        ON (c.notice_id = #{noticeId} AND c.member_id = #{memberId})
+        WHEN MATCHED THEN
+            UPDATE SET c.confirmed_yn = 1
+        WHEN NOT MATCHED THEN
+            INSERT (confirm_id, member_id, notice_id, confirmed_yn)
+            VALUES (
+                (SELECT NVL(MAX(confirm_id), 0) + 1 FROM notice_confirm),
+                #{memberId},
+                #{noticeId},
+                1
+            )
+    </insert>
+
+    <insert id="insertAttach" parameterType="com.spring.dto.AttachVO">
+        INSERT INTO attach (
+            ano, pno, uploadpath, filename, filetype, attacher, regdate
+        ) VALUES (
+            (SELECT NVL(MAX(ano), 0) + 1 FROM attach),
+            #{pno}, #{uploadPath}, #{fileName}, #{fileType}, #{attacher}, SYSDATE
+        )
+    </insert>
+
+    <select id="selectAttachList" parameterType="int" resultMap="attachResultMap">
+        SELECT ano, pno, uploadpath, filename, filetype, attacher, regdate
+        FROM attach
+        WHERE pno = #{noticeId}
+        ORDER BY ano
+    </select>
+
+    <select id="selectAttachByAno" parameterType="int" resultMap="attachResultMap">
+        SELECT ano, pno, uploadpath, filename, filetype, attacher, regdate
+        FROM attach
+        WHERE ano = #{ano}
+    </select>
+
+    <delete id="deleteAttachByNoticeId" parameterType="int">
+        DELETE FROM attach
+        WHERE pno = #{noticeId}
+    </delete>
+
+</mapper>

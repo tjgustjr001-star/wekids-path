@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.StudentLearnProgressDAO">
+
+    <select id="selectProgressId" parameterType="map" resultType="int">
+        SELECT PROGRESS_ID
+        FROM LEARN_PRO
+        WHERE LEARN_ID = #{learnId}
+          AND STUDENT_ID = #{studentId}
+    </select>
+
+    <select id="selectProgressIdByLearnAndStudent" parameterType="map" resultType="int">
+        SELECT PROGRESS_ID
+        FROM LEARN_PRO
+        WHERE LEARN_ID = #{learnId}
+          AND STUDENT_ID = #{studentId}
+    </select>
+
+    <select id="selectNextProgressId" resultType="int">
+        SELECT NVL(MAX(PROGRESS_ID), 0) + 1
+        FROM LEARN_PRO
+    </select>
+
+    <select id="selectNextFeedbackId" resultType="int">
+        SELECT NVL(MAX(LEARN_FBD_ID), 0) + 1
+        FROM LEARN_FBD
+    </select>
+
+    <insert id="insertLearnProgress" parameterType="map">
+        INSERT INTO LEARN_PRO (
+            PROGRESS_ID,
+            LEARN_ID,
+            STUDENT_ID,
+            STATUS,
+            START_DATE,
+            END_DATE,
+            TOTAL_MINUTE,
+            LAST_POSITION,
+            TEMP_DATA,
+            LAST_SAVED_AT,
+            PROGRESS_RATE
+        ) VALUES (
+            #{progressId, jdbcType=NUMERIC},
+            #{learnId, jdbcType=NUMERIC},
+            #{studentId, jdbcType=NUMERIC},
+            'IN_PROGRESS',
+            SYSDATE,
+            NULL,
+            0,
+            '0',
+            NULL,
+            SYSDATE,
+            0
+        )
+    </insert>
+
+    <update id="updateLearnProgressToInProgress" parameterType="map">
+        UPDATE LEARN_PRO
+           SET STATUS = 'IN_PROGRESS',
+               START_DATE = NVL(START_DATE, SYSDATE),
+               LAST_SAVED_AT = SYSDATE,
+               PROGRESS_RATE = CASE
+                   WHEN NVL(PROGRESS_RATE, 0) = 0 THEN 10
+                   ELSE PROGRESS_RATE
+               END
+         WHERE LEARN_ID = #{learnId}
+           AND STUDENT_ID = #{studentId}
+    </update>
+
+    <update id="updateLearnProgressToCompleted" parameterType="map">
+        UPDATE LEARN_PRO
+           SET STATUS = 'COMPLETED',
+               END_DATE = SYSDATE,
+               LAST_SAVED_AT = SYSDATE,
+               PROGRESS_RATE = 100
+         WHERE LEARN_ID = #{learnId}
+           AND STUDENT_ID = #{studentId}
+    </update>
+
+    <update id="updateVideoProgress" parameterType="map">
+        UPDATE LEARN_PRO
+           SET LAST_POSITION = #{currentSecond, jdbcType=VARCHAR},
+               LAST_SAVED_AT = SYSDATE,
+               PROGRESS_RATE = #{progressRate, jdbcType=NUMERIC},
+               TOTAL_MINUTE = CASE
+                   WHEN #{durationSecond, jdbcType=NUMERIC} IS NULL OR #{durationSecond, jdbcType=NUMERIC} = 0
+                       THEN TOTAL_MINUTE
+                   ELSE FLOOR(#{currentSecond, jdbcType=NUMERIC} / 60)
+               END
+         WHERE LEARN_ID = #{learnId}
+           AND STUDENT_ID = #{studentId}
+    </update>
+
+    <insert id="insertLearnDifficultyFeedback" parameterType="map">
+        INSERT INTO LEARN_FBD (
+            LEARN_FBD_ID,
+            PROGRESS_ID,
+            WRITER_ID,
+            DIFFICULT_YN,
+            FEEDBACK_CONTENT,
+            CREATED_AT,
+            UPDATED_AT
+        ) VALUES (
+            #{feedbackId, jdbcType=NUMERIC},
+            #{progressId, jdbcType=NUMERIC},
+            #{studentId, jdbcType=NUMERIC},
+            1,
+            #{feedbackContent, jdbcType=CLOB},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+	<select id="selectDifficultyFeedbackIdByProgressId" parameterType="map" resultType="int">
+	    SELECT LEARN_FBD_ID
+	    FROM LEARN_FBD
+	    WHERE PROGRESS_ID = #{progressId}
+	      AND NVL(DIFFICULT_YN, 0) = 1
+	</select>
+	
+	<update id="updateLearnDifficultyFeedback" parameterType="map">
+	    UPDATE LEARN_FBD
+	       SET FEEDBACK_CONTENT = #{feedbackContent, jdbcType=CLOB},
+	           UPDATED_AT = SYSDATE,
+	           DIFFICULT_YN = 1
+	     WHERE LEARN_FBD_ID = #{feedbackId}
+	</update>
+
+</mapper>

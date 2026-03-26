@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.ClassDAO">
+
+    <select id="selectNextClassId" resultType="int">
+        SELECT NVL(MAX(CLASS_ID), 3000) + 1
+        FROM CLASS
+    </select>
+
+    <select id="selectNextTeacherClassId" resultType="int">
+        SELECT NVL(MAX(T_CLASS_ID), 0) + 1
+        FROM TEACHER_CLASS
+    </select>
+
+    <insert id="insertClass" parameterType="map">
+        INSERT INTO CLASS (
+            CLASS_ID,
+            YEAR,
+            SEMESTER,
+            GRADE,
+            CLASS_NO,
+            CLASS_NAME,
+            CLASS_STATUS,
+            ALLOW_SUBMISSION_MODIFY_YN,
+            INVITE_CODE,
+            CREATED_AT,
+            UPDATED_AT,
+            DEFAULT_DUE_TIME,
+            DESCRIPTION
+        ) VALUES (
+            #{classId},
+            #{dto.year},
+            #{dto.semester},
+            #{dto.grade},
+            #{dto.classNo},
+            #{dto.className},
+            'ACTIVE',
+            1,
+            #{inviteCode},
+            SYSDATE,
+            SYSDATE,
+            '23:59',
+            #{dto.description}
+        )
+    </insert>
+
+    <insert id="insertTeacherClass" parameterType="map">
+        INSERT INTO TEACHER_CLASS (
+            T_CLASS_ID,
+            TEACHER_ID,
+            CLASS_ID,
+            START_DATE,
+            STATUS,
+            CREATED_AT,
+            ASSIGNED_AT
+        ) VALUES (
+            #{teacherClassId},
+            #{teacherId},
+            #{classId},
+            SYSDATE,
+            'ACTIVE',
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <select id="selectTeacherClassList" parameterType="int" resultType="com.spring.dto.ClassVO">
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            T.TEACHER_NAME AS teacherName,
+            (
+                SELECT COUNT(*)
+                FROM STUDENT_CLASS SC2
+                WHERE SC2.CLASS_ID = C.CLASS_ID
+            ) AS memberCount
+        FROM CLASS C
+        JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+        JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE TC.TEACHER_ID = #{teacherId}
+          AND TC.STATUS = 'ACTIVE'
+          AND C.CLASS_STATUS = 'ACTIVE'
+        ORDER BY C.CREATED_AT DESC
+    </select>
+
+    <select id="selectTeacherClassDetail" parameterType="map" resultType="com.spring.dto.ClassVO">
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            T.TEACHER_NAME AS teacherName
+        FROM CLASS C
+        JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+        JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE TC.TEACHER_ID = #{teacherId}
+          AND C.CLASS_ID = #{classId}
+          AND TC.STATUS = 'ACTIVE'
+    </select>
+
+    <select id="selectStudentClassList" parameterType="int" resultType="com.spring.dto.ClassVO">
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            T.TEACHER_NAME AS teacherName,
+            (
+                SELECT COUNT(*)
+                FROM STUDENT_CLASS SC2
+                WHERE SC2.CLASS_ID = C.CLASS_ID
+            ) AS memberCount
+        FROM CLASS C
+        JOIN STUDENT_CLASS SC
+          ON SC.CLASS_ID = C.CLASS_ID
+        LEFT JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+         AND TC.STATUS = 'ACTIVE'
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE SC.STUDENT_ID = #{studentId}
+
+  		AND SC.END_DATE IS NULL
+        ORDER BY C.CREATED_AT DESC
+    </select>
+
+    <select id="selectStudentClassDetail" parameterType="map" resultType="com.spring.dto.ClassVO">
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            T.TEACHER_NAME AS teacherName
+        FROM CLASS C
+        JOIN STUDENT_CLASS SC
+          ON SC.CLASS_ID = C.CLASS_ID
+        LEFT JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+         AND TC.STATUS = 'ACTIVE'
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE SC.STUDENT_ID = #{studentId}
+		  AND C.CLASS_ID = #{classId}
+		  AND SC.END_DATE IS NULL
+    </select>
+
+    <select id="selectParentClassList" parameterType="int" resultType="com.spring.dto.ClassVO">
+	    SELECT
+	        C.CLASS_ID     AS classId,
+	        C.YEAR         AS year,
+	        C.SEMESTER     AS semester,
+	        C.GRADE        AS grade,
+	        C.CLASS_NO     AS classNo,
+	        C.CLASS_NAME   AS className,
+	        C.CLASS_STATUS AS classStatus,
+	        C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+	        C.INVITE_CODE  AS inviteCode,
+	        C.DEFAULT_DUE_TIME AS defaultDueTime,
+	        C.DESCRIPTION  AS description,
+	        T.TEACHER_NAME AS teacherName,
+	        S.STUDENT_NAME AS childName,
+	        (
+	            SELECT COUNT(*)
+	            FROM STUDENT_CLASS SC2
+	            WHERE SC2.CLASS_ID = C.CLASS_ID
+	        ) AS memberCount
+	    FROM CLASS C
+	    JOIN STUDENT_CLASS SC
+	      ON SC.CLASS_ID = C.CLASS_ID
+	    JOIN STUDENT_PARENT SP
+	      ON SP.STUDENT_ID = SC.STUDENT_ID
+	    JOIN STUDENT S
+	      ON S.STUDENT_ID = SC.STUDENT_ID
+	    LEFT JOIN TEACHER_CLASS TC
+	      ON TC.CLASS_ID = C.CLASS_ID
+	     AND TC.STATUS = 'ACTIVE'
+	    LEFT JOIN TEACHER T
+	      ON T.TEACHER_ID = TC.TEACHER_ID
+	    WHERE SP.PARENT_ID = #{parentId}
+	    	AND SC.END_DATE IS NULL
+	    ORDER BY C.CREATED_AT DESC
+	</select>
+
+	<select id="selectParentClassDetail" parameterType="map" resultType="com.spring.dto.ClassVO">
+	    SELECT DISTINCT
+	        C.CLASS_ID     AS classId,
+	        C.YEAR         AS year,
+	        C.SEMESTER     AS semester,
+	        C.GRADE        AS grade,
+	        C.CLASS_NO     AS classNo,
+	        C.CLASS_NAME   AS className,
+	        C.CLASS_STATUS AS classStatus,
+	        C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+	        C.INVITE_CODE  AS inviteCode,
+	        C.DEFAULT_DUE_TIME AS defaultDueTime,
+	        C.DESCRIPTION  AS description,
+	        T.TEACHER_NAME AS teacherName,
+	        S.STUDENT_NAME AS childName
+	    FROM CLASS C
+	    JOIN STUDENT_CLASS SC
+	      ON SC.CLASS_ID = C.CLASS_ID
+	    JOIN STUDENT_PARENT SP
+	      ON SP.STUDENT_ID = SC.STUDENT_ID
+	    JOIN STUDENT S
+	      ON S.STUDENT_ID = SC.STUDENT_ID
+	    LEFT JOIN TEACHER_CLASS TC
+	      ON TC.CLASS_ID = C.CLASS_ID
+	     AND TC.STATUS = 'ACTIVE'
+	    LEFT JOIN TEACHER T
+	      ON T.TEACHER_ID = TC.TEACHER_ID
+	    WHERE SP.PARENT_ID = #{parentId}
+	      AND C.CLASS_ID = #{classId}
+	      AND SC.END_DATE IS NULL
+	</select>
+	
+	<select id="selectNextStudentClassId" resultType="int">
+	    SELECT NVL(MAX(STUDENT_CLASS_ID), 0) + 1
+	    FROM STUDENT_CLASS
+	</select>
+
+	<select id="selectClassByInviteCode" parameterType="string" resultType="com.spring.dto.ClassVO">
+	    SELECT
+	        CLASS_ID     AS classId,
+	        YEAR         AS year,
+	        SEMESTER     AS semester,
+	        GRADE        AS grade,
+	        CLASS_NO     AS classNo,
+	        CLASS_NAME   AS className,
+	        CLASS_STATUS AS classStatus,
+	        INVITE_CODE  AS inviteCode,
+	        DESCRIPTION  AS description
+	    FROM CLASS
+	    WHERE UPPER(INVITE_CODE) = UPPER(#{inviteCode})
+	      AND CLASS_STATUS = 'ACTIVE'
+	</select>
+
+	<select id="countStudentClassByStudentIdAndClassId" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STUDENT_CLASS
+	    WHERE STUDENT_ID = #{studentId}
+	      AND CLASS_ID = #{classId}
+	</select>
+	
+	<insert id="insertStudentClass" parameterType="map">
+	    INSERT INTO STUDENT_CLASS (
+	        STUDENT_CLASS_ID,
+	        STUDENT_ID,
+	        CLASS_ID,
+	        START_DATE,
+	        END_DATE
+	    ) VALUES (
+	        #{studentClassId},
+	        #{studentId},
+	        #{classId},
+	        SYSDATE,
+	        NULL
+	    )
+	</insert>
+	
+	<update id="updateTeacherClassBasicSettings" parameterType="map">
+	    UPDATE CLASS
+	    SET
+	        CLASS_NAME = #{dto.className},
+	        CLASS_STATUS = #{dto.classStatus},
+	        GRADE = #{dto.grade},
+	        CLASS_NO = #{dto.classNo},
+	        DESCRIPTION = #{dto.description},
+	        UPDATED_AT = SYSDATE
+	    WHERE CLASS_ID = #{classId}
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = CLASS.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	      )
+	</update>
+
+	<update id="updateTeacherAssignmentSettings" parameterType="map">
+	    UPDATE CLASS
+	    SET
+	        DEFAULT_DUE_TIME = #{dto.defaultDueTime},
+	        ALLOW_SUBMISSION_MODIFY_YN = #{dto.allowSubmissionModifyYn},
+	        UPDATED_AT = SYSDATE
+	    WHERE CLASS_ID = #{classId}
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = CLASS.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	      )
+	</update>
+	
+	<update id="regenerateInviteCode" parameterType="map">
+	    UPDATE CLASS
+	    SET
+	        INVITE_CODE = #{inviteCode},
+	        UPDATED_AT = SYSDATE
+	    WHERE CLASS_ID = #{classId}
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = CLASS.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	      )
+	</update>
+	
+	<update id="archiveTeacherClass" parameterType="map">
+	    UPDATE CLASS
+	    SET
+	        CLASS_STATUS = 'ARCHIVED',
+	        UPDATED_AT = SYSDATE
+	    WHERE CLASS_ID = #{classId}
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = CLASS.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	      )
+	</update>
+	
+	<select id="countTeacherClassStudents" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STUDENT_CLASS SC
+	    WHERE SC.CLASS_ID = #{classId}
+	      AND SC.END_DATE IS NULL
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = SC.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	      )
+	</select>
+	
+	<select id="selectTeacherStudentManageList"
+	        parameterType="map"
+	        resultType="com.spring.dto.teacher.TeacherStudentManageDTO">
+	    SELECT
+	        SC.STUDENT_CLASS_ID AS studentClassId,
+	        S.STUDENT_ID AS studentId,
+	        ROW_NUMBER() OVER (ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC) AS studentNo,
+	        S.STUDENT_NAME AS studentName,
+	        SUBSTR(S.STUDENT_NAME, 1, 1) AS nameFirst,
+	        S.PHONE AS phone,
+	        S.PROFILE_IMAGE AS profileImage,
+	        S.INTRO AS intro,
+	        S.PARENT_LINK_CODE AS parentLinkCode,
+	        NVL(SC.OBSERVATION_MEMO, '') AS observationMemo,
+	        NVL((
+	            SELECT LISTAGG(SCT.TAG_NAME, ',') WITHIN GROUP (ORDER BY SCT.TAG_NAME)
+	            FROM STUDENT_CLASS_TAG SCT
+	            WHERE SCT.STUDENT_CLASS_ID = SC.STUDENT_CLASS_ID
+	        ), '') AS tagsCsv,
+	        CASE
+	            WHEN EXISTS (
+	                SELECT 1
+	                FROM STUDENT_PARENT SP
+	                WHERE SP.STUDENT_ID = S.STUDENT_ID
+	                  AND SP.LINK_STATUS = 1
+	                  AND SP.UNLINKED_AT IS NULL
+	            ) THEN 1
+	            ELSE 0
+	        END AS parentLinked,
+	        (
+	            SELECT MAX(SP.RELATION_TYPE)
+	            FROM STUDENT_PARENT SP
+	            WHERE SP.STUDENT_ID = S.STUDENT_ID
+	              AND SP.LINK_STATUS = 1
+	              AND SP.UNLINKED_AT IS NULL
+	        ) AS parentRelationType,
+	        NVL(TO_CHAR(M.LAST_LOGIN_AT, 'YYYY-MM-DD HH24:MI'), '접속 기록 없음') AS lastLoginAtText,
+	        0 AS learningProgressRate,
+	        0 AS totalLearningCount,
+	        0 AS completedLearningCount,
+	        0 AS totalAssignmentCount,
+	        0 AS submittedAssignmentCount,
+	        0 AS assignmentSubmitRate
+	    FROM STUDENT_CLASS SC
+	    JOIN STUDENT S
+	      ON S.STUDENT_ID = SC.STUDENT_ID
+	    JOIN MEMBER M
+	      ON M.MEMBER_ID = S.STUDENT_ID
+	    WHERE SC.CLASS_ID = #{classId}
+	      AND SC.END_DATE IS NULL
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = SC.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	              AND TC.END_DATE IS NULL
+	      )
+	    ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC
+	</select>
+	
+	<select id="selectNextStudentClassTagId" resultType="int">
+	    SELECT NVL(MAX(STUDENT_CLASS_TAG_ID), 0) + 1
+	    FROM STUDENT_CLASS_TAG
+	</select>
+ 
+   <!-- 권한 확인용 카운트 -->
+	<select id="countActiveTeacherStudentClass" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STUDENT_CLASS SC
+	    WHERE SC.STUDENT_CLASS_ID = #{studentClassId}
+	      AND SC.END_DATE IS NULL
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = SC.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	              AND TC.END_DATE IS NULL
+	      )
+	</select>
+	
+	<!-- 메모 업데이트 -->
+	<update id="updateStudentObservationMemo" parameterType="map">
+	    UPDATE STUDENT_CLASS SC
+	    SET
+	        SC.OBSERVATION_MEMO = #{dto.observationMemo},
+	        SC.START_DATE = SC.START_DATE
+	    WHERE SC.STUDENT_CLASS_ID = #{dto.studentClassId}
+	      AND SC.END_DATE IS NULL
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = SC.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	              AND TC.END_DATE IS NULL
+	      )
+	</update>
+	
+	<!-- 태그 전체삭제 -->
+	<delete id="deleteStudentObservationTags" parameterType="map">
+	    DELETE FROM STUDENT_CLASS_TAG
+	    WHERE STUDENT_CLASS_ID = #{studentClassId}
+	      AND EXISTS (
+	            SELECT 1
+	            FROM STUDENT_CLASS SC
+	            JOIN TEACHER_CLASS TC
+	              ON TC.CLASS_ID = SC.CLASS_ID
+	            WHERE SC.STUDENT_CLASS_ID = #{studentClassId}
+	              AND SC.END_DATE IS NULL
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	              AND TC.END_DATE IS NULL
+	      )
+	</delete>
+	
+	<!-- 태그 인설트 -->
+	<insert id="insertStudentObservationTag" parameterType="map">
+	    INSERT INTO STUDENT_CLASS_TAG (
+	        STUDENT_CLASS_TAG_ID,
+	        STUDENT_CLASS_ID,
+	        TAG_NAME,
+	        CREATED_AT
+	    ) VALUES (
+	        #{studentClassTagId},
+	        #{studentClassId},
+	        #{tagName},
+	        SYSDATE
+	    )
+	</insert>
+		
+	<!-- 클래스 제외 -->	
+	<update id="endStudentClass" parameterType="map">
+	    UPDATE STUDENT_CLASS SC
+	    SET
+	        SC.END_DATE = SYSDATE
+	    WHERE SC.STUDENT_CLASS_ID = #{studentClassId}
+	      AND SC.END_DATE IS NULL
+	      AND EXISTS (
+	            SELECT 1
+	            FROM TEACHER_CLASS TC
+	            WHERE TC.CLASS_ID = SC.CLASS_ID
+	              AND TC.TEACHER_ID = #{teacherId}
+	              AND TC.STATUS = 'ACTIVE'
+	              AND TC.END_DATE IS NULL
+	      )
+	</update>
+	
+	<select id="countActiveStudentClassByStudentIdAndClassId" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STUDENT_CLASS
+	    WHERE STUDENT_ID = #{studentId}
+	      AND CLASS_ID = #{classId}
+	      AND END_DATE IS NULL
+	</select>
+	
+	<select id="countRemovedStudentClassByStudentIdAndClassId" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STUDENT_CLASS
+	    WHERE STUDENT_ID = #{studentId}
+	      AND CLASS_ID = #{classId}
+	      AND END_DATE IS NOT NULL
+	</select>
+	
+	<update id="reactivateStudentClass" parameterType="map">
+	    UPDATE STUDENT_CLASS
+	    SET
+	        START_DATE = SYSDATE,
+	        END_DATE = NULL
+	    WHERE STUDENT_ID = #{studentId}
+	      AND CLASS_ID = #{classId}
+	      AND END_DATE IS NOT NULL
+	</update>	
+	</mapper>

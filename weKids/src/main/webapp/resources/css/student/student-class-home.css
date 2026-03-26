@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+.student-class-home .class-home-panel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.student-class-home .summary-card {
+    align-items: center;
+    text-align: center;
+    min-height: 210px;
+}
+
+.student-class-home .summary-title {
+    font-size: 30px;
+}
+
+.student-class-home .summary-value {
+    font-size: 58px;
+}
+
+@media (max-width: 1200px) {
+    .student-class-home .class-home-panel {
+        grid-template-columns: 1fr;
+    }
+}

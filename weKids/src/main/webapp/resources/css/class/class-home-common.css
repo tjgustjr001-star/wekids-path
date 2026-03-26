@@ -1,0 +1,231 @@
+@charset "UTF-8";
+
+.class-home-page,
+.parent-home-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.class-hero-card,
+.parent-hero-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    padding: 36px 42px;
+    box-shadow: 0 12px 32px rgba(17, 24, 39, 0.08);
+}
+
+.class-hero-card {
+    min-height: 240px;
+    background: linear-gradient(120deg, rgba(46, 125, 50, 0.45), rgba(37, 99, 235, 0.65)),
+                url("/resources/images/class/class-cover-default.jpg") center center / cover no-repeat;
+    color: #fff;
+}
+
+.class-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(17, 24, 39, 0.18), rgba(17, 24, 39, 0.05));
+}
+
+.class-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.class-hero-content h1,
+.parent-hero-card h1 {
+    margin: 0 0 14px;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.class-hero-content p,
+.parent-hero-card p {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.5;
+    opacity: 0.95;
+}
+
+.class-home-panel,
+.parent-dashboard-card,
+.class-home-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 28px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.class-home-panel,
+.class-home-section,
+.parent-dashboard-card {
+    padding: 28px 32px;
+}
+
+.summary-card {
+    min-height: 138px;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    padding: 26px 28px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.summary-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.summary-value {
+    font-size: 44px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.summary-icon {
+    font-size: 34px;
+    line-height: 1;
+}
+
+.summary-blue {
+    background: #f4f8ff;
+    border-color: #cfe0ff;
+}
+
+.summary-red {
+    background: #fff5f5;
+    border-color: #ffd4d4;
+}
+
+.summary-yellow {
+    background: #fffbea;
+    border-color: #f5e6a7;
+}
+
+.summary-purple {
+    background: #faf5ff;
+    border-color: #e9d5ff;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.detail-link {
+    color: #4f46e5;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.notice-list,
+.update-list,
+.parent-notice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.notice-item,
+.parent-notice-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid #eceff3;
+    border-radius: 18px;
+    padding: 20px 22px;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+}
+
+.notice-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.notice-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 10px;
+    background: #ffe1e1;
+    color: #d92d20;
+    font-size: 15px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.notice-title {
+    font-size: 24px;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notice-date {
+    font-size: 20px;
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.empty-box {
+    border: 1px dashed #d1d5db;
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+    color: #6b7280;
+    background: #f9fafb;
+}
+
+@media (max-width: 1200px) {
+    .class-hero-content h1,
+    .parent-hero-card h1 {
+        font-size: 40px;
+    }
+
+    .class-hero-content p,
+    .parent-hero-card p {
+        font-size: 18px;
+    }
+
+    .summary-value {
+        font-size: 34px;
+    }
+
+    .notice-title {
+        font-size: 20px;
+    }
+
+    .notice-date {
+        font-size: 16px;
+    }
+}

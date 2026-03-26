@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.MemberDAO">
+
+    <resultMap id="memberResultMap" type="com.spring.dto.MemberVO">
+        <id property="member_id" column="member_id"/>
+        <result property="login_id" column="login_id"/>
+        <result property="pwd" column="pwd"/>
+        <result property="email" column="email"/>
+        <result property="account_status" column="account_status"/>
+        <result property="login_fail_count" column="login_fail_count"/>
+        <result property="last_login_at" column="last_login_at"/>
+        <result property="locked_at" column="locked_at"/>
+        <result property="pwd_changed_at" column="pwd_changed_at"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_at" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectMemberByLoginId" parameterType="string" resultMap="memberResultMap">
+        SELECT
+            member_id,
+            login_id,
+            pwd,
+            email,
+            account_status,
+            login_fail_count,
+            last_login_at,
+            locked_at,
+            pwd_changed_at,
+            created_at,
+            updated_at
+        FROM member
+        WHERE login_id = #{login_id}
+    </select>
+
+</mapper>
