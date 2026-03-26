@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.admin.AdminTeacherDAO">
+   
+	<resultMap id="AdminTeacherListResultMap" type="com.spring.dto.admin.AdminTeacherListDTO">
+		<result property="teacherId" column="teacher_id"/>
+		<result property="teacherName" column="teacher_name"/>
+		<result property="email" column="email"/>
+		<result property="schoolName" column="school_name"/>
+		<result property="classCount" column="class_count"/>
+		<result property="joinDate" column="join_date"/>
+		<result property="accountStatus" column="account_status"/>
+	</resultMap>
+
+	<select id="selectTeacherList" resultMap="AdminTeacherListResultMap">
+		SELECT
+			t.teacher_id,
+			t.teacher_name,
+			m.email,
+			'대우초등학교' AS school_name,
+			NVL(COUNT(tc.class_id), 0) AS class_count,
+			m.created_at AS join_date,
+			m.account_status
+		FROM teacher t
+			JOIN member m ON t.teacher_id = m.member_id
+			LEFT JOIN teacher_class tc ON t.teacher_id = tc.teacher_id
+		WHERE m.account_status != 'DELETED'
+		GROUP BY
+			t.teacher_id,
+			t.teacher_name,
+			m.email,
+			m.created_at,
+			m.account_status
+		ORDER BY t.teacher_id
+	</select>
+	<resultMap id="AdminTeacherDetailResultMap" type="com.spring.dto.admin.AdminTeacherDetailDTO">
+	<result property="teacherId" column="teacher_id"/>
+	<result property="teacherName" column="teacher_name"/>
+	<result property="email" column="email"/>
+	<result property="phone" column="phone"/>
+	<result property="intro" column="intro"/>
+	<result property="birth" column="birth"/>
+	<result property="joinDate" column="join_date"/>
+	<result property="lastLoginAt" column="last_login_at"/>
+	<result property="accountStatus" column="account_status"/>
+</resultMap>
+
+<resultMap id="AdminTeacherClassResultMap" type="com.spring.dto.admin.AdminTeacherClassDTO">
+	<result property="classId" column="class_id"/>
+	<result property="className" column="class_name"/>
+	<result property="classStatus" column="class_status"/>
+	<result property="studentCount" column="student_count"/>
+	<result property="startDate" column="start_date"/>
+	<result property="endDate" column="end_date"/>
+</resultMap>
+
+<select id="selectTeacherDetailById" parameterType="int" resultMap="AdminTeacherDetailResultMap">
+	SELECT
+		t.teacher_id,
+		t.teacher_name,
+		m.email,
+		t.phone,
+		t.intro,
+		t.birth,
+		m.created_at AS join_date,
+		m.last_login_at,
+		m.account_status
+	FROM teacher t
+		JOIN member m ON t.teacher_id = m.member_id
+	WHERE t.teacher_id = #{teacherId}
+</select>
+
+<update id="updateTeacherStatus" parameterType="map">
+	UPDATE member
+	SET account_status = #{accountStatus},
+	    updated_at = SYSDATE
+	WHERE member_id = #{teacherId}
+</update>
+
+<select id="selectTeacherClassListById" parameterType="int" resultMap="AdminTeacherClassResultMap">
+	SELECT
+		c.class_id,
+		c.class_name,
+		c.class_status,
+		COUNT(sc.student_id) AS student_count,
+		tc.start_date,
+		tc.end_date
+	FROM teacher_class tc
+		JOIN class c ON tc.class_id = c.class_id
+		LEFT JOIN student_class sc ON c.class_id = sc.class_id
+	WHERE tc.teacher_id = #{teacherId}
+	GROUP BY
+		c.class_id,
+		c.class_name,
+		c.class_status,
+		tc.start_date,
+		tc.end_date
+	ORDER BY c.class_id
+</select>
+<select id="selectNextMemberId" resultType="int">
+	SELECT NVL(MAX(member_id), 1000) + 1
+	FROM member
+</select>
+
+<select id="selectNextAuthorityId" resultType="int">
+	SELECT NVL(MAX(authority_id), 2000) + 1
+	FROM authority
+</select>
+<insert id="insertTeacherMember" parameterType="map">
+	INSERT INTO member (
+		member_id,
+		login_id,
+		pwd,
+		email,
+		account_status,
+		login_fail_count,
+		last_login_at,
+		locked_at,
+		pwd_changed_at,
+		created_at,
+		updated_at
+	) VALUES (
+		#{memberId},
+		#{registDTO.loginId},
+		#{registDTO.initialPassword},
+		#{registDTO.email},
+		'ACTIVE',
+		0,
+		SYSDATE,
+		NULL,
+		SYSDATE,
+		SYSDATE,
+		SYSDATE
+	)
+</insert>
+<insert id="insertTeacherAuthority" parameterType="map">
+	INSERT INTO authority (
+		authority_id,
+		member_id,
+		role_code,
+		role_name
+	) VALUES (
+		#{authorityId},
+		#{memberId},
+		'TEACHER',
+		'교사'
+	)
+</insert>
+<insert id="insertTeacher" parameterType="map">
+	INSERT INTO teacher (
+		teacher_id,
+		teacher_name,
+		created_at,
+		updated_at
+	) VALUES (
+		#{memberId},
+		#{registDTO.teacherName},
+		SYSDATE,
+		SYSDATE
+	)
+</insert>
+</mapper>

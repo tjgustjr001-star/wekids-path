@@ -1,0 +1,451 @@
+@charset "UTF-8";
+
+.teacher-class-manage-page {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.manage-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06);
+}
+
+.summary-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.summary-icon.green {
+    background: #eef9ec;
+    color: #6EC207;
+}
+
+.summary-icon.blue {
+    background: #eef4ff;
+    color: #4379F2;
+}
+
+.summary-icon.purple {
+    background: #f3efff;
+    color: #7c5cff;
+}
+
+.summary-text-box p {
+    margin: 0 0 6px;
+    font-size: 15px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.summary-text-box strong {
+    font-size: 34px;
+    line-height: 1.2;
+    color: #111827;
+    font-weight: 800;
+}
+
+.users-summary-icon::before,
+.users-summary-icon::after,
+.learn-summary-icon::before,
+.learn-summary-icon::after,
+.assignment-summary-icon::before,
+.assignment-summary-icon::after {
+    content: "";
+    position: absolute;
+}
+
+.users-summary-icon::before {
+    left: 14px;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border: 3px solid currentColor;
+    border-radius: 50%;
+    box-shadow: 13px 2px 0 -1px currentColor;
+}
+
+.users-summary-icon::after {
+    left: 11px;
+    bottom: 11px;
+    width: 13px;
+    height: 8px;
+    border: 3px solid currentColor;
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+}
+
+.learn-summary-icon::before {
+    left: 13px;
+    top: 10px;
+    width: 9px;
+    height: 22px;
+    border: 3px solid currentColor;
+    border-right: 1px solid currentColor;
+    border-radius: 4px 0 0 4px;
+}
+
+.learn-summary-icon::after {
+    right: 13px;
+    top: 10px;
+    width: 9px;
+    height: 22px;
+    border: 3px solid currentColor;
+    border-left: 1px solid currentColor;
+    border-radius: 0 4px 4px 0;
+}
+
+.assignment-summary-icon::before {
+    left: 13px;
+    top: 10px;
+    width: 22px;
+    height: 24px;
+    border: 3px solid currentColor;
+    border-radius: 4px;
+}
+
+.assignment-summary-icon::after {
+    left: 18px;
+    top: 6px;
+    width: 12px;
+    height: 6px;
+    border: 3px solid currentColor;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.manage-section,
+.danger-zone-section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.section-title-row h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 30px;
+    line-height: 1.3;
+    font-weight: 800;
+    color: #111827;
+}
+
+.danger-title {
+    color: #dc2626;
+}
+
+.section-title-icon {
+    width: 26px;
+    height: 26px;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    color: #6EC207;
+}
+
+.settings-section-icon::before,
+.assignment-section-icon::before,
+.shield-section-icon::before,
+.shield-section-icon::after,
+.danger-section-icon::before,
+.danger-section-icon::after {
+    content: "";
+    position: absolute;
+}
+
+.settings-section-icon::before {
+    left: 5px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    box-shadow:
+        0 -8px 0 -5px currentColor,
+        0 8px 0 -5px currentColor,
+        8px 0 0 -5px currentColor,
+        -8px 0 0 -5px currentColor;
+}
+
+.assignment-section-icon::before {
+    left: 4px;
+    top: 4px;
+    width: 18px;
+    height: 20px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+}
+
+.assignment-section-icon::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 1px;
+    width: 10px;
+    height: 5px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.shield-section-icon::before {
+    left: 6px;
+    top: 3px;
+    width: 14px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-radius: 8px 8px 10px 10px;
+}
+
+.shield-section-icon::after {
+    left: 11px;
+    top: 9px;
+    width: 4px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+
+.danger-section-icon {
+    color: #dc2626;
+}
+
+.danger-section-icon::before {
+    left: 5px;
+    top: 3px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 16px solid currentColor;
+}
+
+.danger-section-icon::after {
+    left: 12px;
+    top: 8px;
+    width: 2px;
+    height: 6px;
+    background: #fff;
+    box-shadow: 0 8px 0 0 #fff;
+}
+
+.manage-form-box,
+.invite-manage-box {
+    background: #f9fafb;
+    border: 1px solid #eef1f4;
+    border-radius: 24px;
+    padding: 30px;
+}
+
+.manage-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-grid.two-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-field label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    border: 1px solid #d8dee8;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 16px;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: #6EC207;
+    box-shadow: 0 0 0 3px rgba(110, 194, 7, 0.12);
+}
+
+.form-field textarea {
+    min-height: 120px;
+    resize: none;
+}
+
+.field-help-text {
+    margin: -2px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #6b7280;
+}
+
+.form-action-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.primary-save-btn {
+    min-width: 140px;
+    height: 52px;
+    border: 0;
+    border-radius: 16px;
+    background: #6EC207;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.primary-save-btn:hover {
+    background: #5cad00;
+}
+
+.invite-info-box h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.invite-info-box p {
+    margin: 0 0 22px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #6b7280;
+}
+
+.invite-code-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.invite-code-box {
+    min-width: 260px;
+    padding: 16px 22px;
+    border-radius: 18px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #1f2937;
+}
+
+.secondary-line-btn,
+.secondary-green-btn,
+.danger-outline-btn {
+    height: 48px;
+    padding: 0 20px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.secondary-line-btn {
+    background: #fff;
+    border: 1px solid #d9dee6;
+    color: #4b5563;
+}
+
+.secondary-line-btn:hover {
+    background: #f9fafb;
+}
+
+.secondary-green-btn {
+    background: #eef9ec;
+    border: 1px solid #d4ecd1;
+    color: #117554;
+}
+
+.secondary-green-btn:hover {
+    background: #e4f5df;
+}
+
+.danger-zone-box {
+    background: #fff4f4;
+    border: 1px solid #ffd9d9;
+    border-radius: 20px;
+    padding: 26px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.danger-text-box h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.danger-text-box p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.danger-outline-btn {
+    background: #fff;
+    border: 1px solid #f1b5b5;
+    color: #dc2626;
+    white-space: nowrap;
+}
+
+.danger-outline-btn:hover {
+    background: #fff7f7;
+}
+
+@media (max-width: 1100px) {
+    .manage-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid.two-cols {
+        grid-template-columns: 1fr;
+    }
+
+    .danger-zone-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

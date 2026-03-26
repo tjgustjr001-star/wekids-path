@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+.parent-shell .user-symbol {
+    background: #ffe4e4;
+}
+
+.parent-shell .sidebar-menu:hover {
+    background: #fff7f7;
+}
+
+.parent-shell .sidebar-menu.active {
+    background: #fff5f5;
+    border-color: #ffd6d6;
+    box-shadow: var(--shadow-sm);
+}

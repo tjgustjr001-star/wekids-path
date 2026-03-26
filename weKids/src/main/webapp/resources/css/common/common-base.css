@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+:root {
+    --sidebar-width: 320px;
+    --header-height: 88px;
+    --bg-page: #f5f6f8;
+    --white: #ffffff;
+    --border-color: #e5e7eb;
+    --text-main: #111827;
+    --text-sub: #6b7280;
+    --text-light: #9ca3af;
+    --brand-dark: #3f7c5f;
+    --shadow-sm: 0 4px 16px rgba(17, 24, 39, 0.06);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-page);
+    color: var(--text-main);
+    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-page);
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-content {
+    flex: 1;
+    min-width: 0;
+    padding: 34px 36px;
+    background: var(--bg-page);
+    overflow-x: auto;
+}
+
+@media (max-width: 1200px) {
+    :root {
+        --sidebar-width: 290px;
+    }
+
+    .app-content {
+        padding: 28px 24px;
+    }
+}
+
+@media (max-width: 960px) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .app-content {
+        padding: 22px 16px;
+    }
+}

@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+.teacher-shell .user-symbol {
+    background: #eef4ff;
+}
+
+.teacher-shell .sidebar-menu:hover {
+    background: #eef6ff;
+}
+
+.teacher-shell .sidebar-menu.active {
+    background: #ffffff;
+    border-color: #dbeafe;
+    box-shadow: var(--shadow-sm);
+}

@@ -1,0 +1,55 @@
+@charset "UTF-8";
+
+:root {
+    --font-size: 16px;
+
+    --background: #ffffff;
+    --foreground: #171717;
+    --card: #ffffff;
+    --card-foreground: #171717;
+
+    --primary: #059669;
+    --primary-foreground: #ffffff;
+
+    --muted: #ececf0;
+    --muted-foreground: #717182;
+
+    --accent: #e9ebef;
+    --accent-foreground: #030213;
+
+    --border: rgba(0, 0, 0, 0.1);
+    --input-background: #f3f3f5;
+
+    --radius: 0.625rem;
+
+    --color-brand-blue: #4379F2;
+    --color-brand-yellow: #FFEB00;
+    --color-brand-green: #6EC207;
+    --color-brand-dark: #117554;
+
+    --color-role-student: #00d37a;
+    --color-role-parent: #FF7777;
+    --color-role-teacher: #008BFF;
+    --color-role-admin: #9DB2BF;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: var(--font-size);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}

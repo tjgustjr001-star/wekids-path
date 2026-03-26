@@ -1,0 +1,149 @@
+@charset "UTF-8";
+
+.sidebar .home-icon::before,
+.sidebar .home-icon::after,
+.sidebar .class-icon::before,
+.sidebar .class-icon::after,
+.sidebar .bell-mini-icon::before,
+.sidebar .bell-mini-icon::after,
+.sidebar .book-mini-icon::before,
+.sidebar .calendar-mini-icon::before,
+.sidebar .calendar-mini-icon::after,
+.sidebar .chart-mini-icon::before,
+.sidebar .users-mini-icon::before,
+.sidebar .users-mini-icon::after,
+.sidebar .settings-mini-icon::before {
+    content: "";
+    position: absolute;
+}
+
+.sidebar .home-icon::before {
+    left: 5px;
+    top: 10px;
+    width: 18px;
+    height: 13px;
+    border: 3px solid #111;
+    border-top: 0;
+    border-radius: 0 0 3px 3px;
+}
+
+.sidebar .home-icon::after {
+    left: 3px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    border-left: 3px solid #111;
+    border-top: 3px solid #111;
+    transform: rotate(45deg);
+}
+
+.sidebar .class-icon::before {
+    left: 3px;
+    top: 5px;
+    width: 9px;
+    height: 18px;
+    border: 3px solid #111;
+    border-right: 1px solid #111;
+    border-radius: 4px 0 0 4px;
+}
+
+.sidebar .class-icon::after {
+    right: 3px;
+    top: 5px;
+    width: 9px;
+    height: 18px;
+    border: 3px solid #111;
+    border-left: 1px solid #111;
+    border-radius: 0 4px 4px 0;
+}
+
+.sidebar .bell-mini-icon::before {
+    left: 6px;
+    top: 5px;
+    width: 14px;
+    height: 11px;
+    border: 2px solid #111;
+    border-bottom: 0;
+    border-radius: 9px 9px 0 0;
+}
+
+.sidebar .bell-mini-icon::after {
+    left: 10px;
+    bottom: 4px;
+    width: 6px;
+    height: 3px;
+    border-bottom: 2px solid #111;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 -4px 0 0 #111;
+}
+
+.sidebar .book-mini-icon::before {
+    left: 5px;
+    top: 4px;
+    width: 16px;
+    height: 18px;
+    border: 2px solid #111;
+    border-radius: 3px;
+}
+
+.sidebar .calendar-mini-icon::before {
+    left: 5px;
+    top: 5px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #111;
+    border-radius: 4px;
+}
+
+.sidebar .calendar-mini-icon::after {
+    left: 8px;
+    top: 2px;
+    width: 12px;
+    height: 4px;
+    background: #111;
+    border-radius: 2px;
+}
+
+.sidebar .chart-mini-icon::before {
+    left: 5px;
+    bottom: 4px;
+    width: 3px;
+    height: 10px;
+    background: #111;
+    border-radius: 2px;
+    box-shadow: 7px -4px 0 0 #111, 14px -10px 0 0 #111;
+}
+
+.sidebar .users-mini-icon::before {
+    left: 5px;
+    top: 7px;
+    width: 7px;
+    height: 7px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    box-shadow: 9px 2px 0 -1px #111;
+}
+
+.sidebar .users-mini-icon::after {
+    left: 3px;
+    bottom: 4px;
+    width: 10px;
+    height: 6px;
+    border: 2px solid #111;
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+}
+
+.sidebar .settings-mini-icon::before {
+    left: 6px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    box-shadow:
+        0 -7px 0 -5px #111,
+        0 7px 0 -5px #111,
+        7px 0 0 -5px #111,
+        -7px 0 0 -5px #111;
+}
