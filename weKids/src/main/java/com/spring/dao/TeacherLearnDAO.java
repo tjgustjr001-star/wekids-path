@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnManageDTO;
+import com.spring.dto.teacher.TeacherLearnProgressDTO;
 
 public interface TeacherLearnDAO {
 
@@ -37,7 +38,7 @@ public interface TeacherLearnDAO {
 
     void deleteLearnListIfNoChildren(Map<String, Object> paramMap) throws SQLException;
     
-    
+    List<TeacherLearnProgressDTO> selectTeacherLearnProgressList(Map<String, Object> paramMap) throws SQLException;
 
     List<TeacherLearnDifficultyDTO> selectTeacherLearnDifficultyList(Map<String, Object> paramMap) throws SQLException;
 }

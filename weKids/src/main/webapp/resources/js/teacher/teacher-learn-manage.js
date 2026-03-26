@@ -226,13 +226,14 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelectorAll('.teacher-modal-backdrop').forEach(function (backdrop) {
+	/*배경클릭하면 모달창닫히는거*/
+/*    document.querySelectorAll('.teacher-modal-backdrop').forEach(function (backdrop) {
         backdrop.addEventListener('click', function (e) {
             if (e.target === backdrop) {
                 closeModal(backdrop);
             }
         });
-    });
+    });*/
 
     if (learnType) {
         learnType.addEventListener('change', function () {
@@ -355,10 +356,24 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detailDurationText').textContent = row.dataset.duration && row.dataset.duration !== '0' ? row.dataset.duration + '분' : '-';
             document.getElementById('detailTargetText').textContent = row.dataset.target || '';
             document.getElementById('detailContentText').textContent = row.dataset.content || '';
-
+			
             const detailLinkBox = document.getElementById('detailLinkBox');
             const detailLinkUrl = document.getElementById('detailLinkUrl');
 
+			document.getElementById('detailCompletedCount').textContent =
+			    (row.dataset.completedCount || '0') + '명';
+			document.getElementById('detailInProgressCount').textContent =
+			    (row.dataset.inProgressCount || '0') + '명';
+			document.getElementById('detailNotStartedCount').textContent =
+			    (row.dataset.notStartedCount || '0') + '명';
+
+			const completionRate = Number(row.dataset.completionRate || 0);
+			document.getElementById('detailCompletionRateText').textContent = completionRate + '%';
+			document.getElementById('detailCompletionBar').style.width = completionRate + '%';
+			document.getElementById('detailStudentCount').textContent = row.dataset.totalStudentCount || '0';
+
+			loadStudentProgress(row.dataset.learningId || '');
+			
             if (row.dataset.linkUrl) {
                 detailLinkBox.style.display = '';
                 detailLinkUrl.href = row.dataset.linkUrl;
@@ -539,5 +554,92 @@ window.addEventListener('DOMContentLoaded', function () {
     if (trashMode && openCreateBtn) {
         openCreateBtn.style.display = 'none';
     }
+	function renderStudentProgressList(list) {
+	    const listBox = document.getElementById('detailStudentProgressList');
+	    const countBox = document.getElementById('detailStudentCount');
 
+	    if (!listBox) return;
+
+	    if (!list || list.length === 0) {
+	        if (countBox) countBox.textContent = '0';
+	        listBox.innerHTML = '<div class="teacher-empty-box">학생 진행 데이터가 없습니다.</div>';
+	        return;
+	    }
+
+	    if (countBox) countBox.textContent = String(list.length);
+
+	    let html = '';
+
+	    list.forEach(function (item) {
+	        const studentName = item.studentName || '학생';
+	        const profileImage = item.profileImage || '';
+	        const status = item.status || '미시작';
+	        const progressRate = Number(item.progressRate || 0);
+	        const lastAccessedAt = item.lastAccessedAt || '';
+
+	        let avatarHtml = '';
+	        if (profileImage) {
+	            avatarHtml = '<img src="' + escapeHtml(profileImage) + '" alt="' + escapeHtml(studentName) + '" class="detail-student-avatar-image">';
+	        } else {
+	            avatarHtml = '<span class="detail-student-avatar-text">' + escapeHtml(studentName.charAt(0)) + '</span>';
+	        }
+
+	        let statusClass = 'not-started';
+	        let progressClass = 'not-started';
+	        if (status === '완료') {
+	            statusClass = 'complete';
+	            progressClass = 'complete';
+	        } else if (status === '진행중') {
+	            statusClass = 'progress';
+	            progressClass = 'progress';
+	        }
+
+	        html +=
+	            '<div class="detail-student-item">' +
+	                '<div class="detail-student-left">' +
+	                    '<div class="detail-student-avatar">' + avatarHtml + '</div>' +
+	                    '<div class="detail-student-meta">' +
+	                        '<strong>' + escapeHtml(studentName) + '</strong>' +
+	                        '<div class="detail-student-progress-row">' +
+	                            '<div class="detail-student-progress-bar">' +
+	                                '<div class="detail-student-progress-fill ' + progressClass + '" style="width:' + progressRate + '%;"></div>' +
+	                            '</div>' +
+	                            '<span class="detail-student-progress-rate">' + progressRate + '%</span>' +
+	                        '</div>' +
+	                        '<p>' + (lastAccessedAt ? '마지막 접근: ' + escapeHtml(lastAccessedAt) : '기록 없음') + '</p>' +
+	                    '</div>' +
+	                '</div>' +
+	                '<div class="detail-student-right">' +
+	                    '<span class="status-badge ' + statusClass + '">' + escapeHtml(status) + '</span>' +
+	                '</div>' +
+	            '</div>';
+	    });
+
+	    listBox.innerHTML = html;
+	}
+	function loadStudentProgress(learnId) {
+	    const listBox = document.getElementById('detailStudentProgressList');
+	    if (!listBox) return;
+
+	    listBox.innerHTML = '<div class="teacher-empty-box">학생 진행 상황을 불러오는 중입니다.</div>';
+
+	    fetch(contextPath + '/teacher/classes/' + classId + '/learns/' + learnId + '/progress', {
+	        method: 'POST',
+	        headers: {
+	            'X-Requested-With': 'XMLHttpRequest'
+	        }
+	    })
+	    .then(function (response) {
+	        if (!response.ok) {
+	            throw new Error('load failed');
+	        }
+	        return response.json();
+	    })
+	    .then(function (data) {
+	        renderStudentProgressList(data);
+	    })
+	    .catch(function () {
+	        listBox.innerHTML = '<div class="teacher-empty-box">학생 진행 상황을 불러오지 못했습니다.</div>';
+	    });
+	}
 });

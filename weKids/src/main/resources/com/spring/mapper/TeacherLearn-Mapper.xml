@@ -94,27 +94,30 @@
                 WHERE LP.LEARN_ID = LC.LEARN_ID
             ) AS NOT_STARTED_COUNT,
             CASE
-                WHEN (
-                    SELECT COUNT(*)
-                    FROM STUDENT_CLASS SC
-                    WHERE SC.CLASS_ID = LL.CLASS_ID
-                      AND SC.END_DATE IS NULL
-                ) = 0 THEN 0
-                ELSE FLOOR(
-                    (
-                        SELECT COUNT(*)
-                        FROM LEARN_PRO LP
-                        WHERE LP.LEARN_ID = LC.LEARN_ID
-                          AND LP.STATUS = 'COMPLETED'
-                    ) * 100 /
-                    (
-                        SELECT COUNT(*)
-                        FROM STUDENT_CLASS SC
-                        WHERE SC.CLASS_ID = LL.CLASS_ID
-                          AND SC.END_DATE IS NULL
-                    )
-                )
-            END AS COMPLETION_RATE,
+				    WHEN (
+				        SELECT COUNT(*)
+				        FROM STUDENT_CLASS SC
+				        WHERE SC.CLASS_ID = LL.CLASS_ID
+				          AND SC.END_DATE IS NULL
+				    ) = 0 THEN 0
+				    ELSE FLOOR(
+				        (
+				            SELECT NVL(SUM(NVL(LP.PROGRESS_RATE, 0)), 0)
+				            FROM LEARN_PRO LP
+				            JOIN STUDENT_CLASS SC
+				              ON SC.STUDENT_ID = LP.STUDENT_ID
+				            WHERE LP.LEARN_ID = LC.LEARN_ID
+				              AND SC.CLASS_ID = LL.CLASS_ID
+				              AND SC.END_DATE IS NULL
+				        ) /
+				        (
+				            SELECT COUNT(*)
+				            FROM STUDENT_CLASS SC
+				            WHERE SC.CLASS_ID = LL.CLASS_ID
+				              AND SC.END_DATE IS NULL
+				        )
+				    )
+				END AS COMPLETION_RATE,
             (
                 SELECT COUNT(*)
                 FROM STUDENT_CLASS SC
@@ -304,45 +307,38 @@
            )
     </update>
 
-    <delete id="deleteLearnFeedbackByLearnId" parameterType="map">
-        DELETE FROM LEARN_FBD
-         WHERE PROGRESS_ID IN (
-             SELECT PROGRESS_ID
-             FROM LEARN_PRO
-             WHERE LEARN_ID = #{learnId}
-         )
-    </delete>
-
-    <delete id="deleteLearnProgressByLearnId" parameterType="map">
-        DELETE FROM LEARN_PRO
-         WHERE LEARN_ID = #{learnId}
-    </delete>
-
-    <delete id="deleteLearnCont" parameterType="map">
-        DELETE FROM LEARN_CONT
-         WHERE LEARN_ID = #{learnId}
-           AND LEARN_LIST_ID IN (
-               SELECT LEARN_LIST_ID
-               FROM LEARN_LIST
-               WHERE CLASS_ID = #{classId}
-                 AND TEACHER_ID = #{teacherId}
-           )
-    </delete>
-
-    <delete id="deleteLearnListIfNoChildren" parameterType="map">
-        DELETE FROM LEARN_LIST
-         WHERE LEARN_LIST_ID IN (
-             SELECT LL.LEARN_LIST_ID
-             FROM LEARN_LIST LL
-             WHERE LL.CLASS_ID = #{classId}
-               AND LL.TEACHER_ID = #{teacherId}
-               AND NOT EXISTS (
-                   SELECT 1
-                   FROM LEARN_CONT LC
-                   WHERE LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
-               )
-         )
-    </delete>
+	 <delete id="deleteLearnFeedbackByLearnId" parameterType="map">
+	    DELETE FROM LEARN_FBD
+	     WHERE PROGRESS_ID IN (
+	         SELECT LP.PROGRESS_ID
+	           FROM LEARN_PRO LP
+	          WHERE LP.LEARN_ID = #{learnId}
+	     )
+	</delete>
+	
+	<delete id="deleteLearnProgressByLearnId" parameterType="map">
+	    DELETE FROM LEARN_PRO
+	     WHERE LEARN_ID = #{learnId}
+	</delete>
+	
+	<delete id="deleteLearnCont" parameterType="map">
+	    DELETE FROM LEARN_CONT
+	     WHERE LEARN_ID = #{learnId}
+	       AND LEARN_LIST_ID = #{learnListId}
+	       AND NVL(DELETE_YN, 0) = 1
+	</delete>
+	
+	<delete id="deleteLearnListIfNoChildren" parameterType="map">
+	    DELETE FROM LEARN_LIST
+	     WHERE LEARN_LIST_ID = #{learnListId}
+	       AND CLASS_ID = #{classId}
+	       AND TEACHER_ID = #{teacherId}
+	       AND NOT EXISTS (
+	            SELECT 1
+	              FROM LEARN_CONT
+	             WHERE LEARN_LIST_ID = #{learnListId}
+	       )
+	</delete>
 
 	<resultMap id="teacherLearnDifficultyMap" type="com.spring.dto.teacher.TeacherLearnDifficultyDTO">
 	    <result property="learnFbdId" column="LEARN_FBD_ID"/>
@@ -385,7 +381,52 @@
 	    ORDER BY LF.UPDATED_AT DESC, LF.LEARN_FBD_ID DESC
 	</select>
 	
-
+	<resultMap id="teacherLearnProgressMap" type="com.spring.dto.teacher.TeacherLearnProgressDTO">
+	    <result property="studentId" column="STUDENT_ID"/>
+	    <result property="studentName" column="STUDENT_NAME"/>
+	    <result property="profileImage" column="PROFILE_IMAGE"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="progressRate" column="PROGRESS_RATE"/>
+	    <result property="lastAccessedAt" column="LAST_ACCESSED_AT"/>
+	    <result property="totalMinute" column="TOTAL_MINUTE"/>
+	</resultMap>
+	
+	<select id="selectTeacherLearnProgressList" parameterType="map" resultMap="teacherLearnProgressMap">
+	    SELECT
+	        SC.STUDENT_ID,
+	        S.STUDENT_NAME,
+	        S.PROFILE_IMAGE,
+	        CASE
+	            WHEN LP.STATUS = 'COMPLETED' THEN '완료'
+	            WHEN LP.STATUS = 'IN_PROGRESS' THEN '진행중'
+	            ELSE '미시작'
+	        END AS STATUS,
+	        NVL(LP.PROGRESS_RATE, 0) AS PROGRESS_RATE,
+	        TO_CHAR(NVL(LP.LAST_SAVED_AT, LP.START_DATE), 'YYYY-MM-DD HH24:MI') AS LAST_ACCESSED_AT,
+	        NVL(LP.TOTAL_MINUTE, 0) AS TOTAL_MINUTE
+	    FROM STUDENT_CLASS SC
+	    JOIN STUDENT S
+	      ON SC.STUDENT_ID = S.STUDENT_ID
+	    LEFT JOIN LEARN_PRO LP
+	      ON LP.STUDENT_ID = SC.STUDENT_ID
+	     AND LP.LEARN_ID = #{learnId}
+	    JOIN LEARN_CONT LC
+	      ON LC.LEARN_ID = #{learnId}
+	    JOIN LEARN_LIST LL
+	      ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+	    WHERE SC.CLASS_ID = #{classId}
+	      AND SC.END_DATE IS NULL
+	      AND LL.CLASS_ID = #{classId}
+	      AND LL.TEACHER_ID = #{teacherId}
+	    ORDER BY
+	        CASE
+	            WHEN LP.STATUS = 'COMPLETED' THEN 1
+	            WHEN LP.STATUS = 'IN_PROGRESS' THEN 2
+	            ELSE 3
+	        END,
+	        NVL(LP.PROGRESS_RATE, 0) DESC,
+	        S.STUDENT_NAME ASC
+	</select>
 
 
 </mapper>

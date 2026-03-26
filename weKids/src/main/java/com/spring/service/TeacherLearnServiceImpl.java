@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.dao.TeacherLearnDAO;
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnManageDTO;
+import com.spring.dto.teacher.TeacherLearnProgressDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
 
 @Service
@@ -38,6 +40,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void registTeacherLearn(int teacherId, int classId, TeacherLearnSaveDTO dto) throws Exception {
         normalizeTeacherLearnDto(dto);
 
@@ -56,6 +59,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void modifyTeacherLearn(int teacherId, int classId, int learnId, TeacherLearnSaveDTO dto) throws Exception {
         normalizeTeacherLearnDto(dto);
 
@@ -70,6 +74,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteTeacherLearn(int teacherId, int classId, int learnId) throws Exception {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("teacherId", teacherId);
@@ -80,6 +85,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void restoreTeacherLearn(int teacherId, int classId, int learnId) throws Exception {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("teacherId", teacherId);
@@ -90,11 +96,23 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeTeacherLearn(int teacherId, int classId, int learnId) throws Exception {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("teacherId", teacherId);
         paramMap.put("classId", classId);
         paramMap.put("learnId", learnId);
+
+        TeacherLearnManageDTO learn = teacherLearnDAO.selectTeacherLearnDetail(paramMap);
+        if (learn == null) {
+            throw new IllegalArgumentException("존재하지 않는 학습입니다.");
+        }
+
+        if (!learn.isDeleted()) {
+            throw new IllegalStateException("휴지통에 있는 학습만 영구삭제할 수 있습니다.");
+        }
+
+        paramMap.put("learnListId", learn.getLearnListId());
 
         teacherLearnDAO.deleteLearnFeedbackByLearnId(paramMap);
         teacherLearnDAO.deleteLearnProgressByLearnId(paramMap);
@@ -150,6 +168,15 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
         if (value == null) return null;
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    @Override
+    public List<TeacherLearnProgressDTO> getTeacherLearnProgressList(int teacherId, int classId, int learnId) throws Exception {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("teacherId", teacherId);
+        paramMap.put("classId", classId);
+        paramMap.put("learnId", learnId);
+        return teacherLearnDAO.selectTeacherLearnProgressList(paramMap);
     }
     
     @Override

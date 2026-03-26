@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnManageDTO;
+import com.spring.dto.teacher.TeacherLearnProgressDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
 
 public interface TeacherLearnService {
@@ -25,4 +26,7 @@ public interface TeacherLearnService {
     
 
     List<TeacherLearnDifficultyDTO> getTeacherLearnDifficultyList(int teacherId, int classId, int learnId) throws Exception;
+
+    List<TeacherLearnProgressDTO> getTeacherLearnProgressList(int teacherId, int classId, int learnId) throws Exception;
+    
 }

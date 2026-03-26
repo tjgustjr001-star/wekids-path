@@ -1143,6 +1143,221 @@
     word-break: break-word;
 }
 
+.teacher-learn-detail-modal {
+    width: min(1120px, 92vw);
+    max-height: 88vh;
+}
+
+.teacher-learn-detail-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.detail-progress-summary-card {
+    padding: 24px 26px;
+    border: 1px solid #dbe7df;
+    border-radius: 22px;
+    background: #f7fbf9;
+}
+
+.detail-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+}
+
+#detailCompletionRateText {
+    font-size: 24px;
+    color: #117554;
+}
+
+.detail-progress-bar {
+    width: 100%;
+    height: 18px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.detail-progress-bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #117554 0%, #4379F2 100%);
+    border-radius: 999px;
+}
+
+.detail-progress-count-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.detail-progress-count-box {
+    padding: 18px 14px;
+    border-radius: 18px;
+    background: #fff;
+    text-align: center;
+    border: 1px solid #edf2f7;
+}
+
+.detail-progress-count-box span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 700;
+}
+
+.detail-progress-count-box strong {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.detail-progress-count-box strong.complete { color: #59c36a; }
+.detail-progress-count-box strong.progress { color: #4379F2; }
+.detail-progress-count-box strong.not-started { color: #9ca3af; }
+
+.detail-student-progress-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-section-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.detail-student-progress-list {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-student-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    background: #fff;
+}
+
+.detail-student-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.detail-student-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #eef6f1;
+    color: #59c36a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.detail-student-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detail-student-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.detail-student-meta strong {
+    display: block;
+    font-size: 16px;
+    color: #111827;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.detail-student-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.detail-student-progress-bar {
+    width: 220px;
+    max-width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.detail-student-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.detail-student-progress-fill.complete { background: #59c36a; }
+.detail-student-progress-fill.progress { background: #4379F2; }
+.detail-student-progress-fill.not-started { background: #cbd5e1; }
+
+.detail-student-progress-rate {
+    font-size: 14px;
+    font-weight: 800;
+    color: #6b7280;
+}
+
+.detail-student-meta p {
+    margin: 0;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.detail-student-right {
+    flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+    .detail-progress-count-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-student-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-student-right {
+        align-self: flex-end;
+    }
+
+    .detail-student-progress-bar {
+        width: 100%;
+    }
+}
+
 @media (max-width: 900px) {
     .difficult-student-right {
         justify-content: flex-start;
