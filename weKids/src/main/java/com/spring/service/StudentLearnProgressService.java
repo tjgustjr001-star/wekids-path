@@ -9,4 +9,6 @@ public interface StudentLearnProgressService {
     void saveDifficultyFeedback(int studentId, int classId, int learnId, String feedbackContent) throws Exception;
 
     void saveVideoProgress(int studentId, int classId, int learnId, int currentSecond, int durationSecond, int progressRate) throws Exception;
+
+    void saveTextProgress(int studentId, int classId, int learnId, int scrollTop, int progressRate) throws Exception;
 }

@@ -94,6 +94,15 @@
            AND STUDENT_ID = #{studentId}
     </update>
 
+	<update id="updateTextProgress" parameterType="map">
+	    UPDATE LEARN_PRO
+	       SET LAST_POSITION = #{scrollTop, jdbcType=VARCHAR},
+	           LAST_SAVED_AT = SYSDATE,
+	           PROGRESS_RATE = #{progressRate, jdbcType=NUMERIC}
+	     WHERE LEARN_ID = #{learnId}
+	       AND STUDENT_ID = #{studentId}
+	</update>
+	
     <insert id="insertLearnDifficultyFeedback" parameterType="map">
         INSERT INTO LEARN_FBD (
             LEARN_FBD_ID,

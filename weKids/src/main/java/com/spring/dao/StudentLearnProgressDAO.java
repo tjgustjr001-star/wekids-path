@@ -22,7 +22,9 @@ public interface StudentLearnProgressDAO {
     void insertLearnDifficultyFeedback(Map<String, Object> paramMap) throws SQLException;
 
     void updateVideoProgress(Map<String, Object> paramMap) throws SQLException;
-    
+
+    void updateTextProgress(Map<String, Object> paramMap) throws SQLException;
+
     Integer selectDifficultyFeedbackIdByProgressId(Map<String, Object> paramMap) throws SQLException;
 
     void updateLearnDifficultyFeedback(Map<String, Object> paramMap) throws SQLException;

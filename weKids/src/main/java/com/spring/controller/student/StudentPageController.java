@@ -251,7 +251,29 @@ public class StudentPageController {
 
         return "OK";
     }
-    
+    @PostMapping("/student/classes/{classId}/learns/{learnId}/text-progress")
+    @ResponseBody
+    public String saveTextProgress(@PathVariable("classId") int classId,
+                                   @PathVariable("learnId") int learnId,
+                                   @RequestParam("scrollTop") int scrollTop,
+                                   @RequestParam("progressRate") int progressRate,
+                                   HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "FAIL";
+        }
+
+        studentLearnProgressService.saveTextProgress(
+                loginUser.getMember_id(),
+                classId,
+                learnId,
+                scrollTop,
+                progressRate
+        );
+
+        return "OK";
+    }
     @PostMapping("/student/classes/{classId}/learns/{learnId}/start")
     @ResponseBody
     public String startLearning(@PathVariable("classId") int classId,

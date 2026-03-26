@@ -34,6 +34,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const contextPath = window.appContextPath || '';
     const classId = window.studentClassId || '';
 
+	let textScrollHandler = null;
     let selectedCard = null;
     let currentLearning = null;
     let selectedDifficultyReason = '';
@@ -259,6 +260,13 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     function closeModal() {
+		
+		const scrollBox = getTextScrollBox();
+		if (scrollBox && textScrollHandler) {
+		    scrollBox.removeEventListener('scroll', textScrollHandler);
+		}
+		textScrollHandler = null;
+		
         destroyYoutubePlayer();
 
         if (modalOverlay) {
@@ -282,13 +290,15 @@ window.addEventListener('DOMContentLoaded', function () {
                 textTitle.textContent = learning.title || '지문 학습';
             }
 
-            const textPs = textContent ? textContent.querySelectorAll('p') : [];
-            if (textPs.length > 0) {
-                textPs[0].innerHTML = escapeHtml(learning.textContent || '').replace(/\n/g, '<br>');
-            }
-            if (textPs.length > 1) {
-                textPs[1].innerHTML = escapeHtml(learning.content || '').replace(/\n/g, '<br>');
-            }
+			const textBody = learning.content || learning.textContent || '';
+
+			if (learningTextTitle) {
+			    learningTextTitle.textContent = learning.title || '';
+			}
+
+			if (learningTextContent) {
+			    learningTextContent.textContent = textBody;
+			}
         }
 
         if (learning.type === 'link') {
@@ -411,87 +421,191 @@ window.addEventListener('DOMContentLoaded', function () {
             showToast('영상 진행 저장 중 오류가 발생했습니다.', 'error');
         });
     }
+	function getTextScrollBox() {
+	    return textContent;
+	}
 
-    function openLearning(card) {
-        if (!card) return;
+	function calculateTextProgress() {
+	    const scrollBox = getTextScrollBox();
+	    if (!scrollBox) return 0;
 
-        selectedCard = card;
-        autoCompleted = false;
+	    const scrollTop = scrollBox.scrollTop || 0;
+	    const scrollHeight = scrollBox.scrollHeight || 0;
+	    const clientHeight = scrollBox.clientHeight || 0;
 
-        currentLearning = {
-            id: card.dataset.learningId || '',
-            title: card.dataset.title || '',
-            type: card.dataset.type || 'link',
-            required: card.dataset.required === 'true',
-            status: card.dataset.status || '미시작',
-            deadline: card.dataset.deadline || '',
-            duration: card.dataset.duration || '',
-            progress: Number(card.dataset.progress || 0),
-            content: card.dataset.content || '',
-            textContent: card.dataset.textContent || '',
-            linkUrl: card.dataset.linkUrl || '',
-            lastPosition: card.dataset.lastPosition || '0'
-        };
+	    if (scrollHeight <= clientHeight) {
+	        return 100;
+	    }
 
-        if (modalTitle) {
-            modalTitle.textContent = currentLearning.title;
-        }
+	    const maxScroll = scrollHeight - clientHeight;
+	    const progressRate = Math.floor((scrollTop / maxScroll) * 100);
 
-        if (modalTypeBadge) {
-            modalTypeBadge.textContent =
-                currentLearning.type === 'video' ? '영상 학습' :
-                currentLearning.type === 'text' ? '지문 읽기' :
-                currentLearning.type === 'link' ? '링크 학습' :
-                '파일 학습';
-        }
+	    return Math.max(0, Math.min(100, progressRate));
+	}
 
-        if (modalRequiredBadge) {
-            modalRequiredBadge.textContent = currentLearning.required ? '필수' : '선택';
-        }
+	function restoreTextPosition() {
+	    if (!currentLearning || currentLearning.type !== 'text') return;
 
-        setProgress(currentLearning.progress || 0);
-        renderTypeContent(currentLearning);
-        resetDifficultyPanel();
+	    const scrollBox = getTextScrollBox();
+	    if (!scrollBox) return;
 
-        postForm(contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/start', {})
-            .then(function () {
-                if (currentLearning && currentLearning.status === '미시작') {
-                    currentLearning.status = '진행중';
-                    updateCardUI(selectedCard, currentLearning);
-                }
-            })
-            .catch(function () {});
+	    const saved = Number(currentLearning.lastPosition || 0);
+	    if (saved > 0) {
+	        scrollBox.scrollTop = saved;
+	    } else {
+	        scrollBox.scrollTop = 0;
+	    }
+	}
 
-        if (currentLearning.type === 'video') {
-            createYoutubePlayer(currentLearning);
-        }
+	function bindTextScrollTracking() {
+	    const scrollBox = getTextScrollBox();
+	    if (!scrollBox) return;
 
-        openModal();
-    }
+	    if (textScrollHandler) {
+	        scrollBox.removeEventListener('scroll', textScrollHandler);
+	    }
 
-    function saveAndCloseLearning() {
-        if (!currentLearning) {
-            closeModal();
-            return;
-        }
+	    textScrollHandler = function () {
+	        if (!currentLearning || currentLearning.type !== 'text') return;
 
-        saveYoutubeProgress()
-            .then(function () {
-                if (currentLearning && currentLearning.status === '미시작') {
-                    currentLearning.status = '진행중';
-                }
+	        const progressRate = calculateTextProgress();
+	        currentLearning.progress = progressRate;
+	        currentLearning.lastPosition = String(scrollBox.scrollTop || 0);
 
-                updateCardUI(selectedCard, currentLearning);
-                showToast('진행 상태를 저장하고 학습창을 닫았습니다.', 'success');
+	        if (progressRate >= 100) {
+	            currentLearning.status = '완료';
+	        } else if (progressRate > 0) {
+	            currentLearning.status = '진행중';
+	        }
 
-                setTimeout(function () {
-                    closeModal();
-                }, 150);
-            })
-            .catch(function () {
-                showToast('진행 상태 저장 중 오류가 발생했습니다.', 'error');
-            });
-    }
+	        setProgress(progressRate);
+	        updateCardUI(selectedCard, currentLearning);
+	    };
+
+	    scrollBox.addEventListener('scroll', textScrollHandler);
+	}
+
+	function saveTextProgress() {
+	    if (!currentLearning || currentLearning.type !== 'text') {
+	        return Promise.resolve();
+	    }
+
+	    const scrollBox = getTextScrollBox();
+	    const scrollTop = scrollBox ? Math.floor(scrollBox.scrollTop || 0) : 0;
+	    const progressRate = calculateTextProgress();
+
+	    currentLearning.lastPosition = String(scrollTop);
+	    currentLearning.progress = progressRate;
+	    currentLearning.status = progressRate >= 100 ? '완료' : (progressRate > 0 ? '진행중' : '미시작');
+
+	    setProgress(progressRate);
+	    updateCardUI(selectedCard, currentLearning);
+
+	    return postForm(
+	        contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/text-progress',
+	        {
+	            scrollTop: scrollTop,
+	            progressRate: progressRate
+	        }
+	    ).catch(function () {
+	        showToast('지문 읽기 진행 저장 중 오류가 발생했습니다.', 'error');
+	    });
+	}
+	
+	function openLearning(card) {
+	    if (!card) return;
+
+	    selectedCard = card;
+	    autoCompleted = false;
+
+	    currentLearning = {
+	        id: card.dataset.learningId || '',
+	        title: card.dataset.title || '',
+	        type: card.dataset.type || 'link',
+	        required: card.dataset.required === 'true',
+	        status: card.dataset.status || '미시작',
+	        deadline: card.dataset.deadline || '',
+	        duration: card.dataset.duration || '',
+	        progress: Number(card.dataset.progress || 0),
+	        content: card.dataset.content || '',
+	        textContent: card.dataset.textContent || '',
+	        linkUrl: card.dataset.linkUrl || '',
+	        lastPosition: card.dataset.lastPosition || '0'
+	    };
+
+	    if (modalTitle) {
+	        modalTitle.textContent = currentLearning.title;
+	    }
+
+	    if (modalTypeBadge) {
+	        modalTypeBadge.textContent =
+	            currentLearning.type === 'video' ? '영상 학습' :
+	            currentLearning.type === 'text' ? '지문 읽기' :
+	            currentLearning.type === 'link' ? '링크 학습' :
+	            '파일 학습';
+	    }
+
+	    if (modalRequiredBadge) {
+	        modalRequiredBadge.textContent = currentLearning.required ? '필수' : '선택';
+	    }
+
+	    setProgress(currentLearning.progress || 0);
+	    renderTypeContent(currentLearning);
+	    resetDifficultyPanel();
+
+	    postForm(contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/start', {})
+	        .then(function () {
+	            if (currentLearning && currentLearning.status === '미시작') {
+	                currentLearning.status = '진행중';
+	                updateCardUI(selectedCard, currentLearning);
+	            }
+	        })
+	        .catch(function () {});
+
+	    openModal();
+
+	    if (currentLearning.type === 'video') {
+	        createYoutubePlayer(currentLearning);
+	    } else if (currentLearning.type === 'text') {
+	        setTimeout(function () {
+	            restoreTextPosition();
+	            bindTextScrollTracking();
+	            setProgress(currentLearning.progress || 0);
+	        }, 50);
+	    }
+	}
+
+	function saveAndCloseLearning() {
+	    if (!currentLearning) {
+	        closeModal();
+	        return;
+	    }
+
+	    let savePromise = Promise.resolve();
+
+	    if (currentLearning.type === 'video') {
+	        savePromise = saveYoutubeProgress();
+	    } else if (currentLearning.type === 'text') {
+	        savePromise = saveTextProgress();
+	    }
+
+	    savePromise
+	        .then(function () {
+	            if (currentLearning && currentLearning.status === '미시작') {
+	                currentLearning.status = '진행중';
+	            }
+
+	            updateCardUI(selectedCard, currentLearning);
+	            showToast('진행 상태를 저장하고 학습창을 닫았습니다.', 'success');
+
+	            setTimeout(function () {
+	                closeModal();
+	            }, 150);
+	        })
+	        .catch(function () {
+	            showToast('진행 상태 저장 중 오류가 발생했습니다.', 'error');
+	        });
+	}
 
     function completeLearning() {
         if (!currentLearning) return;

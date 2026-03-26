@@ -535,6 +535,15 @@
     font-size: 18px;
     line-height: 1.8;
 }
+.learning-text-content,
+#learningTextContent {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.8;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 .learning-text-complete-wrap {
     display: flex;

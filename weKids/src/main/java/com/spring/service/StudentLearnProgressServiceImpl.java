@@ -112,4 +112,32 @@ public class StudentLearnProgressServiceImpl implements StudentLearnProgressServ
             studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
         }
     }
+
+    @Override
+    public void saveTextProgress(int studentId, int classId, int learnId, int scrollTop, int progressRate) throws Exception {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("studentId", studentId);
+        paramMap.put("classId", classId);
+        paramMap.put("learnId", learnId);
+        paramMap.put("scrollTop", scrollTop);
+        paramMap.put("progressRate", progressRate);
+
+        Integer progressId = studentLearnProgressDAO.selectProgressId(paramMap);
+
+        if (progressId == null) {
+            progressId = studentLearnProgressDAO.selectNextProgressId();
+            paramMap.put("progressId", progressId);
+            studentLearnProgressDAO.insertLearnProgress(paramMap);
+        } else {
+            paramMap.put("progressId", progressId);
+        }
+
+        studentLearnProgressDAO.updateTextProgress(paramMap);
+
+        if (progressRate >= 100) {
+            studentLearnProgressDAO.updateLearnProgressToCompleted(paramMap);
+        } else {
+            studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
+        }
+    }
 }

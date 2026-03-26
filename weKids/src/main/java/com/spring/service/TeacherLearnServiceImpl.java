@@ -151,10 +151,22 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
             }
         } else if ("지문읽기".equals(type)) {
             dto.setLinkUrl(null);
-            if (dto.getTextContent() == null) {
+
+            String textBody = trimToNull(dto.getTextContent());
+            String contentBody = trimToNull(dto.getContent());
+
+            // 긴 지문 본문은 CONTENT(CLOB)에 저장
+            if (contentBody == null && textBody != null) {
+                dto.setContent(textBody);
+            }
+
+            // GUIDE_POINT(VARCHAR2 1000)에는 긴 지문 넣지 않음
+            dto.setTextContent(null);
+
+            if (dto.getContent() == null) {
                 throw new IllegalArgumentException("지문읽기 유형은 지문 내용이 필요합니다.");
             }
-        } else if ("파일".equals(type)) {
+        }else if ("파일".equals(type)) {
             dto.setTextContent(null);
             if (dto.getLinkUrl() == null) {
                 throw new IllegalArgumentException("파일 유형은 파일 경로 또는 URL이 필요합니다.");
