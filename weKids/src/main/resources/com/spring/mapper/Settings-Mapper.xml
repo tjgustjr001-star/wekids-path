@@ -67,16 +67,19 @@
 		resultMap="childLinkResultMap">
 		SELECT
 		s.STUDENT_ID AS student_id,
-		s.STUDENT_NAME AS student_name,
+		s.STUDENT_NAME AS
+		student_name,
 		s.PARENT_LINK_CODE AS parent_link_code,
-		s.UPDATED_AT AS updated_at
+		s.UPDATED_AT AS
+		updated_at
 		FROM STUDENT s
 		WHERE s.STUDENT_ID = #{memberId}
 	</select>
 
 	<update id="updateStudentLinkCode">
 		UPDATE STUDENT
-		SET PARENT_LINK_CODE = #{parentLinkCode},
+		SET PARENT_LINK_CODE =
+		#{parentLinkCode},
 		UPDATED_AT = SYSDATE
 		WHERE STUDENT_ID = #{studentId}
 	</update>
@@ -85,18 +88,22 @@
 		resultMap="childLinkResultMap">
 		SELECT
 		s.STUDENT_ID AS student_id,
-		s.STUDENT_NAME AS student_name,
+		s.STUDENT_NAME AS
+		student_name,
 		s.PARENT_LINK_CODE AS parent_link_code,
-		s.UPDATED_AT AS updated_at
+		s.UPDATED_AT AS
+		updated_at
 		FROM STUDENT s
 		WHERE s.PARENT_LINK_CODE = #{parentLinkCode}
 	</select>
 
 	<select id="countActiveLink" resultType="int">
 		SELECT COUNT(*)
-		FROM STUDENT_PARENT
+		FROM
+		STUDENT_PARENT
 		WHERE STUDENT_ID = #{studentId}
-		AND PARENT_ID = #{parentId}
+		AND PARENT_ID =
+		#{parentId}
 		AND LINK_STATUS = 1
 	</select>
 
@@ -104,7 +111,8 @@
 		SELECT MAX(LINK_STATUS)
 		FROM STUDENT_PARENT
 		WHERE STUDENT_ID = #{studentId}
-		AND PARENT_ID = #{parentId}
+		AND PARENT_ID =
+		#{parentId}
 	</select>
 
 	<insert id="insertStudentParentLink">
@@ -133,44 +141,28 @@
 		sp.LINK_ID AS link_id,
 		sp.STUDENT_ID AS student_id,
 		sp.PARENT_ID AS parent_id,
-		sp.LINK_STATUS AS link_status,
+		sp.LINK_STATUS
+		AS link_status,
 		sp.RELATION_TYPE AS relation_type,
-		sp.LINKED_AT AS linked_at,
+		sp.LINKED_AT AS
+		linked_at,
 		sp.UNLINKED_AT AS unlinked_at,
-		s.STUDENT_NAME AS student_name,
+		s.STUDENT_NAME AS
+		student_name,
 		s.PROFILE_IMAGE AS profile_image,
-		s.PARENT_LINK_CODE AS parent_link_code
+		s.PARENT_LINK_CODE AS
+		parent_link_code
 		FROM STUDENT_PARENT sp
 		INNER JOIN STUDENT s
-		ON sp.STUDENT_ID = s.STUDENT_ID
+		ON
+		sp.STUDENT_ID = s.STUDENT_ID
 		WHERE sp.PARENT_ID = #{parentMemberId}
-		AND sp.LINK_STATUS = 1
+		AND
+		sp.LINK_STATUS = 1
 		ORDER BY sp.LINKED_AT DESC
 	</select>
 
-	<select id="selectLinkedParentsByStudentId"
-		parameterType="int" resultMap="parentChildResultMap">
-		SELECT
-		sp.LINK_ID AS link_id,
-		sp.STUDENT_ID AS student_id,
-		sp.PARENT_ID AS parent_id,
-		sp.LINK_STATUS AS link_status,
-		sp.RELATION_TYPE AS relation_type,
-		sp.LINKED_AT AS linked_at,
-		sp.UNLINKED_AT AS unlinked_at,
-		p.PARENT_NAME AS parent_name,
-		m.EMAIL AS email
-		FROM STUDENT_PARENT sp
-		INNER JOIN PARENT p
-		ON sp.PARENT_ID = p.PARENT_ID
-		INNER JOIN MEMBER m
-		ON sp.PARENT_ID = m.MEMBER_ID
-		WHERE sp.STUDENT_ID = #{studentId}
-		AND sp.LINK_STATUS = 1
-		ORDER BY sp.LINKED_AT DESC
-	</select>
-
-	<select id="selectChildDetail" parameterType="map"
+	<select id="selectLinkedParentsByStudentId" parameterType="int"
 		resultMap="parentChildResultMap">
 		SELECT
 		sp.LINK_ID AS link_id,
@@ -180,133 +172,101 @@
 		sp.RELATION_TYPE AS relation_type,
 		sp.LINKED_AT AS linked_at,
 		sp.UNLINKED_AT AS unlinked_at,
+		p.PARENT_NAME AS parent_name,
+		m.EMAIL AS
+		email
+		FROM STUDENT_PARENT sp
+		INNER JOIN PARENT p
+		ON sp.PARENT_ID =
+		p.PARENT_ID
+		INNER JOIN MEMBER m
+		ON sp.PARENT_ID = m.MEMBER_ID
+		WHERE
+		sp.STUDENT_ID = #{studentId}
+		AND sp.LINK_STATUS = 1
+		ORDER BY
+		sp.LINKED_AT DESC
+	</select>
+
+	<select id="selectChildDetail" parameterType="map"
+		resultMap="parentChildResultMap">
+
+		SELECT
+		sp.LINK_ID AS link_id,
+		sp.STUDENT_ID AS student_id,
+		sp.PARENT_ID AS parent_id,
+		sp.LINK_STATUS AS link_status,
+		sp.RELATION_TYPE AS relation_type,
+		sp.LINKED_AT AS linked_at,
+		sp.UNLINKED_AT AS unlinked_at,
+
 		s.STUDENT_NAME AS student_name,
 		s.PROFILE_IMAGE AS profile_image,
-		s.PARENT_LINK_CODE AS parent_link_code,
+		s.PARENT_LINK_CODE AS
+		parent_link_code,
 
-		NVL(c."YEAR", 0) AS class_year,
-		NVL(c.GRADE, 0) AS class_grade,
+		NVL(c.YEAR, 0) AS class_year,
+		NVL(c.GRADE, 0) AS
+		class_grade,
 		NVL(c.CLASS_NO, 0) AS class_no_alias,
-		c.CLASS_NAME AS class_name_alias,
+		c.CLASS_NAME AS
+		class_name_alias,
 
-		NVL((
-		SELECT MAX(DBMS_LOB.SUBSTR(r.REPORT_CONTENT, 4000, 1))
-		KEEP (DENSE_RANK LAST ORDER BY r.CREATED_AT)
-		FROM REPORT r
-		WHERE r.STUDENT_ID = #{studentId}
-		), '등록된 선생님 코멘트가 없습니다.') AS teacher_comment,
-
-		NVL((
-		SELECT COUNT(*)
-		FROM LEARNING_LIST ll
-		WHERE ll.CLASS_ID = c.CLASS_ID
-		), 0) AS total_learning_count,
-
-		NVL((
-		SELECT COUNT(*)
-		FROM LEARN_PRO lp
-		JOIN LEARNING_LIST ll
-		ON lp.LEARN_LIST_ID = ll.LEARN_LIST_ID
-		WHERE lp.STUDENT_ID = #{studentId}
-		AND ll.CLASS_ID = c.CLASS_ID
-		AND lp.STATUS = 'COMPLETED'
-		), 0) AS completed_learning_count,
-
-		NVL((
-		SELECT CASE
-		WHEN COUNT(*) = 0 THEN 0
-		ELSE TRUNC(SUM(CASE WHEN lp.STATUS = 'COMPLETED' THEN 1 ELSE 0 END) * 100
-		/ COUNT(*))
-		END
-		FROM LEARN_PRO lp
-		JOIN LEARNING_LIST ll
-		ON lp.LEARN_LIST_ID = ll.LEARN_LIST_ID
-		WHERE lp.STUDENT_ID = #{studentId}
-		AND ll.CLASS_ID = c.CLASS_ID
-		), 0) AS learning_progress_rate,
-
-		NVL((
-		SELECT COUNT(*)
-		FROM ASSIGNMENT a
-		WHERE a.CLASS_ID = c.CLASS_ID
-		AND a.DELETE_YN = 0
-		), 0) AS total_assignment_count,
-
-		NVL((
-		SELECT COUNT(*)
-		FROM ASSIGN_SUB sb
-		JOIN ASSIGNMENT a
-		ON sb.ASSIGN_ID = a.ASSIGN_ID
-		WHERE sb.STUDENT_ID = #{studentId}
-		AND a.CLASS_ID = c.CLASS_ID
-		AND a.DELETE_YN = 0
-		AND sb.SUBMIT_STATUS = 'SUBMITTED'
-		), 0) AS submitted_assignment_count,
-
-		NVL((
-		SELECT CASE
-		WHEN COUNT(*) = 0 THEN 0
-		ELSE TRUNC(SUM(CASE WHEN sb.SUBMIT_STATUS = 'SUBMITTED' THEN 1 ELSE 0 END)
-		* 100 / COUNT(*))
-		END
-		FROM ASSIGNMENT a
-		LEFT JOIN ASSIGN_SUB sb
-		ON a.ASSIGN_ID = sb.ASSIGN_ID
-		AND sb.STUDENT_ID = #{studentId}
-		WHERE a.CLASS_ID = c.CLASS_ID
-		AND a.DELETE_YN = 0
-		), 0) AS assignment_rate,
-
-		NVL((
-		SELECT COUNT(*)
-		FROM NOTICE n
-		JOIN STUDENT_CLASS sc2
-		ON n.CLASS_ID = sc2.CLASS_ID
-		WHERE sc2.STUDENT_ID = #{studentId}
-		AND (sc2.END_DATE IS NULL OR sc2.END_DATE >= SYSDATE)
-		AND n.CONFIRM_YN = 1
-		AND NOT EXISTS (
-		SELECT 1
-		FROM NOTICE_CONFIRM nc
-		WHERE nc.NOTICE_ID = n.NOTICE_ID
-		AND nc.MEMBER_ID = #{parentId}
-		AND nc.CONFIRMED_YN = 1
-		)
-		), 0) AS unconfirmed_notice_count
+		'선생님 코멘트 없음' AS teacher_comment,
+		0 AS
+		total_learning_count,
+		0 AS completed_learning_count,
+		0 AS
+		learning_progress_rate,
+		0 AS total_assignment_count,
+		0 AS
+		submitted_assignment_count,
+		0 AS assignment_rate,
+		0 AS
+		unconfirmed_notice_count
 
 		FROM STUDENT_PARENT sp
 		JOIN STUDENT s
-		ON sp.STUDENT_ID = s.STUDENT_ID
+		ON
+		sp.STUDENT_ID = s.STUDENT_ID
 		LEFT JOIN STUDENT_CLASS sc
-		ON s.STUDENT_ID = sc.STUDENT_ID
-		AND (sc.END_DATE IS NULL OR sc.END_DATE >= SYSDATE)
+		ON s.STUDENT_ID
+		= sc.STUDENT_ID
 		LEFT JOIN CLASS c
 		ON sc.CLASS_ID = c.CLASS_ID
-		WHERE sp.PARENT_ID = #{parentId}
+
+		WHERE
+		sp.PARENT_ID = #{parentId}
 		AND sp.STUDENT_ID = #{studentId}
-		AND sp.LINK_STATUS = 1
+		AND
+		sp.LINK_STATUS = 1
 		AND ROWNUM = 1
 	</select>
-
 	<update id="reactivateChildLink" parameterType="map">
-		UPDATE STUDENT_PARENT
+		UPDATE
+		STUDENT_PARENT
 		SET LINK_STATUS = 1,
 		LINKED_AT = SYSDATE,
-		UNLINKED_AT = NULL
+		UNLINKED_AT =
+		NULL
 		WHERE LINK_ID = (
-			SELECT MAX(LINK_ID)
-			FROM STUDENT_PARENT
-			WHERE PARENT_ID = #{parentId}
-			AND STUDENT_ID = #{studentId}
+		SELECT MAX(LINK_ID)
+		FROM STUDENT_PARENT
+		WHERE
+		PARENT_ID = #{parentId}
+		AND STUDENT_ID = #{studentId}
 		)
-		AND LINK_STATUS = 0
+		AND LINK_STATUS =
+		0
 	</update>
 
 	<update id="updateUnlinkChild" parameterType="map">
-		UPDATE STUDENT_PARENT
+		UPDATE
+		STUDENT_PARENT
 		SET LINK_STATUS = 0,
 		UNLINKED_AT = SYSDATE
-		WHERE PARENT_ID = #{parentId}
+		WHERE PARENT_ID
+		= #{parentId}
 		AND STUDENT_ID = #{studentId}
 		AND LINK_STATUS = 1
 	</update>
@@ -322,11 +282,13 @@
 		s.STUDENT_NAME AS name,
 		s.BIRTH AS birth,
 		s.GENDER AS gender,
-		s.INTRO AS intro,
+		s.INTRO AS
+		intro,
 		s.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
 		JOIN STUDENT s
-		ON m.MEMBER_ID = s.STUDENT_ID
+		ON
+		m.MEMBER_ID = s.STUDENT_ID
 		WHERE m.MEMBER_ID = #{memberId}
 	</select>
 
@@ -341,11 +303,13 @@
 		p.PARENT_NAME AS name,
 		p.BIRTH AS birth,
 		p.GENDER AS gender,
-		p.INTRO AS intro,
+		p.INTRO AS
+		intro,
 		p.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
 		JOIN PARENT p
-		ON m.MEMBER_ID = p.PARENT_ID
+		ON
+		m.MEMBER_ID = p.PARENT_ID
 		WHERE m.MEMBER_ID = #{memberId}
 	</select>
 
@@ -360,45 +324,47 @@
 		t.TEACHER_NAME AS name,
 		t.BIRTH AS birth,
 		t.GENDER AS gender,
-		t.INTRO AS intro,
+		t.INTRO AS
+		intro,
 		t.PROFILE_IMAGE AS profile_image
 		FROM MEMBER m
 		JOIN TEACHER t
-		ON m.MEMBER_ID = t.TEACHER_ID
+		ON
+		m.MEMBER_ID = t.TEACHER_ID
 		WHERE m.MEMBER_ID = #{memberId}
 	</select>
 
 	<update id="updateStudentProfile"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE STUDENT
-		SET STUDENT_NAME = #{name},
-		BIRTH = #{birth},
-		GENDER = #{gender},
-		INTRO = #{intro},
-		PROFILE_IMAGE = #{profile_image}
-		WHERE STUDENT_ID = #{member_id}
+		SET STUDENT_NAME = #{name, jdbcType=VARCHAR},
+		BIRTH = #{birth, jdbcType=DATE},
+		GENDER = #{gender, jdbcType=VARCHAR},
+		INTRO = #{intro, jdbcType=VARCHAR},
+		PROFILE_IMAGE = #{profile_image, jdbcType=VARCHAR}
+		WHERE STUDENT_ID = #{member_id, jdbcType=INTEGER}
 	</update>
 
 	<update id="updateParentProfile"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE PARENT
-		SET PARENT_NAME = #{name},
-		BIRTH = #{birth},
-		GENDER = #{gender},
-		INTRO = #{intro},
-		PROFILE_IMAGE = #{profile_image}
-		WHERE PARENT_ID = #{member_id}
+		SET PARENT_NAME = #{name, jdbcType=VARCHAR},
+		BIRTH = #{birth, jdbcType=DATE},
+		GENDER = #{gender, jdbcType=VARCHAR},
+		INTRO = #{intro, jdbcType=VARCHAR},
+		PROFILE_IMAGE = #{profile_image, jdbcType=VARCHAR}
+		WHERE PARENT_ID = #{member_id, jdbcType=INTEGER}
 	</update>
 
 	<update id="updateTeacherProfile"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE TEACHER
-		SET TEACHER_NAME = #{name},
-		BIRTH = #{birth},
-		GENDER = #{gender},
-		INTRO = #{intro},
-		PROFILE_IMAGE = #{profile_image}
-		WHERE TEACHER_ID = #{member_id}
+		SET TEACHER_NAME = #{name, jdbcType=VARCHAR},
+		BIRTH = #{birth, jdbcType=DATE},
+		GENDER = #{gender, jdbcType=VARCHAR},
+		INTRO = #{intro, jdbcType=VARCHAR},
+		PROFILE_IMAGE = #{profile_image, jdbcType=VARCHAR}
+		WHERE TEACHER_ID = #{member_id, jdbcType=INTEGER}
 	</update>
 
 	<select id="selectStudentAccountInfo" parameterType="int"
@@ -406,7 +372,8 @@
 		SELECT
 		m.MEMBER_ID AS member_id,
 		m.LOGIN_ID AS login_id,
-		m.PWD AS pwd,
+		m.PWD
+		AS pwd,
 		m.EMAIL AS email,
 		s.PHONE AS phone,
 		'STUDENT' AS role_code,
@@ -419,7 +386,8 @@
 		FROM MEMBER m
 		JOIN STUDENT s
 		ON m.MEMBER_ID = s.STUDENT_ID
-		WHERE m.MEMBER_ID = #{memberId}
+		WHERE
+		m.MEMBER_ID = #{memberId}
 	</select>
 
 	<select id="selectParentAccountInfo" parameterType="int"
@@ -427,7 +395,8 @@
 		SELECT
 		m.MEMBER_ID AS member_id,
 		m.LOGIN_ID AS login_id,
-		m.PWD AS pwd,
+		m.PWD
+		AS pwd,
 		m.EMAIL AS email,
 		p.PHONE AS phone,
 		'PARENT' AS role_code,
@@ -440,7 +409,8 @@
 		FROM MEMBER m
 		JOIN PARENT p
 		ON m.MEMBER_ID = p.PARENT_ID
-		WHERE m.MEMBER_ID = #{memberId}
+		WHERE
+		m.MEMBER_ID = #{memberId}
 	</select>
 
 	<select id="selectTeacherAccountInfo" parameterType="int"
@@ -448,7 +418,8 @@
 		SELECT
 		m.MEMBER_ID AS member_id,
 		m.LOGIN_ID AS login_id,
-		m.PWD AS pwd,
+		m.PWD
+		AS pwd,
 		m.EMAIL AS email,
 		t.PHONE AS phone,
 		'TEACHER' AS role_code,
@@ -461,28 +432,32 @@
 		FROM MEMBER m
 		JOIN TEACHER t
 		ON m.MEMBER_ID = t.TEACHER_ID
-		WHERE m.MEMBER_ID = #{memberId}
+		WHERE
+		m.MEMBER_ID = #{memberId}
 	</select>
 
 	<update id="updateStudentAccountInfo"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE STUDENT
 		SET PHONE = #{phone}
-		WHERE STUDENT_ID = #{member_id}
+		WHERE STUDENT_ID =
+		#{member_id}
 	</update>
 
 	<update id="updateParentAccountInfo"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE PARENT
 		SET PHONE = #{phone}
-		WHERE PARENT_ID = #{member_id}
+		WHERE PARENT_ID =
+		#{member_id}
 	</update>
 
 	<update id="updateTeacherAccountInfo"
 		parameterType="com.spring.dto.MemberVO">
 		UPDATE TEACHER
 		SET PHONE = #{phone}
-		WHERE TEACHER_ID = #{member_id}
+		WHERE TEACHER_ID =
+		#{member_id}
 	</update>
 
 	<update id="updateMemberEmail"
@@ -496,7 +471,8 @@
 	<update id="updateMemberPassword">
 		UPDATE MEMBER
 		SET PWD = #{pwd},
-		PWD_CHANGED_AT = SYSDATE,
+		PWD_CHANGED_AT =
+		SYSDATE,
 		UPDATED_AT = SYSDATE
 		WHERE MEMBER_ID = #{memberId}
 	</update>

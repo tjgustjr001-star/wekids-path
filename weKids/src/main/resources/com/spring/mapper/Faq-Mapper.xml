@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.FaqDAO">
+
+    <resultMap id="faqResultMap" type="com.spring.dto.FaqVO">
+        <id     property="faqId"     column="FAQ_ID"/>
+        <result property="adminId"   column="ADMIN_ID"/>
+        <result property="category"  column="CATEGORY"/>
+        <result property="question"  column="QUESTION"/>
+        <result property="answer"    column="ANSWER"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <!-- 전체 FAQ 목록 -->
+    <select id="selectFaqList" resultMap="faqResultMap">
+        SELECT FAQ_ID, ADMIN_ID, CATEGORY, QUESTION, ANSWER, CREATED_AT, UPDATED_AT
+        FROM FAQ
+        ORDER BY FAQ_ID ASC
+    </select>
+
+    <!-- 카테고리별 FAQ 목록 -->
+    <select id="selectFaqListByCategory" parameterType="String" resultMap="faqResultMap">
+        SELECT FAQ_ID, ADMIN_ID, CATEGORY, QUESTION, ANSWER, CREATED_AT, UPDATED_AT
+        FROM FAQ
+        WHERE CATEGORY = #{category}
+        ORDER BY FAQ_ID ASC
+    </select>
+
+    <!-- 카테고리 목록 (중복 제거) -->
+    <select id="selectCategoryList" resultType="String">
+        SELECT DISTINCT CATEGORY
+        FROM FAQ
+        ORDER BY CATEGORY ASC
+    </select>
+
+</mapper>

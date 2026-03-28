@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.SupportDAO">
+
+    <!-- 문의 등록 -->
+    <insert id="insertSupport"
+            parameterType="com.spring.dto.SupportVO">
+
+        INSERT INTO support (
+            support_id,
+            writer_id,
+            support_type,
+            title,
+            content,
+            status,
+            created_at,
+            delete_yn
+        )
+        VALUES (
+            support_seq.NEXTVAL,
+            #{writerId},
+            #{category},
+            #{title},
+            #{content},
+            '대기중',
+            SYSDATE,
+            0
+        )
+
+    </insert>
+
+
+    <!-- 내 문의 목록 -->
+    <select id="selectSupportListByWriterId"
+            parameterType="int"
+            resultType="com.spring.dto.SupportVO">
+
+        SELECT
+            support_id   AS supportNo,
+            writer_id    AS writerId,
+            support_type AS category,
+            title,
+            content,
+            status,
+            created_at   AS createdAt
+        FROM support
+        WHERE writer_id = #{writerId}
+          AND delete_yn = 0
+        ORDER BY created_at DESC
+
+    </select>
+
+
+    <!-- 상세 조회 -->
+    <select id="selectSupportById"
+            parameterType="int"
+            resultType="com.spring.dto.SupportVO">
+
+        SELECT
+            support_id   AS supportNo,
+            writer_id    AS writerId,
+            support_type AS category,
+            title,
+            content,
+            status,
+            created_at   AS createdAt
+        FROM support
+        WHERE support_id = #{supportId}
+          AND delete_yn = 0
+
+    </select>
+
+
+    <!-- 상태 변경 -->
+    <update id="updateSupportStatus"
+            parameterType="com.spring.dto.SupportVO">
+
+        UPDATE support
+        SET status = #{status}
+        WHERE support_id = #{supportNo}
+
+    </update>
+
+
+    <!-- 삭제 -->
+    <update id="deleteSupport"
+            parameterType="int">
+
+        UPDATE support
+        SET delete_yn = 1
+        WHERE support_id = #{supportId}
+
+    </update>
+
+    <!-- 답변 조회 -->
+    <select id="selectAnswerBySupportNo"
+            parameterType="int"
+            resultType="com.spring.dto.SupportAnswerVO">
+
+        SELECT
+            support_a_id   AS answerId,
+            support_id     AS supportNo,
+            member_id      AS memberId,
+            answer_content AS answerContent,
+            created_at     AS createdAt
+        FROM support_answer
+        WHERE support_id = #{supportNo}
+
+    </select>
+
+</mapper>

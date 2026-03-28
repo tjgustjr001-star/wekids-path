@@ -12,6 +12,8 @@ public interface SettingsService {
 
     ChildLinkVO getStudentLinkInfo(int memberId) throws SQLException;
 
+    ChildLinkVO getStudentLinkInfoByCode(String linkCode) throws SQLException;
+
     String generateParentLinkCode(int memberId) throws SQLException;
 
     boolean connectStudentToParent(int parentMemberId, String linkCode) throws SQLException;

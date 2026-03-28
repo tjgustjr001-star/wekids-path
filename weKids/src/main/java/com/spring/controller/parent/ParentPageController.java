@@ -111,47 +111,35 @@ public class ParentPageController {
     }
 
     @GetMapping("/parent/children/{childId}")
-    public String parentChildDetail(@PathVariable("childId") String childId, Model model) {
+    public String parentChildDetail(@PathVariable("childId") int childId,
+                                    Model model,
+                                    HttpSession session) throws Exception {
         model.addAttribute("pageTitle", "자녀 상세");
         model.addAttribute("currentUri", "/parent/children");
-        model.addAttribute("contentPage", "/WEB-INF/views/parent/children/detailContent.jsp");
+        model.addAttribute("contentPage", "/WEB-INF/views/parent/children/detailRealContent.jsp");
 
         setParentLayoutBase(model);
 
-        List<Map<String, Object>> allChildren = createChildDetailList();
-        Map<String, Object> currentChild = allChildren.get(0);
-
-        for (Map<String, Object> child : allChildren) {
-            if (childId.equals(String.valueOf(child.get("id")))) {
-                currentChild = child;
-                break;
-            }
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
         }
 
-        model.addAttribute("allChildren", allChildren);
-        model.addAttribute("currentChild", currentChild);
+        List<ParentChildVO> childList = settingsService.getLinkedChildren(loginUser.getMember_id());
+        ParentChildVO child = settingsService.getChildDetail(loginUser.getMember_id(), childId);
 
-        int learningDone = (Integer) currentChild.get("learningDone");
-        int learningTotal = (Integer) currentChild.get("learningTotal");
-        int assignmentDone = (Integer) currentChild.get("assignmentDone");
-        int assignmentTotal = (Integer) currentChild.get("assignmentTotal");
+        if (child == null) {
+            model.addAttribute("childList", childList);
+            model.addAttribute("msg", "not_found_child");
+            model.addAttribute("contentPage", "/WEB-INF/views/settings/childLinkParent.jsp");
+            return "common/layout/parentLayout";
+        }
 
-        int overallProgress = learningTotal > 0 && assignmentTotal > 0
-                ? Math.round(((float) learningDone / learningTotal) * 50
-                + ((float) assignmentDone / assignmentTotal) * 50)
-                : 0;
+        model.addAttribute("childList", childList);
+        model.addAttribute("child", child);
+
+        int overallProgress = Math.round((child.getLearningProgressRate() + child.getAssignmentRate()) / 2.0f);
         model.addAttribute("overallProgress", overallProgress);
-
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> weeklySubjects =
-                (List<Map<String, Object>>) currentChild.get("weeklySubjects");
-
-        int sum = 0;
-        for (Map<String, Object> subject : weeklySubjects) {
-            sum += (Integer) subject.get("progress");
-        }
-        int weeklyAverage = weeklySubjects.isEmpty() ? 0 : Math.round((float) sum / weeklySubjects.size());
-        model.addAttribute("weeklyAverage", weeklyAverage);
 
         return "common/layout/parentLayout";
     }

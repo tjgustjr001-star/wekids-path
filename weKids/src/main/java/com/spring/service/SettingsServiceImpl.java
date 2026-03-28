@@ -30,6 +30,14 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public ChildLinkVO getStudentLinkInfoByCode(String linkCode) throws SQLException {
+        if (linkCode == null || linkCode.trim().isEmpty()) {
+            return null;
+        }
+        return settingsDAO.selectStudentByLinkCode(linkCode.trim());
+    }
+
+    @Override
     public String generateParentLinkCode(int memberId) throws SQLException {
         ChildLinkVO info = settingsDAO.selectStudentLinkInfoByMemberId(memberId);
 

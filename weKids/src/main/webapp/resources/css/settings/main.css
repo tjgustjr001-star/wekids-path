@@ -23,6 +23,40 @@ a {
     padding: 0 16px;
 }
 
+
+.settings-back-wrap {
+    margin-bottom: 14px;
+}
+
+.settings-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #d8dee6;
+    background: #f8fafc;
+    color: #475467;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.settings-back-btn i {
+    font-size: 13px;
+}
+
+.settings-back-btn:hover {
+    background: #eef2f6;
+    border-color: #cfd6df;
+    color: #344054;
+}
+
+.settings-back-btn:active {
+    transform: translateY(1px);
+}
+
 .settings-header-card {
     background: #ffffff;
     border: 1px solid #e9ecef;

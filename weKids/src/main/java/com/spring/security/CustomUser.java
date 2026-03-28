@@ -1,4 +1,3 @@
-
 package com.spring.security;
 
 import java.util.ArrayList;
@@ -46,8 +45,16 @@ public class CustomUser extends User {
         }
 
         return authorities.stream()
-                .filter(auth -> auth != null && auth.getRoleCode() != null)
-                .map(auth -> new SimpleGrantedAuthority("ROLE_" + auth.getRoleCode()))
+                .filter(auth -> auth != null && auth.getRoleCode() != null && !auth.getRoleCode().trim().isEmpty())
+                .map(auth -> {
+                    String roleCode = auth.getRoleCode().trim();
+
+                    if (!roleCode.startsWith("ROLE_")) {
+                        roleCode = "ROLE_" + roleCode;
+                    }
+
+                    return new SimpleGrantedAuthority(roleCode);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -58,5 +65,4 @@ public class CustomUser extends User {
     public void setMember(MemberVO member) {
         this.member = member;
     }
-
 }

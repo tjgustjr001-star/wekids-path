@@ -36,4 +36,48 @@
         WHERE login_id = #{login_id}
     </select>
 
+    <select id="selectNextMemberId" resultType="int">
+        SELECT NVL(MAX(MEMBER_ID), 0) + 1 FROM MEMBER
+    </select>
+
+    <insert id="insertMember" parameterType="com.spring.dto.MemberVO">
+        INSERT INTO MEMBER (
+            MEMBER_ID,
+            LOGIN_ID,
+            PWD,
+            EMAIL,
+            ACCOUNT_STATUS,
+            LOGIN_FAIL_COUNT,
+            CREATED_AT,
+            UPDATED_AT
+        ) VALUES (
+            #{member_id},
+            #{login_id},
+            #{pwd},
+            #{email},
+            #{account_status},
+            0,
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <insert id="insertParent" parameterType="com.spring.dto.MemberVO">
+        INSERT INTO PARENT (
+            PARENT_ID,
+            PARENT_NAME,
+            BIRTH,
+            PHONE,
+            CREATED_AT,
+            UPDATED_AT
+        ) VALUES (
+            #{member_id},
+            #{name},
+            TO_DATE('2000-01-01','YYYY-MM-DD'),
+            #{phone},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
 </mapper>

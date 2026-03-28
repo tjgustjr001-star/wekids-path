@@ -1,3 +1,4 @@
+
 package com.spring.dao;
 
 import org.apache.ibatis.session.SqlSession;
@@ -14,6 +15,22 @@ public class MemberDAOImpl implements MemberDAO {
 
     @Override
     public MemberVO selectMemberByLoginId(String login_id) throws Exception {
-        return sqlSession.selectOne("Member-Mapper.selectMemberByLoginId", login_id);
+        return sqlSession.selectOne("com.spring.dao.MemberDAO.selectMemberByLoginId", login_id);
+    }
+
+    @Override
+    public int selectNextMemberId() throws Exception {
+        Integer nextId = sqlSession.selectOne("com.spring.dao.MemberDAO.selectNextMemberId");
+        return nextId == null ? 1 : nextId;
+    }
+
+    @Override
+    public void insertMember(MemberVO member) throws Exception {
+        sqlSession.insert("com.spring.dao.MemberDAO.insertMember", member);
+    }
+
+    @Override
+    public void insertParent(MemberVO member) throws Exception {
+        sqlSession.insert("com.spring.dao.MemberDAO.insertParent", member);
     }
 }

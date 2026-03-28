@@ -1,3 +1,4 @@
+
 package com.spring.dao;
 
 import java.util.List;
@@ -10,4 +11,8 @@ import com.spring.dto.AuthorityVO;
 @Mapper
 public interface AuthorityDAO {
     List<AuthorityVO> selectAuthoritiesByMemberId(@Param("memberId") int memberId) throws Exception;
+
+    int selectNextAuthorityId() throws Exception;
+
+    void insertAuthority(AuthorityVO authority) throws Exception;
 }

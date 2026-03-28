@@ -211,12 +211,6 @@
 			<version>5.0.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>Spring_security</groupId>
-			<artifactId>Spring_security</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>

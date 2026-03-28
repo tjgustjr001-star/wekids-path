@@ -14,7 +14,14 @@
 
 <div class="settings-page">
 
-    <div class="settings-header-card">
+    <div class="settings-back-wrap">
+        <a href="#" class="settings-back-btn" onclick="goSettingsBack(); return false;">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>뒤로가기</span>
+        </a>
+    </div>
+
+<div class="settings-header-card">
         <h1>설정</h1>
         <p>개인정보 및 환경설정을 관리하세요.</p>
     </div>
@@ -121,7 +128,7 @@
     <div class="settings-section">
         <div class="section-title">고객센터</div>
 
-        <a class="setting-item" href="${pageContext.request.contextPath}/support">
+        <a class="setting-item" href="${pageContext.request.contextPath}/support/main">
             <div class="item-left">
                 <div class="item-icon">
                     <i class="fa-solid fa-headset"></i>
@@ -153,6 +160,45 @@
     </div>
 
 </div>
+
+
+<script>
+(function () {
+    var settingsPathKeyword = '/settings';
+    var referrer = document.referrer || '';
+    var currentOrigin = window.location.origin;
+
+    function isInternalSettingsPage(url) {
+        return !!url && url.indexOf(settingsPathKeyword) !== -1;
+    }
+
+    function isSameOrigin(url) {
+        return !!url && url.indexOf(currentOrigin) === 0;
+    }
+
+    if (isSameOrigin(referrer) && !isInternalSettingsPage(referrer)) {
+        sessionStorage.setItem('settingsEntryUrl', referrer);
+    }
+})();
+
+function goSettingsBack() {
+    var savedUrl = sessionStorage.getItem('settingsEntryUrl');
+    var currentUrl = window.location.href;
+    var contextPath = '${pageContext.request.contextPath}';
+
+    if (savedUrl && savedUrl !== currentUrl) {
+        window.location.href = savedUrl;
+        return;
+    }
+
+    if (document.referrer && document.referrer !== currentUrl && document.referrer.indexOf('/settings') === -1) {
+        history.back();
+        return;
+    }
+
+    window.location.href = contextPath + '/index';
+}
+</script>
 
 </body>
 

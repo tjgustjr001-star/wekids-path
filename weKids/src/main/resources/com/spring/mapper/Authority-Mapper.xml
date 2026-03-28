@@ -22,4 +22,22 @@
         WHERE member_id = #{memberId}
     </select>
 
+    <select id="selectNextAuthorityId" resultType="int">
+        SELECT NVL(MAX(AUTHORITY_ID), 0) + 1 FROM AUTHORITY
+    </select>
+
+    <insert id="insertAuthority" parameterType="com.spring.dto.AuthorityVO">
+        INSERT INTO AUTHORITY (
+            AUTHORITY_ID,
+            MEMBER_ID,
+            ROLE_CODE,
+            ROLE_NAME
+        ) VALUES (
+            #{authorityId},
+            #{memberId},
+            #{roleCode},
+            #{roleName}
+        )
+    </insert>
+
 </mapper>
