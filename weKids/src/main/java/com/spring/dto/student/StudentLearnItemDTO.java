@@ -22,6 +22,25 @@ public class StudentLearnItemDTO {
 
     private String lastPosition; //마지막학습위치
 
+    private String description;
+    private String guidePoint;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getGuidePoint() {
+        return guidePoint;
+    }
+
+    public void setGuidePoint(String guidePoint) {
+        this.guidePoint = guidePoint;
+    }
+    
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

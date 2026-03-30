@@ -76,6 +76,7 @@
                                      data-deadline="${learn.deadline}"
                                      data-duration="${learn.duration}"
                                      data-link-url="${learn.linkUrl}"
+                                     data-description="${learn.description}"
                                      data-content="${learn.content}"
                                      data-text-content="${learn.textContent}"
                                      data-target="${learn.target}"
@@ -126,8 +127,20 @@
                                             </c:if>
 
                                             <p class="learn-desc ${learn.deleted ? 'deleted-text' : ''}">
-                                                ${learn.content}
-                                            </p>
+											    <c:choose>
+											        <c:when test="${not empty learn.description}">
+											            ${learn.description}
+											        </c:when>
+											        <c:otherwise>
+											            <c:choose>
+											                <c:when test="${learn.type eq '지문읽기'}">지문 읽기 학습입니다.</c:when>
+											                <c:when test="${learn.type eq '영상'}">영상 학습입니다.</c:when>
+											                <c:when test="${learn.type eq '링크'}">링크 학습입니다.</c:when>
+											                <c:otherwise>파일 학습입니다.</c:otherwise>
+											            </c:choose>
+											        </c:otherwise>
+											    </c:choose>
+											</p>
 
                                             <c:if test="${learn.deleted and not empty learn.deletedAt}">
                                                 <p class="deleted-info-text">
@@ -283,7 +296,7 @@
                 <div class="form-field" id="learnTextField">
                     <label for="learnTextContent">지문 내용</label>
                     <textarea id="learnTextContent"
-                              name="textContent"
+                              name="Content"
                               rows="6"
                               placeholder="지문 내용을 입력해주세요."></textarea>
                 </div>
@@ -296,7 +309,7 @@
                 <div class="form-field">
                     <label for="learnContent">설명</label>
                     <textarea id="learnContent"
-                              name="content"
+                              name="description"
                               rows="6"
                               placeholder="학습에 대한 상세한 설명을 입력해주세요."></textarea>
                 </div>
@@ -370,6 +383,11 @@
         <span>학습 상세 설명</span>
         <p id="detailContentText"></p>
     </div>
+
+	<div class="detail-content-box" id="detailTextContentBox" style="display:none;">
+	    <span>지문 내용</span>
+	    <p id="detailTextContentText"></p>
+	</div>
 
     <div class="detail-link-box" id="detailLinkBox">
         <span>학습 자료 링크</span>

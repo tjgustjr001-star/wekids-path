@@ -23,11 +23,12 @@
 		     data-deadline="${learning.deadline}"
 		     data-duration="${learning.duration}"
 		     data-progress="${learning.progress}"
-		     data-content="${learning.content}"
 		     data-text-content="${learning.textContent}"
 		     data-link-url="${learning.linkUrl}"
-		     data-last-position="${learning.lastPosition}">
-
+		     data-last-position="${learning.lastPosition}"
+		     data-description="${learning.description}"
+			 data-guide-point="${learning.guidePoint}">
+			<textarea class="learning-raw-content" hidden><c:out value="${learning.content}" /></textarea>
                 <div class="learning-card-inner">
                     <div class="learning-card-left">
                         <div class="learning-type-icon
@@ -50,7 +51,17 @@
                                         <span class="learning-required-badge optional">선택</span>
                                     </c:otherwise>
                                 </c:choose>
-
+								
+								<span class="learning-type-badge ${learning.type}">
+						            <c:choose>
+						                <c:when test="${learning.type eq 'video'}">영상</c:when>
+						                <c:when test="${learning.type eq 'text'}">지문</c:when>
+						                <c:when test="${learning.type eq 'link'}">링크</c:when>
+						                <c:when test="${learning.type eq 'file'}">파일</c:when>
+						                <c:otherwise>학습</c:otherwise>
+						            </c:choose>
+						        </span>
+								
                                 <h3 class="learning-title">${learning.title}</h3>
                             </div>
 
@@ -141,39 +152,53 @@
                     </div>
                 </div>
 
-                <div class="learning-content-placeholder text-content" id="learningTextContent">
-                    <h3 id="learningTextTitle">텍스트 학습 제목</h3>
-                    <p>
-                        이곳에는 학습할 텍스트 내용이 표시됩니다. 학습자는 이 내용을 읽고 스크롤하여 진도를 기록할 수 있습니다.
-                    </p>
-                    <p>
-                        1. 핵심 개념 이해하기<br>
-                        2. 주요 사례 분석하기<br>
-                        3. 요약 및 정리
-                    </p>
-                    <p>
-                        더 많은 내용이 화면을 채울 것입니다...
-                    </p>
+                <div class="learning-text-panel" id="learningTextContent" style="display:none;">
+				    <div class="learning-text-card">
+				        <h3 id="learningTextTitle">텍스트 학습 제목</h3>
+				     		
+				        <p class="learning-text-description" id="learningTextDescription"></p>
+						
+				        <div class="learning-text-guide-point" id="learningTextGuidePoint" style="display:none;"></div>
+						
+				        <div class="learning-text-scroll-box" id="learningTextScrollBox">
+				            <div class="learning-text-body" id="learningTextBody"></div>
+				        </div>
+				
+				        <div class="learning-text-complete-wrap">
+				            <button type="button" class="learning-text-complete-btn disabled" id="learningTextCompleteBtn" disabled>
+				                다 읽었어요
+				            </button>
+				        </div>
+				    </div>
+				</div>
 
-                    <div class="learning-text-complete-wrap">
-                        <button type="button" class="learning-text-complete-btn" id="learningTextCompleteBtn">
-                            다 읽었어요
-                        </button>
-                    </div>
-                </div>
+                <div class="learning-content-placeholder text-content" id="learningLinkContent" style="display:none;">
+				    <h3 id="learningLinkTitle">참고 링크 학습</h3>
+				    <p class="learning-link-description" id="learningLinkDescription"></p>
+				    <div class="learning-link-box">
+				        <a href="#" class="learning-link-anchor" id="learningLinkAnchor" target="_blank">참고 자료 열기</a>
+				    </div>
+				    <div class="learning-text-complete-wrap">
+				        <button type="button" class="learning-text-complete-btn" id="learningLinkCompleteBtn">
+				            링크를 확인했어요
+				        </button>
+				    </div>
+				</div>
+				
+				<div class="learning-content-placeholder text-content" id="learningFileContent" style="display:none;">
+				    <h3 id="learningFileTitle">파일 학습</h3>
+				    <p class="learning-file-description" id="learningFileDescription"></p>
+				    <div class="learning-link-box">
+				        <a href="#" class="learning-link-anchor" id="learningFileAnchor" target="_blank">첨부파일 열기</a>
+				    </div>
+				    <div class="learning-text-complete-wrap">
+				        <button type="button" class="learning-text-complete-btn" id="learningFileCompleteBtn">
+				            파일을 확인했어요
+				        </button>
+				    </div>
+				</div>
 
-                <div class="learning-content-placeholder text-content" id="learningLinkContent">
-                    <h3>참고 링크 학습</h3>
-                    <p>외부 참고 자료를 확인하는 링크형 학습입니다.</p>
-                    <div class="learning-link-box">
-                        <a href="#" class="learning-link-anchor" id="learningLinkAnchor" target="_blank">참고 자료 열기</a>
-                    </div>
-                    <div class="learning-text-complete-wrap">
-                        <button type="button" class="learning-text-complete-btn" id="learningLinkCompleteBtn">
-                            자료를 확인했어요
-                        </button>
-                    </div>
-                </div>
+
             </div>
 
             <div class="learning-modal-side">

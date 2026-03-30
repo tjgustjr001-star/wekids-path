@@ -10,8 +10,10 @@ public class TeacherLearnSaveDTO {
     private String startDate;
     private String deadline;
     private String linkUrl;
-    private String textContent;
-    private String content;
+
+    private String description; // 설명
+    private String content;     // 지문 본문
+    private String textContent; // 기존 JS/폼 호환용 임시 유지
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -37,9 +39,12 @@ public class TeacherLearnSaveDTO {
     public String getLinkUrl() { return linkUrl; }
     public void setLinkUrl(String linkUrl) { this.linkUrl = linkUrl; }
 
-    public String getTextContent() { return textContent; }
-    public void setTextContent(String textContent) { this.textContent = textContent; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
+
+    public String getTextContent() { return textContent; }
+    public void setTextContent(String textContent) { this.textContent = textContent; }
 }

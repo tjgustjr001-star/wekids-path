@@ -26,6 +26,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const classId = classIdInput ? classIdInput.value : '';
     const contextPath = window.appContextPath || '';
 
+	
+	
 	function escapeHtml(text) {
 	    return String(text || '')
 	        .replace(/&/g, '&amp;')
@@ -321,8 +323,8 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('learnStartDate').value = row.dataset.startDate || '';
             document.getElementById('learnDeadline').value = (row.dataset.deadline || '').replace(' ', 'T');
             document.getElementById('learnLinkUrl').value = row.dataset.linkUrl || '';
-            document.getElementById('learnTextContent').value = row.dataset.textContent || '';
-            document.getElementById('learnContent').value = row.dataset.content || '';
+			document.getElementById('learnTextContent').value = row.dataset.content || '';
+			document.getElementById('learnContent').value = row.dataset.description || '';
 
             learnForm.action = contextPath + '/teacher/classes/' + classId + '/learns/' + learnId + '/edit';
             learnFormModalTitle.textContent = '학습 자료 수정';
@@ -355,7 +357,18 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detailDeadlineText').textContent = row.dataset.deadline || '';
             document.getElementById('detailDurationText').textContent = row.dataset.duration && row.dataset.duration !== '0' ? row.dataset.duration + '분' : '-';
             document.getElementById('detailTargetText').textContent = row.dataset.target || '';
-            document.getElementById('detailContentText').textContent = row.dataset.content || '';
+            document.getElementById('detailContentText').textContent = row.dataset.description || '';
+			
+			const detailTextContentBox = document.getElementById('detailTextContentBox');
+			const detailTextContentText = document.getElementById('detailTextContentText');
+
+			if (row.dataset.type === '지문읽기') {
+			    detailTextContentBox.style.display = '';
+			    detailTextContentText.textContent = row.dataset.content || '';
+			} else {
+			    detailTextContentBox.style.display = 'none';
+			    detailTextContentText.textContent = '';
+			}
 			
             const detailLinkBox = document.getElementById('detailLinkBox');
             const detailLinkUrl = document.getElementById('detailLinkUrl');

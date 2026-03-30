@@ -130,7 +130,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
         dto.setStartDate(trimToNull(dto.getStartDate()));
         dto.setDeadline(trimToNull(dto.getDeadline()));
         dto.setLinkUrl(trimToNull(dto.getLinkUrl()));
-        dto.setTextContent(trimToNull(dto.getTextContent()));
+        dto.setDescription(trimToNull(dto.getDescription()));
         dto.setContent(trimToNull(dto.getContent()));
 
         if (dto.getDuration() != null && dto.getDuration() <= 0) {
@@ -140,34 +140,23 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
         String type = dto.getType();
 
         if ("영상".equals(type)) {
-            dto.setTextContent(null);
+            dto.setContent(null);
             if (dto.getLinkUrl() == null) {
                 throw new IllegalArgumentException("영상 유형은 영상 URL이 필요합니다.");
             }
         } else if ("링크".equals(type)) {
-            dto.setTextContent(null);
+            dto.setContent(null);
             if (dto.getLinkUrl() == null) {
                 throw new IllegalArgumentException("링크 유형은 링크 URL이 필요합니다.");
             }
         } else if ("지문읽기".equals(type)) {
             dto.setLinkUrl(null);
 
-            String textBody = trimToNull(dto.getTextContent());
-            String contentBody = trimToNull(dto.getContent());
-
-            // 긴 지문 본문은 CONTENT(CLOB)에 저장
-            if (contentBody == null && textBody != null) {
-                dto.setContent(textBody);
-            }
-
-            // GUIDE_POINT(VARCHAR2 1000)에는 긴 지문 넣지 않음
-            dto.setTextContent(null);
-
             if (dto.getContent() == null) {
                 throw new IllegalArgumentException("지문읽기 유형은 지문 내용이 필요합니다.");
             }
-        }else if ("파일".equals(type)) {
-            dto.setTextContent(null);
+        } else if ("파일".equals(type)) {
+            dto.setContent(null);
             if (dto.getLinkUrl() == null) {
                 throw new IllegalArgumentException("파일 유형은 파일 경로 또는 URL이 필요합니다.");
             }
@@ -190,7 +179,7 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
         paramMap.put("learnId", learnId);
         return teacherLearnDAO.selectTeacherLearnProgressList(paramMap);
     }
-    
+
     @Override
     public List<TeacherLearnDifficultyDTO> getTeacherLearnDifficultyList(int teacherId, int classId, int learnId) throws Exception {
         Map<String, Object> paramMap = new HashMap<>();

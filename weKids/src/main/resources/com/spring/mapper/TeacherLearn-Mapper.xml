@@ -6,31 +6,34 @@
 <mapper namespace="com.spring.dao.TeacherLearnDAO">
 
     <resultMap id="teacherLearnManageMap" type="com.spring.dto.teacher.TeacherLearnManageDTO">
-        <result property="id" column="ID"/>
-        <result property="learnListId" column="LEARN_LIST_ID"/>
-        <result property="classId" column="CLASS_ID"/>
-        <result property="teacherId" column="TEACHER_ID"/>
-        <result property="title" column="TITLE"/>
-        <result property="type" column="TYPE"/>
-        <result property="required" column="REQUIRED"/>
-        <result property="status" column="STATUS"/>
-        <result property="startDate" column="START_DATE"/>
-        <result property="endDate" column="END_DATE"/>
-        <result property="deadline" column="DEADLINE"/>
-        <result property="duration" column="DURATION"/>
-        <result property="linkUrl" column="LINK_URL"/>
-        <result property="content" column="CONTENT"/>
-        <result property="textContent" column="TEXT_CONTENT"/>
-        <result property="target" column="TARGET"/>
-        <result property="difficultCount" column="DIFFICULT_COUNT"/>
-        <result property="deleted" column="DELETED"/>
-        <result property="deletedAt" column="DELETED_AT"/>
-        <result property="completedCount" column="COMPLETED_COUNT"/>
-        <result property="inProgressCount" column="IN_PROGRESS_COUNT"/>
-        <result property="notStartedCount" column="NOT_STARTED_COUNT"/>
-        <result property="completionRate" column="COMPLETION_RATE"/>
-        <result property="totalStudentCount" column="TOTAL_STUDENT_COUNT"/>
-    </resultMap>
+	    <result property="id" column="ID"/>
+	    <result property="learnListId" column="LEARN_LIST_ID"/>
+	    <result property="classId" column="CLASS_ID"/>
+	    <result property="teacherId" column="TEACHER_ID"/>
+	    <result property="title" column="TITLE"/>
+	    <result property="type" column="TYPE"/>
+	    <result property="required" column="REQUIRED"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="startDate" column="START_DATE"/>
+	    <result property="endDate" column="END_DATE"/>
+	    <result property="deadline" column="DEADLINE"/>
+	    <result property="duration" column="DURATION"/>
+	    <result property="linkUrl" column="LINK_URL"/>
+	    <result property="description" column="DESCRIPTION"/>
+	    <result property="content" column="CONTENT"/>
+	    <result property="textContent" column="TEXT_CONTENT"/>
+	    <result property="target" column="TARGET"/>
+	    <result property="difficultCount" column="DIFFICULT_COUNT"/>
+	    <result property="deleted" column="DELETED"/>
+	    <result property="deletedAt" column="DELETED_AT"/>
+	    <result property="completedCount" column="COMPLETED_COUNT"/>
+	    <result property="inProgressCount" column="IN_PROGRESS_COUNT"/>
+	    <result property="notStartedCount" column="NOT_STARTED_COUNT"/>
+	    <result property="completionRate" column="COMPLETION_RATE"/>
+	    <result property="totalStudentCount" column="TOTAL_STUDENT_COUNT"/>
+	    <result property="description" column="DESCRIPTION"/>
+		<result property="guidePoint" column="GUIDE_POINT"/>
+	</resultMap>
 
     <select id="selectTeacherLearnList" parameterType="map" resultMap="teacherLearnManageMap">
         SELECT
@@ -39,6 +42,8 @@
             LL.CLASS_ID,
             LL.TEACHER_ID,
             LC.TITLE,
+            LC.DESCRIPTION AS DESCRIPTION,
+			LC.GUIDE_POINT AS GUIDE_POINT,
             LC.LEARN_TYPE AS TYPE,
             CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
             CASE
@@ -51,6 +56,7 @@
             TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
             NVL(LC.TARGET_TIME, 0) AS DURATION,
             LC.ATTACH_URL AS LINK_URL,
+            LC.DESCRIPTION AS DESCRIPTION,
             LC.CONTENT,
             LC.GUIDE_POINT AS TEXT_CONTENT,
             '전체 (' ||
@@ -139,6 +145,8 @@
             LL.LEARN_LIST_ID,
             LL.CLASS_ID,
             LL.TEACHER_ID,
+            LC.DESCRIPTION AS DESCRIPTION,
+			LC.GUIDE_POINT AS GUIDE_POINT,
             LC.TITLE,
             LC.LEARN_TYPE AS TYPE,
             CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
@@ -152,6 +160,7 @@
             TO_CHAR(LC.END_DATE, 'YYYY-MM-DD HH24:MI') AS DEADLINE,
             NVL(LC.TARGET_TIME, 0) AS DURATION,
             LC.ATTACH_URL AS LINK_URL,
+            LC.DESCRIPTION AS DESCRIPTION,
             LC.CONTENT,
             LC.GUIDE_POINT AS TEXT_CONTENT,
             '전체 (' ||
@@ -220,6 +229,7 @@
 	        TITLE,
 	        LEARN_TYPE,
 	        CONTENT,
+	        DESCRIPTION,
 	        REQUIRED_YN,
 	        START_DATE,
 	        END_DATE,
@@ -235,11 +245,12 @@
 	        #{dto.title, jdbcType=VARCHAR},
 	        #{dto.type, jdbcType=VARCHAR},
 	        #{dto.content, jdbcType=CLOB},
+	        #{dto.description, jdbcType=VARCHAR},
 	        CASE WHEN #{dto.required, jdbcType=VARCHAR} = 'true' THEN 1 ELSE 0 END,
 	        TO_DATE(#{dto.startDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),
 	        TO_DATE(REPLACE(#{dto.deadline, jdbcType=VARCHAR}, 'T', ' '), 'YYYY-MM-DD HH24:MI'),
 	        #{dto.duration, jdbcType=NUMERIC},
-	        #{dto.textContent, jdbcType=VARCHAR},
+	        NULL,
 	        #{dto.linkUrl, jdbcType=VARCHAR},
 	        0,
 	        NULL,
@@ -265,6 +276,7 @@
 	    UPDATE LEARN_CONT
 	       SET TITLE = #{dto.title, jdbcType=VARCHAR},
 	           LEARN_TYPE = #{dto.type, jdbcType=VARCHAR},
+	           DESCRIPTION = #{dto.description, jdbcType=VARCHAR},
 	           CONTENT = #{dto.content, jdbcType=CLOB},
 	           REQUIRED_YN = CASE WHEN #{dto.required, jdbcType=VARCHAR} = 'true' THEN 1 ELSE 0 END,
 	           START_DATE = TO_DATE(#{dto.startDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),

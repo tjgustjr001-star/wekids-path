@@ -15,6 +15,7 @@
         <result property="duration" column="DURATION"/>
         <result property="progress" column="PROGRESS"/>
         <result property="content" column="CONTENT"/>
+        <result property="description" column="DESCRIPTION"/>
         <result property="textContent" column="TEXT_CONTENT"/>
         <result property="linkUrl" column="LINK_URL"/>
         <result property="startDate" column="START_DATE"/>
@@ -29,7 +30,7 @@
                 WHEN '영상' THEN 'video'
                 WHEN '지문읽기' THEN 'text'
                 WHEN '링크' THEN 'link'
-                WHEN '파일' THEN 'link'
+                WHEN '파일' THEN 'file'
                 ELSE 'link'
             END AS TYPE,
             CASE WHEN NVL(LC.REQUIRED_YN, 0) = 1 THEN 1 ELSE 0 END AS REQUIRED,
@@ -42,6 +43,7 @@
             NVL(LC.TARGET_TIME, 0) AS DURATION,
             NVL(LP.PROGRESS_RATE, 0) AS PROGRESS,
             LC.CONTENT AS CONTENT,
+            LC.DESCRIPTION AS DESCRIPTION,
             LC.GUIDE_POINT AS TEXT_CONTENT,
             LC.ATTACH_URL AS LINK_URL,
             TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS START_DATE,

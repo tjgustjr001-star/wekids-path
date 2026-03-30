@@ -18,9 +18,12 @@ public class TeacherLearnManageDTO {
 
     private Integer duration;
     private String linkUrl;
-    private String content;
-    private String textContent;
 
+    private String description; // 설명
+    private String content;     // 지문 본문 / 상세 내용
+    private String textContent; // 기존 구조 유지용(당장은 둬도 됨)
+    private String guidePoint;
+    
     private String target;
     private int difficultCount;
     private boolean deleted;
@@ -32,6 +35,7 @@ public class TeacherLearnManageDTO {
     private int completionRate;
     private int totalStudentCount;
 
+    
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -71,6 +75,9 @@ public class TeacherLearnManageDTO {
     public String getLinkUrl() { return linkUrl; }
     public void setLinkUrl(String linkUrl) { this.linkUrl = linkUrl; }
 
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
@@ -103,4 +110,10 @@ public class TeacherLearnManageDTO {
 
     public int getTotalStudentCount() { return totalStudentCount; }
     public void setTotalStudentCount(int totalStudentCount) { this.totalStudentCount = totalStudentCount; }
+	public String getGuidePoint() {
+		return guidePoint;
+	}
+	public void setGuidePoint(String guidePoint) {
+		this.guidePoint = guidePoint;
+	}
 }
