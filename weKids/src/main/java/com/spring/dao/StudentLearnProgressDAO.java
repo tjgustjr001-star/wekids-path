@@ -28,4 +28,8 @@ public interface StudentLearnProgressDAO {
     Integer selectDifficultyFeedbackIdByProgressId(Map<String, Object> paramMap) throws SQLException;
 
     void updateLearnDifficultyFeedback(Map<String, Object> paramMap) throws SQLException;
+
+    String selectStudentLearnOpenStatus(Map<String, Object> paramMap) throws SQLException;
+    
+    String selectProgressStatus(Map<String, Object> paramMap) throws SQLException;
 }

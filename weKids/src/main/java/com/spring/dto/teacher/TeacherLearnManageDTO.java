@@ -11,6 +11,7 @@ public class TeacherLearnManageDTO {
     private String type;
     private boolean required;
     private String status;
+    private String manualStatus;
 
     private String startDate;
     private String endDate;
@@ -59,6 +60,9 @@ public class TeacherLearnManageDTO {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getManualStatus() { return manualStatus; }
+    public void setManualStatus(String manualStatus) { this.manualStatus = manualStatus; }
 
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) { this.startDate = startDate; }

@@ -262,7 +262,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             document.getElementById('learnType').value = '영상';
             document.getElementById('learnRequired').value = 'true';
-            document.getElementById('learnStatus').value = '운영중';
+            document.getElementById('learnStatus').value = 'AUTO';
             setDefaultLearnDates();
             updateTypeFields();
             openModal(learnFormModal);
@@ -318,7 +318,7 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('learnTitle').value = row.dataset.title || '';
             document.getElementById('learnType').value = row.dataset.type || '영상';
             document.getElementById('learnRequired').value = row.dataset.required === 'true' ? 'true' : 'false';
-            document.getElementById('learnStatus').value = row.dataset.status || '운영중';
+            document.getElementById('learnStatus').value = row.dataset.manualStatus || 'AUTO';
             document.getElementById('learnDuration').value = row.dataset.duration && row.dataset.duration !== '0' ? row.dataset.duration : '';
             document.getElementById('learnStartDate').value = row.dataset.startDate || '';
             document.getElementById('learnDeadline').value = (row.dataset.deadline || '').replace(' ', 'T');

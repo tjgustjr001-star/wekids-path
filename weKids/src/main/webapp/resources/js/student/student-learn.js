@@ -243,22 +243,27 @@ window.addEventListener('DOMContentLoaded', function () {
         completeBtn.classList.toggle('show', ready);
     }
 
-    function markReadyToComplete() {
-        if (!currentLearning) return;
+	function markReadyToComplete() {
+	    if (!currentLearning) return;
 
-        currentLearning.progress = 95;
+	    if (currentLearning.status === '완료') {
+	        currentLearning.progress = 100;
+	        setProgress(100);
+	        updateCardUI(selectedCard, currentLearning);
+	        updateActionButtons();
+	        return;
+	    }
 
-        if (currentLearning.status !== '완료') {
-            currentLearning.status = '진행중';
-        }
+	    currentLearning.progress = 95;
+	    currentLearning.status = '진행중';
 
-        isReadyToComplete = true;
-        isManualCompleteOnly = true;
+	    isReadyToComplete = true;
+	    isManualCompleteOnly = true;
 
-        setProgress(95);
-        updateCardUI(selectedCard, currentLearning);
-        updateActionButtons();
-    }
+	    setProgress(95);
+	    updateCardUI(selectedCard, currentLearning);
+	    updateActionButtons();
+	}
 
     function resetDifficultyPanel() {
         selectedDifficultyReason = '';
@@ -473,10 +478,18 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 10000);
     }
 
-    function saveYoutubeProgress() {
-        if (!ytPlayer || !currentLearning || currentLearning.type !== 'video') {
-            return Promise.resolve();
-        }
+	function saveYoutubeProgress() {
+	    if (!ytPlayer || !currentLearning || currentLearning.type !== 'video') {
+	        return Promise.resolve();
+	    }
+
+	    if (currentLearning.status === '완료') {
+	        currentLearning.progress = 100;
+	        setProgress(100);
+	        updateCardUI(selectedCard, currentLearning);
+	        updateActionButtons();
+	        return Promise.resolve();
+	    }
 
         const duration = Math.floor(ytPlayer.getDuration ? ytPlayer.getDuration() : 0);
         const current = Math.floor(ytPlayer.getCurrentTime ? ytPlayer.getCurrentTime() : 0);
@@ -559,9 +572,9 @@ window.addEventListener('DOMContentLoaded', function () {
             let progressRate = calculateTextProgress();
             currentLearning.lastPosition = String(textScrollBox.scrollTop || 0);
 
-            if (isAtBottom) {
-                isReadyToComplete = true;
-                progressRate = 95;
+			if (isAtBottom) {
+			    isReadyToComplete = true;
+			    progressRate = currentLearning.status === '완료' ? 100 : 95;
 
                 if (textCompleteBtn) {
                     textCompleteBtn.disabled = false;
@@ -600,21 +613,29 @@ window.addEventListener('DOMContentLoaded', function () {
                     textCompleteBtn.classList.remove('disabled');
                 }
 
-                currentLearning.progress = 95;
-                currentLearning.status = currentLearning.status === '완료' ? '완료' : '진행중';
-                setProgress(95);
+				currentLearning.progress = currentLearning.status === '완료' ? 100 : 95;
+				currentLearning.status = currentLearning.status === '완료' ? '완료' : '진행중';
+				setProgress(currentLearning.status === '완료' ? 100 : 95);
                 updateCardUI(selectedCard, currentLearning);
                 updateActionButtons();
             }
         }, 0);
     }
 
-    function saveTextProgress() {
-        const textScrollBox = getTextScrollBox();
+	function saveTextProgress() {
+	    const textScrollBox = getTextScrollBox();
 
-        if (!currentLearning || currentLearning.type !== 'text') {
-            return Promise.resolve();
-        }
+	    if (!currentLearning || currentLearning.type !== 'text') {
+	        return Promise.resolve();
+	    }
+
+	    if (currentLearning.status === '완료') {
+	        currentLearning.progress = 100;
+	        setProgress(100);
+	        updateCardUI(selectedCard, currentLearning);
+	        updateActionButtons();
+	        return Promise.resolve();
+	    }
 
         const scrollTop = textScrollBox ? Math.floor(textScrollBox.scrollTop || 0) : 0;
         const progressRate = calculateTextProgress();
@@ -655,6 +676,8 @@ window.addEventListener('DOMContentLoaded', function () {
             type: card.dataset.type || 'link',
             required: card.dataset.required === 'true',
             status: card.dataset.status || '미시작',
+            openStatus: card.dataset.openStatus || 'OPEN',
+            accessible: card.dataset.accessible === 'true',
             deadline: card.dataset.deadline || '',
             duration: card.dataset.duration || '',
             progress: Number(card.dataset.progress || 0),
@@ -663,6 +686,13 @@ window.addEventListener('DOMContentLoaded', function () {
             linkUrl: card.dataset.linkUrl || '',
             lastPosition: card.dataset.lastPosition || '0'
         };
+
+        if (!currentLearning.accessible) {
+            showToast(currentLearning.openStatus === 'WAITING' ? '아직 시작되지 않은 학습입니다.' : '마감된 학습은 열람할 수 없습니다.', 'error');
+            selectedCard = null;
+            currentLearning = null;
+            return;
+        }
 
         isReadyToComplete = currentLearning.status === '완료' || Number(currentLearning.progress || 0) >= 95;
         isManualCompleteOnly = currentLearning.type !== 'video' && currentLearning.type !== 'text';
@@ -689,14 +719,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
         resetDifficultyPanel();
 
-        postForm(contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/start', {})
-            .then(function () {
-                if (currentLearning && currentLearning.status === '미시작') {
-                    currentLearning.status = '진행중';
-                    updateCardUI(selectedCard, currentLearning);
-                }
-            })
-            .catch(function () {});
+		if (currentLearning.status !== '완료') {
+		    postForm(contextPath + '/student/classes/' + classId + '/learns/' + currentLearning.id + '/start', {})
+		        .then(function () {
+		            if (currentLearning && currentLearning.status === '미시작') {
+		                currentLearning.status = '진행중';
+		                updateCardUI(selectedCard, currentLearning);
+		            }
+		        })
+		        .catch(function () {});
+		}
 
         openModal();
 
@@ -714,6 +746,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     function saveAndCloseLearning() {
         if (!currentLearning) {
+            closeModal();
+            return;
+        }
+
+        if (!currentLearning.accessible) {
+            showToast('운영중인 학습만 저장할 수 있습니다.', 'error');
             closeModal();
             return;
         }
@@ -747,6 +785,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     function completeLearning() {
         if (!currentLearning) return;
+
+        if (!currentLearning.accessible) {
+            showToast('운영중인 학습만 완료할 수 있습니다.', 'error');
+            return;
+        }
 
         if (currentLearning.type === 'text' || currentLearning.type === 'video') {
             if (!isReadyToComplete) {

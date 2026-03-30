@@ -20,6 +20,8 @@
 		     data-type="${learning.type}"
 		     data-required="${learning.required}"
 		     data-status="${learning.status}"
+		     data-open-status="${learning.openStatus}"
+		     data-accessible="${learning.accessible}"
 		     data-deadline="${learning.deadline}"
 		     data-duration="${learning.duration}"
 		     data-progress="${learning.progress}"
@@ -62,13 +64,16 @@
 						            </c:choose>
 						        </span>
 								
+                                <span class="learning-open-badge ${learning.openStatus eq 'OPEN' ? 'open' : learning.openStatus eq 'WAITING' ? 'waiting' : 'closed'}">
+                                    ${learning.openStatus eq 'OPEN' ? '운영중' : learning.openStatus eq 'WAITING' ? '대기중' : '마감'}
+                                </span>
                                 <h3 class="learning-title">${learning.title}</h3>
                             </div>
 
                             <div class="learning-meta-row">
                                 <span class="learning-meta-item">
                                     <span class="meta-clock-icon"></span>
-                                    ${learning.duration} 소요 예상
+                                    ${learning.duration}분 소요 예상
                                 </span>
                                 <span class="learning-meta-divider">|</span>
                                 <span class="learning-meta-item">${learning.deadline} 마감</span>
@@ -98,6 +103,11 @@
 
                         <div class="learning-action-wrap">
                             <c:choose>
+                                <c:when test="${not learning.accessible}">
+                                    <button type="button" class="learning-action-btn blocked" disabled>
+                                        ${learning.openStatus eq 'WAITING' ? '대기중' : '마감'}
+                                    </button>
+                                </c:when>
                                 <c:when test="${learning.status eq '진행중'}">
                                     <button type="button" class="learning-action-btn continue open-learning-btn">
                                         이어보기

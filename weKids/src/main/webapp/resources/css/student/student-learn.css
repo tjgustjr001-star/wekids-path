@@ -1017,3 +1017,41 @@ button.learning-text-complete-btn:disabled {
     border-color: #bbf7d0;
     color: #15803d;
 }
+
+.learning-open-badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.learning-open-badge.open {
+    background: rgba(0, 211, 122, 0.12);
+    color: #059669;
+}
+
+.learning-open-badge.waiting {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.learning-open-badge.closed {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.learning-action-btn.blocked {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.learning-card[data-accessible="false"] {
+    cursor: default;
+}
+
+.learning-card[data-accessible="false"]:hover {
+    box-shadow: none;
+}

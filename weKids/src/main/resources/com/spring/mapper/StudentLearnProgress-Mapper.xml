@@ -58,17 +58,18 @@
     </insert>
 
     <update id="updateLearnProgressToInProgress" parameterType="map">
-        UPDATE LEARN_PRO
-           SET STATUS = 'IN_PROGRESS',
-               START_DATE = NVL(START_DATE, SYSDATE),
-               LAST_SAVED_AT = SYSDATE,
-               PROGRESS_RATE = CASE
-                   WHEN NVL(PROGRESS_RATE, 0) = 0 THEN 10
-                   ELSE PROGRESS_RATE
-               END
-         WHERE LEARN_ID = #{learnId}
-           AND STUDENT_ID = #{studentId}
-    </update>
+	    UPDATE LEARN_PRO
+	       SET STATUS = 'IN_PROGRESS',
+	           START_DATE = NVL(START_DATE, SYSDATE),
+	           LAST_SAVED_AT = SYSDATE,
+	           PROGRESS_RATE = CASE
+	               WHEN NVL(PROGRESS_RATE, 0) = 0 THEN 10
+	               ELSE PROGRESS_RATE
+	           END
+	     WHERE LEARN_ID = #{learnId}
+	       AND STUDENT_ID = #{studentId}
+	       AND NVL(STATUS, 'IN_PROGRESS') &lt;> 'COMPLETED'
+	</update>
 
     <update id="updateLearnProgressToCompleted" parameterType="map">
         UPDATE LEARN_PRO
@@ -81,18 +82,22 @@
     </update>
 
     <update id="updateVideoProgress" parameterType="map">
-        UPDATE LEARN_PRO
-           SET LAST_POSITION = #{currentSecond, jdbcType=VARCHAR},
-               LAST_SAVED_AT = SYSDATE,
-               PROGRESS_RATE = #{progressRate, jdbcType=NUMERIC},
-               TOTAL_MINUTE = CASE
-                   WHEN #{durationSecond, jdbcType=NUMERIC} IS NULL OR #{durationSecond, jdbcType=NUMERIC} = 0
-                       THEN TOTAL_MINUTE
-                   ELSE FLOOR(#{currentSecond, jdbcType=NUMERIC} / 60)
-               END
-         WHERE LEARN_ID = #{learnId}
-           AND STUDENT_ID = #{studentId}
-    </update>
+	    UPDATE LEARN_PRO
+	       SET LAST_POSITION = #{currentSecond, jdbcType=VARCHAR},
+	           LAST_SAVED_AT = SYSDATE,
+	           PROGRESS_RATE = CASE
+	               WHEN NVL(STATUS, 'IN_PROGRESS') = 'COMPLETED' THEN 100
+	               ELSE #{progressRate, jdbcType=NUMERIC}
+	           END,
+	           TOTAL_MINUTE = CASE
+	               WHEN #{durationSecond, jdbcType=NUMERIC} IS NULL OR #{durationSecond, jdbcType=NUMERIC} = 0
+	                   THEN TOTAL_MINUTE
+	               ELSE FLOOR(#{currentSecond, jdbcType=NUMERIC} / 60)
+	           END
+	     WHERE LEARN_ID = #{learnId}
+	       AND STUDENT_ID = #{studentId}
+	       AND NVL(STATUS, 'IN_PROGRESS') &lt;> 'COMPLETED'
+	</update>
 
 	<update id="updateTextProgress" parameterType="map">
 	    UPDATE LEARN_PRO
@@ -138,4 +143,35 @@
 	     WHERE LEARN_FBD_ID = #{feedbackId}
 	</update>
 
+
+    <select id="selectStudentLearnOpenStatus" parameterType="map" resultType="string">
+        SELECT
+            CASE
+                WHEN NVL(LC.OPEN_STATUS_OVERRIDE, 'AUTO') = 'WAITING' THEN 'WAITING'
+                WHEN NVL(LC.OPEN_STATUS_OVERRIDE, 'AUTO') = 'OPEN' THEN 'OPEN'
+                WHEN NVL(LC.OPEN_STATUS_OVERRIDE, 'AUTO') = 'CLOSED' THEN 'CLOSED'
+                WHEN LC.START_DATE IS NOT NULL AND SYSDATE &lt; LC.START_DATE THEN 'WAITING'
+                WHEN LC.END_DATE IS NOT NULL AND SYSDATE &gt; LC.END_DATE THEN 'CLOSED'
+                ELSE 'OPEN'
+            END AS OPEN_STATUS
+        FROM STUDENT_CLASS SC
+        JOIN LEARN_LIST LL
+          ON LL.CLASS_ID = SC.CLASS_ID
+        JOIN LEARN_CONT LC
+          ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+        WHERE SC.STUDENT_ID = #{studentId}
+          AND SC.CLASS_ID = #{classId}
+          AND LC.LEARN_ID = #{learnId}
+          AND SC.END_DATE IS NULL
+          AND NVL(LC.DELETE_YN, 0) = 0
+    </select>
+
+
+	<select id="selectProgressStatus" parameterType="map" resultType="string">
+	    SELECT STATUS
+	    FROM LEARN_PRO
+	    WHERE LEARN_ID = #{learnId}
+	      AND STUDENT_ID = #{studentId}
+	</select>
+	
 </mapper>

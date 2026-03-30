@@ -27,10 +27,16 @@ public class StudentLearnProgressServiceImpl implements StudentLearnProgressServ
             int nextProgressId = studentLearnProgressDAO.selectNextProgressId();
             paramMap.put("progressId", nextProgressId);
             studentLearnProgressDAO.insertLearnProgress(paramMap);
-        } else {
-            paramMap.put("progressId", progressId);
-            studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
+            return;
         }
+
+        String currentStatus = studentLearnProgressDAO.selectProgressStatus(paramMap);
+        if ("COMPLETED".equalsIgnoreCase(currentStatus)) {
+            return;
+        }
+
+        paramMap.put("progressId", progressId);
+        studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
     }
 
     @Override
@@ -102,15 +108,15 @@ public class StudentLearnProgressServiceImpl implements StudentLearnProgressServ
             studentLearnProgressDAO.insertLearnProgress(paramMap);
         } else {
             paramMap.put("progressId", progressId);
+
+            String currentStatus = studentLearnProgressDAO.selectProgressStatus(paramMap);
+            if ("COMPLETED".equalsIgnoreCase(currentStatus)) {
+                return;
+            }
         }
 
         studentLearnProgressDAO.updateVideoProgress(paramMap);
-
-        if (progressRate >= 90) {
-            studentLearnProgressDAO.updateLearnProgressToCompleted(paramMap);
-        } else {
-            studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
-        }
+        studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
     }
 
     @Override
@@ -130,14 +136,14 @@ public class StudentLearnProgressServiceImpl implements StudentLearnProgressServ
             studentLearnProgressDAO.insertLearnProgress(paramMap);
         } else {
             paramMap.put("progressId", progressId);
+
+            String currentStatus = studentLearnProgressDAO.selectProgressStatus(paramMap);
+            if ("COMPLETED".equalsIgnoreCase(currentStatus)) {
+                return;
+            }
         }
 
         studentLearnProgressDAO.updateTextProgress(paramMap);
-
-        if (progressRate >= 100) {
-            studentLearnProgressDAO.updateLearnProgressToCompleted(paramMap);
-        } else {
-            studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
-        }
+        studentLearnProgressDAO.updateLearnProgressToInProgress(paramMap);
     }
 }

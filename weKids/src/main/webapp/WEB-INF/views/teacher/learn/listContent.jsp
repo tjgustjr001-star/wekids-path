@@ -58,7 +58,7 @@
                 <div class="teacher-learn-table-head">
                     <div class="col info">학습 자료 정보</div>
                     <div class="col schedule">기한 / 예상 소요시간</div>
-                    <div class="col target">대상 / 참여</div>
+                    <div class="col target">전체 / 완료</div>
                     <div class="col manage">관리</div>
                 </div>
 
@@ -71,6 +71,7 @@
                                      data-type="${learn.type}"
                                      data-required="${learn.required}"
                                      data-status="${learn.status}"
+                                     data-manual-status="${learn.manualStatus}"
                                      data-start-date="${learn.startDate}"
                                      data-end-date="${learn.endDate}"
                                      data-deadline="${learn.deadline}"
@@ -161,8 +162,17 @@
                                     </div>
 
                                     <div class="col target">
-                                        <div class="target-text">${learn.target}</div>
-                                    </div>
+									    <div class="target-stat-box">
+									        <div class="target-stat-line">
+									            <span class="label">전체</span>
+									            <strong>${learn.totalStudentCount}명</strong>
+									        </div>
+									        <div class="target-stat-line">
+									            <span class="label">완료</span>
+									            <strong class="complete">${learn.completedCount}명</strong>
+									        </div>
+									    </div>
+									</div>
 
                                     <div class="col manage">
                                         <c:choose>
@@ -257,6 +267,7 @@
                     <div class="form-field">
                         <label for="learnStatus">상태</label>
                         <select id="learnStatus" name="status">
+                            <option value="AUTO">자동</option>
                             <option value="대기중">대기중</option>
                             <option value="운영중">운영중</option>
                             <option value="마감">마감</option>

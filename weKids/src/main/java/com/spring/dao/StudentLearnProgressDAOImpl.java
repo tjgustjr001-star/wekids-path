@@ -74,4 +74,15 @@ public class StudentLearnProgressDAOImpl implements StudentLearnProgressDAO {
     public void updateLearnDifficultyFeedback(Map<String, Object> paramMap) throws SQLException {
         session.update(NAMESPACE + "updateLearnDifficultyFeedback", paramMap);
     }
+
+    @Override
+    public String selectStudentLearnOpenStatus(Map<String, Object> paramMap) throws SQLException {
+        return session.selectOne(NAMESPACE + "selectStudentLearnOpenStatus", paramMap);
+    }
+
+	@Override
+	public String selectProgressStatus(Map<String, Object> paramMap) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -9,4 +9,6 @@ import com.spring.dto.student.StudentLearnItemDTO;
 public interface StudentLearnDAO {
 
     List<StudentLearnItemDTO> selectStudentLearnList(Map<String, Object> paramMap) throws SQLException;
+
+    String selectStudentLearnOpenStatus(Map<String, Object> paramMap) throws SQLException;
 }

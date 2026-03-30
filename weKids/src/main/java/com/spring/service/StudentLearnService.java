@@ -8,4 +8,6 @@ import com.spring.dto.student.StudentLearnItemDTO;
 public interface StudentLearnService {
 
     List<StudentLearnItemDTO> getStudentLearnList(int studentId, int classId) throws SQLException;
+
+    void validateLearnOpenForStudent(int studentId, int classId, int learnId) throws Exception;
 }

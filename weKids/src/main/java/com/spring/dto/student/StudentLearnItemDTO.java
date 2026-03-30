@@ -11,6 +11,8 @@ public class StudentLearnItemDTO {
     private boolean required;
 
     private String status;        // 미시작 / 진행중 / 완료
+    private String openStatus;    // WAITING / OPEN / CLOSED
+    private boolean accessible;   // 운영중일 때만 true
     private String deadline;      // yyyy-MM-dd HH:mm
     private String duration;      // 15분
     private int progress;         // 0 ~ 100
@@ -61,6 +63,12 @@ public class StudentLearnItemDTO {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getOpenStatus() { return openStatus; }
+    public void setOpenStatus(String openStatus) { this.openStatus = openStatus; }
+
+    public boolean isAccessible() { return accessible; }
+    public void setAccessible(boolean accessible) { this.accessible = accessible; }
 
     public String getDeadline() { return deadline; }
     public void setDeadline(String deadline) { this.deadline = deadline; }

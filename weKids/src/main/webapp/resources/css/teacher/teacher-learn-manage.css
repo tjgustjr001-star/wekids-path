@@ -1436,3 +1436,31 @@
         min-width: 0;
     }
 }
+.target-stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.target-stat-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.target-stat-line .label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.target-stat-line strong {
+    color: #111827;
+    font-weight: 700;
+}
+
+.target-stat-line strong.complete {
+    color: #2563eb;
+}
