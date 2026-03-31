@@ -510,6 +510,7 @@
 }
 
 .row-recover-btn,
+.row-remove-btn,
 .mini-warning-btn {
     min-height: 34px;
     padding: 0 12px;
@@ -523,6 +524,29 @@
 .row-recover-btn {
     background: #eef4ff;
     color: #4379F2;
+}
+
+.row-remove-btn {
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 0;
+    background: #fdecec;
+    color: #ef4444;
+}
+
+.trash-action-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.row-remove-btn:hover {
+    background: #fbd5d5;
 }
 
 .mini-warning-btn {
@@ -967,4 +991,858 @@
     .detail-progress-summary-grid {
         grid-template-columns: 1fr;
     }
+}
+.feedback-chip {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: #eef4ff;
+    color: #3563e9;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.search-empty {
+    margin: 0 20px 20px;
+}
+
+.submission-student-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #eef2f7;
+    border-radius: 16px;
+    background: #fff;
+    margin-bottom: 10px;
+}
+
+.submission-student-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.submission-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e8f7ef;
+    color: #117554;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    flex: 0 0 auto;
+}
+
+.submission-student-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.submission-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.feedback-mini-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.feedback-mini-badge.done {
+    background: #e8f7ef;
+    color: #16a34a;
+}
+
+.feedback-mini-badge.need {
+    background: #fff3e8;
+    color: #dd6b20;
+}
+
+.submission-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9ca3af;
+    font-size: 12px;
+    flex-wrap: wrap;
+}
+
+.submission-status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.submission-status-pill.green {
+    background: #e8f7ef;
+    color: #16a34a;
+}
+
+.submission-status-pill.blue {
+    background: #eef4ff;
+    color: #3563e9;
+}
+
+.submission-status-pill.orange {
+    background: #fff3e8;
+    color: #dd6b20;
+}
+
+.submission-status-pill.red {
+    background: #fff1f1;
+    color: #ef4444;
+}
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* 진행중 */
+.status-progress {
+    background: #e8f1ff;
+    color: #2f6bff;
+}
+
+/* 마감임박 */
+.status-urgent {
+    background: #fff4d6;
+    color: #d48806;
+}
+
+/* 마감 */
+.status-end {
+    background: #f1f3f5;
+    color: #868e96;
+}
+
+.feedback-badge {
+    margin-top: 6px;
+    display: inline-block;
+    background: #eef3ff;
+    color: #3b5bdb;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+/* ===== assignment status badge override ===== */
+.teacher-assignment-row .assignment-status-box .status-badge,
+#detailStatusBadge.status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 30px !important;
+    padding: 0 14px !important;
+    border-radius: 999px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.teacher-assignment-row .assignment-status-box .status-badge.primary,
+#detailStatusBadge.status-badge.primary {
+    background: #eaf1ff !important;
+    color: #3b6ff6 !important;
+}
+
+.teacher-assignment-row .assignment-status-box .status-badge.warning,
+#detailStatusBadge.status-badge.warning {
+    background: #fff2bf !important;
+    color: #cc8a00 !important;
+}
+
+.teacher-assignment-row .assignment-status-box .status-badge.gray,
+#detailStatusBadge.status-badge.gray {
+    background: #edf0f4 !important;
+    color: #6b7280 !important;
+}
+
+.assignment-title.detail-open-text {
+    cursor: pointer;
+}
+
+.assignment-title.detail-open-text:hover {
+    text-decoration: underline;
+}
+
+/* ===== Assignment detail modal UI refresh (request scope: popup UI only) ===== */
+.teacher-assignment-detail-modal-v2 {
+    max-width: 760px;
+    max-height: 86vh;
+    border-radius: 22px;
+}
+
+.assignment-detail-header-v2 {
+    padding: 18px 20px 14px;
+    background: #ffffff;
+}
+
+.assignment-detail-title-block {
+    min-width: 0;
+}
+
+.assignment-detail-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.assignment-detail-header-v2 h3 {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.detail-badge-row-v2 {
+    gap: 8px;
+}
+
+.detail-badge-row-v2 .mini-badge.subject {
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: transparent;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.detail-badge-row-v2 .status-badge {
+    min-height: 22px;
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.assignment-detail-body-v2 {
+    padding: 16px;
+    background: #fcfcfd;
+}
+
+.assignment-detail-top-grid-v2 {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.detail-content-box-v2,
+.detail-info-box-v2,
+.detail-progress-box-v2,
+.student-submission-section-v2 {
+    border-radius: 12px;
+    border: 1px solid #e9edf3;
+    box-shadow: none;
+}
+
+.detail-content-box-v2,
+.detail-info-box-v2 {
+    background: #f8fafc;
+    padding: 12px 14px;
+    margin-bottom: 0;
+}
+
+.detail-content-box-v2 {
+    min-height: 102px;
+}
+
+.detail-content-box-v2 span,
+.detail-info-box-v2 span {
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #8a94a6;
+    font-weight: 700;
+}
+
+.detail-content-box-v2 p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #374151;
+}
+
+.detail-side-stack-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-deadline-box-v2 strong {
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.detail-feedback-box-v2 {
+    background: #fff8e8;
+    border-color: #f4e2b8;
+}
+
+.detail-feedback-box-v2 strong {
+    color: #d97706;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.detail-progress-box-v2 {
+    background: #f7fbfa;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.detail-progress-box-v2 .detail-progress-title-row {
+    margin-bottom: 10px;
+}
+
+.detail-progress-box-v2 .detail-progress-title-row h4 {
+    font-size: 15px;
+}
+
+.detail-progress-box-v2 .detail-progress-title-row strong {
+    font-size: 17px;
+    color: #117554;
+}
+
+.detail-progress-box-v2 .big-progress-bar {
+    height: 10px;
+    margin-bottom: 12px;
+    background: #e6ebf2;
+}
+
+.detail-progress-box-v2 .big-progress-fill {
+    background: linear-gradient(90deg, #117554 0%, #3b82f6 100%);
+}
+
+.detail-progress-summary-grid-v2 {
+    gap: 8px;
+}
+
+.detail-progress-summary-grid-v2 .progress-summary-card {
+    border-radius: 10px;
+    padding: 10px 8px;
+}
+
+.detail-progress-summary-grid-v2 .progress-summary-card span {
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.detail-progress-summary-grid-v2 .progress-summary-card strong {
+    font-size: 14px;
+}
+
+.student-submission-section-v2 {
+    background: #ffffff;
+    padding: 0;
+    overflow: hidden;
+}
+
+.student-submission-top-v2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid #f1f4f8;
+}
+
+.student-submission-top-v2 h4 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.student-submission-top-v2 select {
+    height: 32px;
+    min-width: 88px;
+    border: 1px solid #d9e0e8;
+    border-radius: 8px;
+    padding: 0 28px 0 10px;
+    font-size: 12px;
+    color: #4b5563;
+    background: #f9fafb;
+}
+
+.student-submission-list-v2 {
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 10px;
+    gap: 8px;
+}
+
+.student-submission-list-v2 .teacher-empty-box {
+    min-height: 120px;
+    font-size: 13px;
+    background: #fafbfc;
+    border: 1px dashed #e5e7eb;
+    border-radius: 12px;
+}
+
+.student-submission-list-v2 .submission-student-row {
+    margin-bottom: 0;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.student-submission-list-v2 .submission-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    background: #e9f7ef;
+    color: #16a34a;
+}
+
+.student-submission-list-v2 .submission-student-info {
+    gap: 3px;
+}
+
+.student-submission-list-v2 .submission-name-row strong {
+    font-size: 14px;
+}
+
+.student-submission-list-v2 .feedback-mini-badge {
+    padding: 2px 7px;
+    font-size: 10px;
+}
+
+.student-submission-list-v2 .submission-meta-row {
+    gap: 8px;
+    font-size: 11px;
+}
+
+.student-submission-list-v2 .submission-status-pill {
+    min-width: 72px;
+    padding: 5px 10px;
+    font-size: 11px;
+}
+
+.assignment-detail-footer-v2 {
+    padding: 12px 16px;
+    background: #ffffff;
+}
+
+.assignment-notify-btn-v2 {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.assignment-close-btn-v2 {
+    height: 36px;
+    min-width: 68px;
+    border-radius: 10px;
+    background: #f5f7fb;
+}
+
+.student-submission-list-v2::-webkit-scrollbar {
+    width: 8px;
+}
+
+.student-submission-list-v2::-webkit-scrollbar-thumb {
+    background: #cfd6df;
+    border-radius: 999px;
+}
+
+.student-submission-list-v2::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .teacher-assignment-detail-modal-v2 {
+        max-width: 100%;
+        max-height: 90vh;
+    }
+
+    .assignment-detail-top-grid-v2,
+    .detail-progress-summary-grid-v2 {
+        grid-template-columns: 1fr;
+    }
+
+    .student-submission-top-v2 {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+.student-submission-list-v2 .submission-avatar.green {
+    background: #e9f7ef;
+    color: #16a34a;
+}
+.student-submission-list-v2 .submission-avatar.blue {
+    background: #eef4ff;
+    color: #3563e9;
+}
+.student-submission-list-v2 .submission-avatar.orange {
+    background: #fff3e8;
+    color: #dd6b20;
+}
+.student-submission-list-v2 .submission-avatar.red {
+    background: #fff1f1;
+    color: #ef4444;
+}
+
+
+/* student submission modal */
+.teacher-modal-backdrop.secondary {
+    z-index: 1200;
+    background: rgba(17, 24, 39, 0.38);
+}
+.submission-student-open-btn {
+    width: 100%;
+    border: 0;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+}
+.submission-student-open-btn:hover {
+    background: #f8fafc;
+}
+.submission-status-pill.reject,
+.mini-badge.reject {
+    background: #fff1f2;
+    color: #e11d48;
+}
+.teacher-student-submission-modal {
+    width: min(820px, calc(100vw - 48px));
+    border-radius: 28px;
+}
+.teacher-student-submission-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.teacher-student-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.teacher-student-badge-row .mini-badge:not(.subject) {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+.teacher-student-badge-row .mini-badge.green { background: #ecfdf3; color: #16a34a; }
+.teacher-student-badge-row .mini-badge.blue { background: #eef4ff; color: #2563eb; }
+.teacher-student-badge-row .mini-badge.orange { background: #fff7ed; color: #ea580c; }
+.teacher-student-badge-row .mini-badge.red,
+.teacher-student-badge-row .mini-badge.reject { background: #fff1f2; color: #e11d48; }
+.teacher-student-submission-head h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+.teacher-student-submission-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.teacher-student-info-box,
+.teacher-student-submit-box,
+.teacher-student-reject-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    background: #fff;
+}
+.teacher-student-info-box h4,
+.teacher-student-submit-box h4,
+.teacher-student-reject-panel h4 {
+    margin: 0 0 12px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #111827;
+}
+.teacher-student-info-box p {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    color: #374151;
+}
+.teacher-student-meta-row {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    color: #6b7280;
+    font-size: 14px;
+}
+.detail-inline-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: -2px;
+    position: relative;
+}
+.detail-inline-icon.clock::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border: 2px solid #94a3b8;
+    border-radius: 50%;
+}
+.detail-inline-icon.clock::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 2px;
+    height: 5px;
+    background: #94a3b8;
+    box-shadow: 2px 3px 0 0 #94a3b8;
+    transform-origin: bottom center;
+}
+.detail-inline-icon.edit::before,
+.detail-inline-icon.edit::after {
+    content: "";
+    position: absolute;
+}
+.detail-inline-icon.edit::before {
+    left: 2px;
+    top: 8px;
+    width: 10px;
+    height: 2px;
+    background: #94a3b8;
+    transform: rotate(-35deg);
+    border-radius: 2px;
+}
+.detail-inline-icon.edit::after {
+    left: 8px;
+    top: 2px;
+    width: 3px;
+    height: 6px;
+    background: #cbd5e1;
+    transform: rotate(-35deg);
+    border-radius: 2px;
+}
+.teacher-student-file-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+.teacher-student-file-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+.teacher-student-file-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.teacher-student-file-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.teacher-student-file-meta strong {
+    color: #111827;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.teacher-student-file-meta span {
+    color: #6b7280;
+    font-size: 13px;
+}
+.teacher-student-download-btn {
+    border: 0;
+    background: transparent;
+    color: #2563eb;
+    font-weight: 700;
+    cursor: pointer;
+}
+.teacher-student-text-box {
+    margin-top: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    min-height: 76px;
+    padding: 16px;
+    background: #fff;
+    color: #374151;
+    white-space: pre-wrap;
+    line-height: 1.7;
+}
+.teacher-student-submitted-state {
+    margin-top: 14px;
+    color: #2563eb;
+    font-weight: 700;
+}
+.teacher-student-reject-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.teacher-student-current-reason {
+    color: #e11d48;
+    background: #fff1f2;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.teacher-student-reject-panel textarea {
+    width: 100%;
+    min-height: 130px;
+    margin-top: 12px;
+    border: 1px solid #dbe2ea;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+}
+.teacher-student-reject-panel textarea:focus {
+    border-color: #117554;
+    box-shadow: 0 0 0 3px rgba(17, 117, 84, 0.10);
+}
+.teacher-student-submission-footer {
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.teacher-student-reject-modal-panel textarea {
+    min-height: 160px;
+}
+.teacher-student-reject-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.teacher-student-complete-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.teacher-student-complete-btn:hover {
+    background: #1e4ed8;
+}
+/* ===== 피드백 버튼 빨간색 ===== */
+.teacher-student-feedback-btn {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.teacher-student-feedback-btn:hover {
+    background: #dc2626;
+}
+/* ===== 버튼 정렬 & 통일 (완성형) ===== */
+.teacher-student-submission-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 모든 버튼 공통 */
+.teacher-student-submission-footer button {
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+/* 닫기 버튼 */
+.teacher-modal-line-btn {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* 피드백 (빨강) */
+.teacher-student-feedback-btn {
+    background: #ef4444;
+    color: #fff;
+}
+
+.teacher-student-feedback-btn:hover {
+    background: #dc2626;
+}
+
+/* 제출완료 (파랑) */
+.teacher-student-complete-btn {
+    background: #2563eb;
+    color: #fff;
+}
+
+.teacher-student-complete-btn:hover {
+    background: #1e4ed8;
+}
+
+/* 반려 (초록 → 유지) */
+.teacher-student-reject-btn {
+    background: #117554;
+    color: #fff;
+}
+
+.teacher-student-reject-btn:hover {
+    background: #0f6548;
 }

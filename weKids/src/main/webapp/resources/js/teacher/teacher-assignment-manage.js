@@ -1,17 +1,40 @@
 window.addEventListener('DOMContentLoaded', function () {
-    const rows = document.querySelectorAll('.teacher-assignment-row');
+    const page = document.getElementById('teacherAssignmentPage');
+    if (!page) return;
+
+    const baseUrl = page.dataset.baseUrl;
+    const trashMode = page.dataset.trashMode === 'true';
     const searchInput = document.getElementById('assignmentSearchInput');
     const trashToggleBtn = document.getElementById('assignmentTrashToggleBtn');
-    const pageTitle = document.getElementById('assignmentPageTitle');
-    const openCreateBtn = document.getElementById('openAssignmentCreateModalBtn');
+    const createBtn = document.getElementById('openAssignmentCreateModalBtn');
+    const formModal = document.getElementById('assignmentFormModal');
+    const detailModal = document.getElementById('assignmentDetailModal');
+    const studentModal = document.getElementById('studentSubmissionModal');
+    const feedbackModal = document.getElementById('teacherFeedbackModal');
+    const rejectModal = document.getElementById('teacherRejectModal');
+    const form = document.getElementById('assignmentForm');
+    const actionForm = document.getElementById('assignmentActionForm');
+    const searchEmptyBox = document.getElementById('assignmentSearchEmptyBox');
+    const detailList = document.getElementById('studentSubmissionList');
+    const filterSelect = document.getElementById('submissionFilterSelect');
+    const notifyBtn = document.getElementById('notifyUnsubmittedBtn');
 
-    const assignmentFormModal = document.getElementById('assignmentFormModal');
-    const assignmentDetailModal = document.getElementById('assignmentDetailModal');
+    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+    const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : '';
 
-    const assignmentFormModalTitle = document.getElementById('assignmentFormModalTitle');
-    const assignmentForm = document.getElementById('assignmentForm');
+    let currentSubmissionList = [];
+    let currentAssignmentDetail = null;
+    let activeStudentSubmission = null;
 
-    let trashMode = false;
+    function qs(selector, root) {
+        return (root || document).querySelector(selector);
+    }
+
+    function qsa(selector, root) {
+        return Array.from((root || document).querySelectorAll(selector));
+    }
 
     function openModal(modal) {
         if (modal) modal.classList.add('open');
@@ -21,291 +44,577 @@ window.addEventListener('DOMContentLoaded', function () {
         if (modal) modal.classList.remove('open');
     }
 
-    document.querySelectorAll('[data-close-modal]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            closeModal(document.getElementById(btn.getAttribute('data-close-modal')));
-        });
-    });
-
-    document.querySelectorAll('.teacher-modal-backdrop').forEach(function (backdrop) {
-        backdrop.addEventListener('click', function (e) {
-            if (e.target === backdrop) closeModal(backdrop);
-        });
-    });
-
-    function closeAllMenus() {
-        document.querySelectorAll('.row-menu-dropdown').forEach(function (menu) {
-            menu.classList.remove('open');
-        });
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
-    document.querySelectorAll('.row-menu-toggle-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const dropdown = btn.parentElement.querySelector('.row-menu-dropdown');
-            const opened = dropdown.classList.contains('open');
+    function fetchJson(url, options) {
+        const opts = options || {};
+        opts.headers = Object.assign({ 'Accept': 'application/json' }, opts.headers || {});
 
-            closeAllMenus();
-            if (!opened) dropdown.classList.add('open');
-        });
-    });
-
-    document.addEventListener('click', function () {
-        closeAllMenus();
-    });
-
-    function applyTrashMode() {
-        rows.forEach(function (row) {
-            const deleted = row.dataset.deleted === 'true';
-            row.style.display = trashMode ? (deleted ? '' : 'none') : (deleted ? 'none' : '');
-        });
-
-        if (trashMode) {
-            if (pageTitle) pageTitle.textContent = '휴지통 (과제 관리)';
-            if (trashToggleBtn) trashToggleBtn.classList.add('active');
-            if (openCreateBtn) openCreateBtn.style.display = 'none';
-        } else {
-            if (pageTitle) pageTitle.textContent = '과제 관리';
-            if (trashToggleBtn) trashToggleBtn.classList.remove('active');
-            if (openCreateBtn) openCreateBtn.style.display = '';
+        if (csrfHeader && csrfToken) {
+            opts.headers[csrfHeader] = csrfToken;
         }
-    }
 
-    if (trashToggleBtn) {
-        trashToggleBtn.addEventListener('click', function () {
-            trashMode = !trashMode;
-            applyTrashMode();
-        });
-    }
-
-    applyTrashMode();
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const keyword = searchInput.value.trim().toLowerCase();
-
-            rows.forEach(function (row) {
-                const title = (row.dataset.title || '').toLowerCase();
-                const deleted = row.dataset.deleted === 'true';
-                const visibleByTrash = trashMode ? deleted : !deleted;
-                const visibleBySearch = title.indexOf(keyword) > -1;
-
-                row.style.display = visibleByTrash && visibleBySearch ? '' : 'none';
+        return fetch(url, opts).then(function (res) {
+            return res.json().catch(function () {
+                return {};
+            }).then(function (data) {
+                if (!res.ok) {
+                    throw new Error(data.message || '요청을 처리하지 못했습니다.');
+                }
+                return data;
             });
         });
     }
 
-    if (openCreateBtn) {
-        openCreateBtn.addEventListener('click', function () {
-            if (assignmentForm) assignmentForm.reset();
-            if (assignmentFormModalTitle) assignmentFormModalTitle.textContent = '새 과제 등록';
+    function formatSize(size) {
+        const value = Number(size || 0);
+        if (!value) return '0 KB';
+        if (value >= 1024 * 1024) return (value / (1024 * 1024)).toFixed(1) + ' MB';
+        return (value / 1024).toFixed(1) + ' KB';
+    }
 
-            const submitBtn = assignmentFormModal
-                ? assignmentFormModal.querySelector('.teacher-primary-btn')
-                : null;
-            if (submitBtn) submitBtn.textContent = '등록 완료';
+    function extLabel(fileName) {
+        const parts = String(fileName || '').split('.');
+        const ext = (parts.length > 1 ? parts.pop() : 'F').toUpperCase();
+        return ext.substring(0, 3);
+    }
 
-            openModal(assignmentFormModal);
+    function closeAllMenus() {
+        qsa('.row-menu-dropdown.open').forEach(function (menu) {
+            menu.classList.remove('open');
         });
     }
 
-    document.querySelectorAll('.edit-open-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
+    function fillForm(row) {
+        qs('#assignmentTitle').value = row ? (row.dataset.title || '') : '';
+        qs('#assignmentSubject').value = row ? (row.dataset.subject || '국어') : '국어';
+        qs('#assignmentStatus').value = row ? (row.dataset.status || '진행중') : '진행중';
+        qs('#assignmentDeadline').value = row ? (row.dataset.deadlineValue || '') : '';
+        qs('#assignmentFormat').value = row ? (row.dataset.submitFormat || '파일') : '파일';
+        qs('#assignmentMaxEditCount').value = row ? (row.dataset.maxEditCount || 3) : 3;
+        qs('#assignmentContent').value = row ? (row.dataset.content || '') : '';
+    }
 
-            const row = btn.closest('.teacher-assignment-row');
-            if (!row) return;
+    function openCreateModal() {
+        if (!form) return;
 
-            const title = row.dataset.title || '';
-            const subject = row.dataset.subject || '국어';
-            const status = row.dataset.status || '진행중';
-            const deadline = row.dataset.deadline || '';
-            const content = row.dataset.content || '';
+        fillForm(null);
+        form.action = baseUrl;
+        qs('#assignmentFormModalTitle').textContent = '새 과제 등록';
+        qs('#assignmentFormSubmitBtn').textContent = '등록 완료';
+        openModal(formModal);
+    }
 
-            const titleInput = document.getElementById('assignmentTitle');
-            const subjectSelect = document.getElementById('assignmentSubject');
-            const statusSelect = document.getElementById('assignmentStatus');
-            const deadlineInput = document.getElementById('assignmentDeadline');
-            const contentInput = document.getElementById('assignmentContent');
+    function openEditModal(row) {
+        if (!row || !form) return;
 
-            if (titleInput) titleInput.value = title;
-            if (subjectSelect) subjectSelect.value = subject;
-            if (statusSelect) statusSelect.value = status;
-            if (deadlineInput) deadlineInput.value = deadline;
-            if (contentInput) contentInput.value = content;
+        fillForm(row);
+        form.action = baseUrl + '/' + row.dataset.id + '/update';
+        qs('#assignmentFormModalTitle').textContent = '과제 수정';
+        qs('#assignmentFormSubmitBtn').textContent = '수정 완료';
+        openModal(formModal);
+    }
 
-            if (assignmentFormModalTitle) assignmentFormModalTitle.textContent = '과제 수정';
+    function submitAction(url) {
+        if (!actionForm) return;
+        actionForm.action = url;
+        actionForm.submit();
+    }
 
-            const submitBtn = assignmentFormModal
-                ? assignmentFormModal.querySelector('.teacher-primary-btn')
-                : null;
-            if (submitBtn) submitBtn.textContent = '수정 완료';
+    function applySearchFilter() {
+        const keyword = (searchInput.value || '').trim().toLowerCase();
+        const rows = qsa('.teacher-assignment-row');
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+            const title = (row.dataset.title || '').toLowerCase();
+            const visible = !keyword || title.indexOf(keyword) > -1;
+            row.style.display = visible ? '' : 'none';
+            if (visible) visibleCount += 1;
+        });
+
+        if (searchEmptyBox) {
+            searchEmptyBox.style.display = visibleCount === 0 && rows.length > 0 ? 'block' : 'none';
+        }
+    }
+
+    function statusClass(status) {
+        if (status === '진행중') return 'primary';
+        if (status === '마감임박') return 'warning';
+        return 'gray';
+    }
+
+    function submissionStatusClass(status) {
+        if (status === '제출완료') return 'green';
+        if (status === '재제출') return 'blue';
+        if (status === '늦은제출') return 'orange';
+        if (status === '확인완료') return 'green';
+        if (status === '반려') return 'reject';
+        return 'red';
+    }
+
+    function renderSubmissionList(filterValue) {
+        if (!detailList) return;
+
+        const list = currentSubmissionList.filter(function (item) {
+            return filterValue === 'all' ? true : item.submitStatus === filterValue;
+        });
+
+        if (!list.length) {
+            detailList.innerHTML = '<div class="teacher-empty-box">표시할 제출 내역이 없습니다.</div>';
+            return;
+        }
+
+        detailList.innerHTML = list.map(function (item) {
+            const feedbackClass = item.feedbackDone ? 'done' : 'need';
+            const feedbackText = item.feedbackDone ? '피드백 완료' : '피드백 필요';
+            const statusClassName = submissionStatusClass(item.submitStatus);
+            const submitText = item.submitAt ? escapeHtml(item.submitAt) : '제출 기록 없음';
+            const revise = Number(item.reviseCount || 0);
+
+            return ''
+                + '<button type="button" class="submission-student-row submission-student-open-btn" data-student-id="' + escapeHtml(item.studentId) + '">'
+                +     '<div class="submission-student-main">'
+                +         '<div class="submission-avatar ' + statusClassName + '">' + escapeHtml(item.nameFirst || '?') + '</div>'
+                +         '<div class="submission-student-info">'
+                +             '<div class="submission-name-row"><strong>' + escapeHtml(item.studentName) + '</strong><span class="feedback-mini-badge ' + feedbackClass + '">' + feedbackText + '</span></div>'
+                +             '<div class="submission-meta-row"><span>🕒 ' + submitText + '</span><span>수정 ' + revise + '회</span></div>'
+                +         '</div>'
+                +     '</div>'
+                +     '<span class="submission-status-pill ' + statusClassName + '">' + escapeHtml(item.submitStatus) + '</span>'
+                + '</button>';
+        }).join('');
+    }
+
+    function applyAssignmentDetail(detail) {
+        currentAssignmentDetail = detail;
+        currentSubmissionList = Array.isArray(detail.submissionList) ? detail.submissionList : [];
+
+        qs('#assignmentDetailTitle').textContent = detail.title || '-';
+        qs('#detailSubjectBadge').textContent = detail.subject || '-';
+
+        const statusBadge = qs('#detailStatusBadge');
+        statusBadge.textContent = detail.status || '-';
+        statusBadge.className = 'status-badge ' + statusClass(detail.status || '');
+
+        qs('#detailAssignmentDeadline').textContent = detail.deadline || '-';
+        qs('#detailAssignmentContent').textContent = detail.content || '등록된 내용이 없습니다.';
+        qs('#detailNeedFeedback').textContent = (detail.needFeedback || 0) + '명 피드백 필요';
+        qs('#detailSubmissionRate').textContent = (detail.progressPercent || 0) + '%';
+        qs('#detailSubmissionBar').style.width = (detail.progressPercent || 0) + '%';
+        qs('#submittedCountText').textContent = (detail.submittedCount || 0) + '명';
+        qs('#resubmittedCountText').textContent = (detail.resubmittedCount || 0) + '명';
+        qs('#lateCountText').textContent = (detail.lateCount || 0) + '명';
+        qs('#notSubmittedCountText').textContent = (detail.notSubmittedCount || 0) + '명';
+        qs('#submissionStudentCount').textContent = (detail.totalCount || currentSubmissionList.length || 0);
+
+        if (filterSelect) {
+            filterSelect.value = 'all';
+        }
+
+        renderSubmissionList('all');
+    }
+
+    function openDetail(id) {
+        fetchJson(baseUrl + '/' + id + '/detail')
+            .then(function (detail) {
+                applyAssignmentDetail(detail);
+                openModal(detailModal);
+            })
+            .catch(function (error) {
+                alert(error.message || '상세 정보를 불러오지 못했습니다.');
+            });
+    }
+
+    function fillStudentModal(submission) {
+        activeStudentSubmission = submission;
+
+        const assignmentSubject = currentAssignmentDetail ? (currentAssignmentDetail.subject || '-') : '-';
+        const assignmentFormat = currentAssignmentDetail ? currentAssignmentDetail.submitFormat : '';
+        const assignmentTitle = currentAssignmentDetail ? (currentAssignmentDetail.title || '-') : '-';
+        const assignmentContent = currentAssignmentDetail ? (currentAssignmentDetail.content || '등록된 내용이 없습니다.') : '등록된 내용이 없습니다.';
+        const assignmentDeadline = currentAssignmentDetail ? (currentAssignmentDetail.deadline || '-') : '-';
+
+        qs('#studentWorkSubjectBadge').textContent = assignmentSubject;
+
+        let workTypeText = '파일 제출';
+        if (assignmentFormat === '텍스트') {
+            workTypeText = '텍스트 제출';
+        } else if (assignmentFormat === '이미지') {
+            workTypeText = '이미지 제출';
+        }
+        qs('#studentWorkTypeBadge').textContent = workTypeText;
+
+        const statusBadge = qs('#studentWorkStatusBadge');
+        statusBadge.textContent = submission.submitStatus || '미제출';
+        statusBadge.className = 'mini-badge blue ' + submissionStatusClass(submission.submitStatus);
+
+        qs('#studentWorkTitle').textContent = assignmentTitle;
+        qs('#studentWorkAssignmentContent').textContent = assignmentContent;
+        qs('#studentWorkDeadline').textContent = assignmentDeadline;
+        const remainCountEl = qs('#studentWorkRemainCount');
+        if (remainCountEl) remainCountEl.textContent = (submission.remainingEditCount || 0) + '회';
+
+        const fileBox = qs('#teacherStudentFileBox');
+        const textBox = qs('#teacherStudentTextBox');
+        const submittedState = qs('#teacherStudentSubmittedState');
+        const downloadBtn = qs('#teacherStudentDownloadBtn');
+        const currentReasonLabel = qs('#teacherRejectCurrentReasonLabel');
+        const reasonInput = qs('#teacherStudentRejectReason');
+        const completeBtn = qs('#teacherStudentCompleteBtn');
+        const feedbackBtn = qs('#teacherStudentFeedbackBtn');
+        const feedbackTextarea = qs('#teacherStudentFeedbackContent');
+
+        fileBox.style.display = submission.attachedFileName ? 'flex' : 'none';
+        if (submission.attachedFileName) {
+            qs('#teacherStudentFileExt').textContent = extLabel(submission.attachedFileName);
+            qs('#teacherStudentFileName').textContent = submission.attachedFileName;
+            qs('#teacherStudentFileSize').textContent = formatSize(submission.fileSize);
+        }
+
+        textBox.style.display = submission.content ? 'block' : 'none';
+        qs('#teacherStudentSubmissionText').textContent = submission.content || '';
+
+        submittedState.textContent = submission.submitted
+            ? '제출이 완료되었습니다.' + (submission.submitAt ? ' (' + submission.submitAt + ')' : '')
+            : '아직 제출하지 않았습니다.';
+
+        const hasExistingReturnReason =
+            (submission.submitStatus || '').trim() === '반려' &&
+            typeof submission.returnReason === 'string' &&
+            submission.returnReason.trim() !== '';
+
+        if (hasExistingReturnReason) {
+            currentReasonLabel.style.display = 'inline-flex';
+            reasonInput.value = submission.returnReason.trim();
+        } else {
+            currentReasonLabel.style.display = 'none';
+            reasonInput.value = '';
+        }
+
+        downloadBtn.style.display = submission.canDownload ? 'inline-flex' : 'none';
+
+        qs('#teacherStudentRejectBtn').disabled = !submission.submitted;
+
+        if (completeBtn) {
+            completeBtn.style.display =
+                submission.submitted && (submission.submitStatus || '').trim() !== '제출완료' && (submission.submitStatus || '').trim() !== '확인완료'
+                    ? 'inline-flex'
+                    : 'none';
+            completeBtn.disabled = !submission.submitted;
+        }
+
+        if (feedbackBtn) {
+            feedbackBtn.style.display =
+                submission.submitted && (submission.submitStatus || '').trim() !== '확인완료' && (submission.submitStatus || '').trim() !== '반려'
+                    ? 'inline-flex'
+                    : 'none';
+            feedbackBtn.disabled = !submission.submitted;
+        }
+
+        if (feedbackTextarea) {
+            feedbackTextarea.value = submission.feedbackContent || '';
+        }
+    }
+
+    function openStudentSubmission(studentId) {
+        if (!currentAssignmentDetail) return;
+
+        fetchJson(baseUrl + '/' + currentAssignmentDetail.id + '/students/' + studentId)
+            .then(function (submission) {
+                fillStudentModal(submission);
+                openModal(studentModal);
+            })
+            .catch(function (error) {
+                alert(error.message || '학생 제출 내역을 불러오지 못했습니다.');
+            });
+    }
+
+    function completeStudentSubmission() {
+        if (!currentAssignmentDetail || !activeStudentSubmission) return;
+        if (!confirm('이 제출을 제출완료 상태로 변경할까요?')) return;
+
+        fetchJson(baseUrl + '/' + currentAssignmentDetail.id + '/students/' + activeStudentSubmission.studentId + '/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: ''
+        }).then(function (result) {
+            alert(result.message || '제출완료 상태로 변경했습니다.');
+
+            if (result.submission) {
+                fillStudentModal(result.submission);
+            }
+
+            if (result.assignmentDetail) {
+                applyAssignmentDetail(result.assignmentDetail);
+            } else {
+                openDetail(currentAssignmentDetail.id);
+            }
+        }).catch(function (error) {
+            alert(error.message || '상태 변경에 실패했습니다.');
+        });
+    }
+
+    function openRejectModal() {
+        if (!activeStudentSubmission || !activeStudentSubmission.submitted) return;
+
+        const currentReasonLabel = qs('#teacherRejectCurrentReasonLabel');
+        const reasonInput = qs('#teacherStudentRejectReason');
+        const hasExistingReturnReason =
+            (activeStudentSubmission.submitStatus || '').trim() === '반려' &&
+            typeof activeStudentSubmission.returnReason === 'string' &&
+            activeStudentSubmission.returnReason.trim() !== '';
+
+        if (currentReasonLabel) {
+            currentReasonLabel.style.display = hasExistingReturnReason ? 'inline-flex' : 'none';
+        }
+        if (reasonInput) {
+            reasonInput.value = hasExistingReturnReason ? activeStudentSubmission.returnReason.trim() : '';
+        }
+        openModal(rejectModal);
+    }
+
+    function rejectStudentSubmission() {
+        if (!currentAssignmentDetail || !activeStudentSubmission) return;
+
+        const reason = (qs('#teacherStudentRejectReason').value || '').trim();
+        if (!reason) {
+            alert('반려 사유를 입력해주세요.');
+            qs('#teacherStudentRejectReason').focus();
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append('returnReason', reason);
+
+        fetchJson(baseUrl + '/' + currentAssignmentDetail.id + '/students/' + activeStudentSubmission.studentId + '/reject', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: formData.toString()
+        }).then(function (result) {
+            alert(result.message || '과제를 반려했습니다.');
+            closeModal(rejectModal);
+
+            if (result.submission) {
+                fillStudentModal(result.submission);
+            }
+
+            if (result.assignmentDetail) {
+                applyAssignmentDetail(result.assignmentDetail);
+            } else {
+                openDetail(currentAssignmentDetail.id);
+            }
+        }).catch(function (error) {
+            alert(error.message || '과제 반려 처리에 실패했습니다.');
+        });
+    }
+
+
+    function openFeedbackModal() {
+        if (!activeStudentSubmission || !activeStudentSubmission.submitted) return;
+        const feedbackTextarea = qs('#teacherStudentFeedbackContent');
+        if (feedbackTextarea) {
+            feedbackTextarea.value = activeStudentSubmission.feedbackContent || '';
+        }
+        openModal(feedbackModal);
+    }
+
+    function confirmFeedbackComplete() {
+        if (!currentAssignmentDetail || !activeStudentSubmission) return;
+
+        const feedbackContent = (qs('#teacherStudentFeedbackContent').value || '').trim();
+        if (!feedbackContent) {
+            alert('피드백 내용을 입력해주세요.');
+            qs('#teacherStudentFeedbackContent').focus();
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append('feedbackContent', feedbackContent);
+
+        fetchJson(baseUrl + '/' + currentAssignmentDetail.id + '/students/' + activeStudentSubmission.studentId + '/feedback-complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: formData.toString()
+        }).then(function (result) {
+            alert(result.message || '피드백을 등록하고 확인완료로 변경했습니다.');
+            closeModal(feedbackModal);
+
+            if (result.submission) {
+                fillStudentModal(result.submission);
+            }
+
+            if (result.assignmentDetail) {
+                applyAssignmentDetail(result.assignmentDetail);
+            } else {
+                openDetail(currentAssignmentDetail.id);
+            }
+        }).catch(function (error) {
+            alert(error.message || '피드백 저장에 실패했습니다.');
+        });
+    }
+
+    document.addEventListener('click', function (event) {
+        const closeBtn = event.target.closest('[data-close-modal]');
+        if (closeBtn) {
+            closeModal(document.getElementById(closeBtn.dataset.closeModal));
+            return;
+        }
+
+        const toggleBtn = event.target.closest('.row-menu-toggle-btn');
+        if (toggleBtn) {
+            event.stopPropagation();
+
+            const menu = qs('.row-menu-dropdown', toggleBtn.closest('.row-menu-wrap'));
+            const isOpen = menu.classList.contains('open');
 
             closeAllMenus();
-            openModal(assignmentFormModal);
-        });
+            if (!isOpen) {
+                menu.classList.add('open');
+            }
+            return;
+        }
+
+        const row = event.target.closest('.teacher-assignment-row');
+
+        if (event.target.closest('.detail-open-btn') || event.target.closest('.detail-open-text')) {
+            closeAllMenus();
+            if (row && row.dataset.deleted !== 'true') {
+                openDetail(row.dataset.id);
+            }
+            return;
+        }
+
+        if (event.target.closest('.edit-open-btn')) {
+            closeAllMenus();
+            openEditModal(row);
+            return;
+        }
+
+        if (event.target.closest('.row-delete-btn')) {
+            closeAllMenus();
+            if (confirm('이 과제를 휴지통으로 이동할까요?')) {
+                submitAction(baseUrl + '/' + row.dataset.id + '/delete');
+            }
+            return;
+        }
+
+        if (event.target.closest('.row-recover-btn')) {
+            if (confirm('이 과제를 복구할까요?')) {
+                submitAction(baseUrl + '/' + row.dataset.id + '/restore');
+            }
+            return;
+        }
+
+        if (event.target.closest('.row-remove-btn')) {
+            if (confirm('영구삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+                submitAction(baseUrl + '/' + row.dataset.id + '/remove');
+            }
+            return;
+        }
+
+        if (event.target.closest('.status-toggle-btn')) {
+            closeAllMenus();
+            submitAction(baseUrl + '/' + row.dataset.id + '/toggle-status');
+            return;
+        }
+
+        const studentRow = event.target.closest('.submission-student-open-btn');
+        if (studentRow) {
+            openStudentSubmission(studentRow.dataset.studentId);
+            return;
+        }
+
+        if (!event.target.closest('.row-menu-wrap')) {
+            closeAllMenus();
+        }
+
+        if (event.target === formModal) {
+            closeModal(formModal);
+        }
+        if (event.target === detailModal) {
+            closeModal(detailModal);
+        }
+        if (event.target === studentModal) {
+            closeModal(studentModal);
+        }
+        if (event.target === feedbackModal) {
+            closeModal(feedbackModal);
+        }
+        if (event.target === rejectModal) {
+            closeModal(rejectModal);
+        }
     });
 
-    if (assignmentForm) {
-        assignmentForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('과제가 저장되었습니다.');
-            closeModal(assignmentFormModal);
+    if (createBtn) {
+        createBtn.addEventListener('click', openCreateModal);
+    }
+
+    if (trashToggleBtn) {
+        trashToggleBtn.addEventListener('click', function () {
+            window.location.href = baseUrl + (trashMode ? '' : '?trash=1');
         });
     }
 
-    document.querySelectorAll('.row-delete-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            if (confirm('정말 삭제하시겠습니까? 삭제된 항목은 휴지통으로 이동합니다.')) {
-                alert('삭제 기능은 아직 연결 전입니다.');
-            }
-        });
-    });
-
-    document.querySelectorAll('.row-recover-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            alert('복구 기능은 아직 연결 전입니다.');
-        });
-    });
-
-    document.querySelectorAll('.status-toggle-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            alert('상태 변경 기능은 아직 연결 전입니다.');
-        });
-    });
-
-    function makeStudentSubmissionData() {
-        return [
-            { name: '김민수', status: '제출완료', submittedAt: '2026-03-14 14:30', editCount: 1, feedbackDone: true },
-            { name: '이영희', status: '제출완료', submittedAt: '2026-03-14 16:45', editCount: 0, feedbackDone: false },
-            { name: '박철수', status: '재제출', submittedAt: '2026-03-15 09:20', editCount: 2, feedbackDone: false },
-            { name: '최지혜', status: '제출완료', submittedAt: '2026-03-14 10:20', editCount: 0, feedbackDone: true },
-            { name: '정준호', status: '미제출', submittedAt: '', editCount: 0, feedbackDone: false },
-            { name: '강서연', status: '제출완료', submittedAt: '2026-03-14 18:00', editCount: 1, feedbackDone: true },
-            { name: '윤동현', status: '미제출', submittedAt: '', editCount: 0, feedbackDone: false },
-            { name: '임수진', status: '늦은제출', submittedAt: '2026-03-15 02:30', editCount: 0, feedbackDone: false }
-        ];
+    if (searchInput) {
+        searchInput.addEventListener('input', applySearchFilter);
     }
 
-    function renderSubmissionList(data) {
-        const list = document.getElementById('studentSubmissionList');
-        if (!list) return;
-
-        list.innerHTML = '';
-
-        data.forEach(function (student) {
-            let avatarClass = 'none';
-            let badgeClass = 'none';
-
-            if (student.status === '제출완료') {
-                avatarClass = 'complete';
-                badgeClass = 'complete';
-            } else if (student.status === '재제출') {
-                avatarClass = 'resubmit';
-                badgeClass = 'resubmit';
-            } else if (student.status === '늦은제출') {
-                avatarClass = 'late';
-                badgeClass = 'late';
-            }
-
-            const feedbackHtml = student.status !== '미제출'
-                ? (student.feedbackDone
-                    ? '<span class="feedback-done-chip">피드백 완료</span>'
-                    : '<span class="feedback-needed-chip inline">피드백 필요</span>')
-                : '';
-
-            const metaText = student.submittedAt
-                ? '제출: ' + student.submittedAt + (student.editCount > 0 ? ' · 수정 ' + student.editCount + '회' : '')
-                : '아직 제출하지 않았습니다';
-
-            const item = document.createElement('div');
-            item.className = 'student-submission-item';
-            item.innerHTML =
-                '<div class="student-submission-left">' +
-                    '<div class="submission-avatar ' + avatarClass + '">' + student.name.charAt(0) + '</div>' +
-                    '<div class="submission-meta">' +
-                        '<strong>' + student.name + '</strong>' +
-                        '<p>' + metaText + '</p>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="submission-status-wrap">' +
-                    feedbackHtml +
-                    '<span class="status-badge ' + badgeClass + '">' + student.status + '</span>' +
-                '</div>';
-
-            list.appendChild(item);
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function () {
+            renderSubmissionList(filterSelect.value);
         });
     }
 
-    document.querySelectorAll('.detail-open-text').forEach(function (titleEl) {
-        titleEl.addEventListener('click', function () {
-            const row = titleEl.closest('.teacher-assignment-row');
-            if (!row) return;
-
-            const title = row.dataset.title || '';
-            const subject = row.dataset.subject || '';
-            const status = row.dataset.status || '';
-            const deadline = row.dataset.deadline || '';
-            const content = row.dataset.content || '';
-            const submitCount = Number(row.dataset.submitCount || '0');
-            const totalCount = Number(row.dataset.totalCount || '0');
-
-            const detailTitle = document.getElementById('assignmentDetailTitle');
-            const detailSubjectBadge = document.getElementById('detailSubjectBadge');
-            const detailStatusBadge = document.getElementById('detailStatusBadge');
-            const detailDeadlineText = document.getElementById('detailDeadlineText');
-            const detailContentText = document.getElementById('detailContentText');
-
-            if (detailTitle) detailTitle.textContent = title;
-            if (detailSubjectBadge) detailSubjectBadge.textContent = subject;
-            if (detailStatusBadge) {
-                detailStatusBadge.textContent = status;
-                detailStatusBadge.className =
-                    'mini-badge ' +
-                    (status === '진행중' ? 'primary' :
-                     status === '마감임박' ? 'warning' : 'gray');
-            }
-            if (detailDeadlineText) detailDeadlineText.textContent = deadline;
-            if (detailContentText) detailContentText.textContent = content || '등록된 내용이 없습니다.';
-
-            const data = makeStudentSubmissionData();
-            const submitted = data.filter(function (d) { return d.status === '제출완료'; }).length;
-            const resubmit = data.filter(function (d) { return d.status === '재제출'; }).length;
-            const late = data.filter(function (d) { return d.status === '늦은제출'; }).length;
-            const notSubmitted = data.filter(function (d) { return d.status === '미제출'; }).length;
-            const rate = data.length === 0 ? 0 : Math.round(((submitted + resubmit + late) / data.length) * 100);
-
-            const needFeedback = data.filter(function (d) {
-                return d.status !== '미제출' && !d.feedbackDone;
-            }).length;
-
-            const completionRate = document.getElementById('detailSubmissionRate');
-            const completionBar = document.getElementById('detailSubmissionBar');
-            const submittedCountText = document.getElementById('submittedCountText');
-            const resubmitCountText = document.getElementById('resubmitCountText');
-            const lateCountText = document.getElementById('lateCountText');
-            const notSubmittedCountText = document.getElementById('notSubmittedCountText');
-            const needFeedbackText = document.getElementById('needFeedbackText');
-            const studentSubmissionCount = document.getElementById('studentSubmissionCount');
-
-            if (completionRate) completionRate.textContent = rate + '%';
-            if (completionBar) completionBar.style.width = rate + '%';
-            if (submittedCountText) submittedCountText.textContent = submitted + '명';
-            if (resubmitCountText) resubmitCountText.textContent = resubmit + '명';
-            if (lateCountText) lateCountText.textContent = late + '명';
-            if (notSubmittedCountText) notSubmittedCountText.textContent = notSubmitted + '명';
-            if (needFeedbackText) needFeedbackText.textContent = needFeedback + '명 피드백 필요';
-            if (studentSubmissionCount) studentSubmissionCount.textContent = data.length;
-
-            renderSubmissionList(data);
-            openModal(assignmentDetailModal);
+    if (notifyBtn) {
+        notifyBtn.addEventListener('click', function () {
+            alert('알림 발송 기능은 다음 단계에서 연결할 수 있습니다.');
         });
-    });
+    }
 
-    const notifyUnsubmittedBtn = document.getElementById('notifyUnsubmittedBtn');
-    if (notifyUnsubmittedBtn) {
-        notifyUnsubmittedBtn.addEventListener('click', function () {
-            alert('미제출 학생 알림 발송 기능은 아직 연결 전입니다.');
+    const rejectBtn = document.getElementById('teacherStudentRejectBtn');
+    if (rejectBtn) {
+        rejectBtn.addEventListener('click', openRejectModal);
+    }
+
+    const completeBtn = document.getElementById('teacherStudentCompleteBtn');
+    if (completeBtn) {
+        completeBtn.addEventListener('click', completeStudentSubmission);
+    }
+
+    const feedbackBtn = document.getElementById('teacherStudentFeedbackBtn');
+    if (feedbackBtn) {
+        feedbackBtn.addEventListener('click', openFeedbackModal);
+    }
+
+    const rejectConfirmBtn = document.getElementById('teacherRejectConfirmBtn');
+    if (rejectConfirmBtn) {
+        rejectConfirmBtn.addEventListener('click', rejectStudentSubmission);
+    }
+
+    const feedbackConfirmBtn = document.getElementById('teacherFeedbackConfirmBtn');
+    if (feedbackConfirmBtn) {
+        feedbackConfirmBtn.addEventListener('click', confirmFeedbackComplete);
+    }
+
+    const downloadBtn = document.getElementById('teacherStudentDownloadBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function () {
+            if (!currentAssignmentDetail || !activeStudentSubmission || !activeStudentSubmission.canDownload) return;
+            window.location.href = baseUrl + '/' + currentAssignmentDetail.id + '/students/' + activeStudentSubmission.studentId + '/download';
         });
     }
 });

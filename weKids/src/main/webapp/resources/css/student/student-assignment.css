@@ -87,6 +87,12 @@
     border-color: rgba(67, 121, 242, 0.2);
 }
 
+.assignment-status-badge.late {
+    background: rgba(249, 115, 22, 0.10);
+    color: #ea580c;
+    border-color: rgba(249, 115, 22, 0.22);
+}
+
 .assignment-status-badge.reject {
     background: #fef2f2;
     color: #dc2626;
@@ -171,6 +177,10 @@
 
 .assignment-submit-state.done {
     color: #4379F2;
+}
+
+.assignment-submit-state.reject {
+    color: #ef4444;
 }
 
 .assignment-open-btn {
@@ -795,4 +805,38 @@
         flex-direction: column;
         align-items: stretch;
     }
+}
+.assignment-open-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.assignment-info-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.assignment-edit-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    border: 2px solid #94a3b8;
+    border-radius: 4px;
+    position: relative;
+}
+
+.assignment-edit-icon::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 2px;
+    background: #94a3b8;
+    top: 6px;
+    left: 2px;
+    transform: rotate(-30deg);
+}
+
+.assignment-download-btn {
+    text-decoration: none;
 }

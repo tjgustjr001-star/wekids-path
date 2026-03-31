@@ -1,10 +1,16 @@
 package com.spring.controller.teacher;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.dto.ClassVO;
@@ -21,6 +28,9 @@ import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
+import com.spring.dto.teacher.TeacherAssignmentDetailDTO;
+import com.spring.dto.teacher.TeacherAssignmentSaveDTO;
+import com.spring.dto.teacher.TeacherAssignmentStudentWorkDTO;
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnProgressDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
@@ -29,9 +39,11 @@ import com.spring.dto.teacher.TeacherStudentObservationSaveDTO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
+import com.spring.service.TeacherAssignmentService;
 import com.spring.service.TeacherLearnService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 
@@ -46,6 +58,9 @@ public class TeacherPageController {
 
     @Autowired
     private TeacherLearnService teacherLearnService;
+
+    @Autowired
+    private TeacherAssignmentService teacherAssignmentService;
     
     @GetMapping("/teacher")
     public String teacherHome(Model model, HttpServletRequest request) {
@@ -498,16 +513,265 @@ public class TeacherPageController {
     
     @GetMapping("/teacher/classes/{classId}/assignments")
     public String teacherAssignmentList(@PathVariable("classId") int classId,
+                                        @RequestParam(value = "trash", defaultValue = "0") int trash,
                                         Model model,
                                         HttpServletRequest request,
-                                        HttpSession session) {
-        model.addAttribute("pageTitle", "과제 관리");
+                                        HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        model.addAttribute("pageTitle", trash == 1 ? "휴지통 (과제 관리)" : "과제 관리");
         model.addAttribute("currentUri", "/teacher/classes/" + classId + "/assignments");
         model.addAttribute("contentPage", "/WEB-INF/views/teacher/assignment/listContent.jsp");
 
         setTeacherClassDetailLayout(model, request, classId, getTeacherClassName(classId, session));
+        model.addAttribute("trashMode", trash == 1);
+        model.addAttribute("assignmentList", teacherAssignmentService.getTeacherAssignmentList(loginUser.getMember_id(), classId, trash));
 
         return "common/layout/teacherLayout";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments")
+    public String registTeacherAssignment(@PathVariable("classId") int classId,
+                                          @ModelAttribute TeacherAssignmentSaveDTO dto,
+                                          HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.registTeacherAssignment(loginUser.getMember_id(), classId, dto);
+        return "redirect:/teacher/classes/" + classId + "/assignments";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/update")
+    public String modifyTeacherAssignment(@PathVariable("classId") int classId,
+                                          @PathVariable("assignmentId") int assignmentId,
+                                          @ModelAttribute TeacherAssignmentSaveDTO dto,
+                                          HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.modifyTeacherAssignment(loginUser.getMember_id(), classId, assignmentId, dto);
+        return "redirect:/teacher/classes/" + classId + "/assignments";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/delete")
+    public String deleteTeacherAssignment(@PathVariable("classId") int classId,
+                                          @PathVariable("assignmentId") int assignmentId,
+                                          HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.deleteTeacherAssignment(loginUser.getMember_id(), classId, assignmentId);
+        return "redirect:/teacher/classes/" + classId + "/assignments";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/restore")
+    public String restoreTeacherAssignment(@PathVariable("classId") int classId,
+                                           @PathVariable("assignmentId") int assignmentId,
+                                           HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.restoreTeacherAssignment(loginUser.getMember_id(), classId, assignmentId);
+        return "redirect:/teacher/classes/" + classId + "/assignments?trash=1";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/remove")
+    public String removeTeacherAssignment(@PathVariable("classId") int classId,
+                                          @PathVariable("assignmentId") int assignmentId,
+                                          HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.removeTeacherAssignment(loginUser.getMember_id(), classId, assignmentId);
+        return "redirect:/teacher/classes/" + classId + "/assignments?trash=1";
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/toggle-status")
+    public String toggleTeacherAssignmentStatus(@PathVariable("classId") int classId,
+                                                @PathVariable("assignmentId") int assignmentId,
+                                                HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+        teacherAssignmentService.toggleTeacherAssignmentStatus(loginUser.getMember_id(), classId, assignmentId);
+        return "redirect:/teacher/classes/" + classId + "/assignments";
+    }
+
+    @GetMapping("/teacher/classes/{classId}/assignments/{assignmentId}/detail")
+    @ResponseBody
+    public TeacherAssignmentDetailDTO teacherAssignmentDetail(@PathVariable("classId") int classId,
+                                                              @PathVariable("assignmentId") int assignmentId,
+                                                              HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        TeacherAssignmentDetailDTO detail = teacherAssignmentService.getTeacherAssignmentDetail(loginUser.getMember_id(), classId, assignmentId);
+        if (detail == null) {
+            throw new IllegalArgumentException("과제를 찾을 수 없습니다.");
+        }
+        return detail;
+    }
+
+
+    @GetMapping("/teacher/classes/{classId}/assignments/{assignmentId}/students/{studentId}")
+    @ResponseBody
+    public TeacherAssignmentStudentWorkDTO teacherStudentSubmissionDetail(@PathVariable("classId") int classId,
+                                                                          @PathVariable("assignmentId") int assignmentId,
+                                                                          @PathVariable("studentId") int studentId,
+                                                                          HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        TeacherAssignmentStudentWorkDTO detail =
+                teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
+
+        if (detail == null) {
+            throw new IllegalArgumentException("학생 제출 내역을 찾을 수 없습니다.");
+        }
+        return detail;
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/students/{studentId}/reject")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> rejectTeacherStudentSubmission(@PathVariable("classId") int classId,
+                                                                              @PathVariable("assignmentId") int assignmentId,
+                                                                              @PathVariable("studentId") int studentId,
+                                                                              @RequestParam("returnReason") String returnReason,
+                                                                              HttpSession session) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            teacherAssignmentService.rejectTeacherStudentSubmission(loginUser.getMember_id(), classId, assignmentId, studentId, returnReason);
+            TeacherAssignmentStudentWorkDTO detail =
+                    teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
+            result.put("success", true);
+            result.put("message", "과제를 반려했습니다.");
+            result.put("submission", detail);
+            result.put("assignmentDetail", teacherAssignmentService.getTeacherAssignmentDetail(loginUser.getMember_id(), classId, assignmentId));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/students/{studentId}/complete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> completeTeacherStudentSubmission(@PathVariable("classId") int classId,
+                                                                                @PathVariable("assignmentId") int assignmentId,
+                                                                                @PathVariable("studentId") int studentId,
+                                                                                HttpSession session) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            teacherAssignmentService.completeTeacherStudentSubmission(loginUser.getMember_id(), classId, assignmentId, studentId);
+            TeacherAssignmentStudentWorkDTO detail =
+                    teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
+            result.put("success", true);
+            result.put("message", "제출완료 상태로 변경했습니다.");
+            result.put("submission", detail);
+            result.put("assignmentDetail", teacherAssignmentService.getTeacherAssignmentDetail(loginUser.getMember_id(), classId, assignmentId));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+
+    @PostMapping("/teacher/classes/{classId}/assignments/{assignmentId}/students/{studentId}/feedback-complete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> completeTeacherStudentSubmissionWithFeedback(@PathVariable("classId") int classId,
+                                                                                            @PathVariable("assignmentId") int assignmentId,
+                                                                                            @PathVariable("studentId") int studentId,
+                                                                                            @RequestParam("feedbackContent") String feedbackContent,
+                                                                                            HttpSession session) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            teacherAssignmentService.completeTeacherStudentSubmissionWithFeedback(loginUser.getMember_id(), classId, assignmentId, studentId, feedbackContent);
+            TeacherAssignmentStudentWorkDTO detail =
+                    teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
+            result.put("success", true);
+            result.put("message", "피드백을 등록하고 확인완료로 변경했습니다.");
+            result.put("submission", detail);
+            result.put("assignmentDetail", teacherAssignmentService.getTeacherAssignmentDetail(loginUser.getMember_id(), classId, assignmentId));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @GetMapping("/teacher/classes/{classId}/assignments/{assignmentId}/students/{studentId}/download")
+    public void downloadTeacherStudentSubmissionFile(@PathVariable("classId") int classId,
+                                                     @PathVariable("assignmentId") int assignmentId,
+                                                     @PathVariable("studentId") int studentId,
+                                                     HttpSession session,
+                                                     HttpServletResponse response) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        TeacherAssignmentStudentWorkDTO detail =
+                teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
+
+        if (detail == null || !detail.isCanDownload()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        File file = new File(detail.getUploadPath());
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        response.setContentType("application/octet-stream");
+        String encodedName = URLEncoder.encode(detail.getAttachedFileName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
+        response.setContentLengthLong(file.length());
+
+        try (FileInputStream in = new FileInputStream(file);
+             OutputStream out = response.getOutputStream()) {
+            in.transferTo(out);
+            out.flush();
+        }
     }
 
     @GetMapping("/teacher/classes/{classId}/reports")

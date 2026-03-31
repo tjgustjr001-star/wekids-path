@@ -1,6 +1,11 @@
 
 package com.spring.controller.parent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,16 +19,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.dto.ParentChildVO;
+import com.spring.dto.parent.ParentAssignmentChildDTO;
+import com.spring.dto.student.StudentAssignmentItemDTO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
+import com.spring.service.ParentAssignmentService;
 import com.spring.service.SettingsService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -37,6 +47,9 @@ public class ParentPageController {
 
     @Autowired
     private SettingsService settingsService;
+
+    @Autowired
+    private ParentAssignmentService parentAssignmentService;
 	
     @GetMapping("/parent")
     public String parentHome(Model model) {
@@ -196,6 +209,7 @@ public class ParentPageController {
 
     @GetMapping("/parent/classes/{classId}/assignments")
     public String parentAssignmentList(@PathVariable("classId") int classId,
+                                       @RequestParam(value = "childId", required = false) Integer childId,
                                        Model model,
                                        HttpSession session) throws Exception {
         model.addAttribute("pageTitle", "과제");
@@ -205,31 +219,80 @@ public class ParentPageController {
         setParentLayoutBase(model);
         setParentClassDetailBase(model, classId, session);
 
-        List<Map<String, Object>> children = new ArrayList<>();
-        children.add(createParentAssignmentChild(1, "김학생", "초등 3학년"));
-        children.add(createParentAssignmentChild(2, "김동생", "초등 1학년"));
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        List<ParentAssignmentChildDTO> children = parentAssignmentService.getParentAssignmentChildren(loginUser.getMember_id(), classId);
         model.addAttribute("assignmentChildren", children);
-        model.addAttribute("selectedChildId", 1);
 
-        model.addAttribute("child1Assignments", Arrays.asList(
-                createParentAssignmentItem(1, "과학 실험 관찰 보고서", "과학", "진행", "오늘 18:00", "파일 제출", false, "",
-                        "", "오늘 수업시간에 진행한 강낭콩 싹틔우기 관찰 결과를 보고서 양식에 맞추어 작성해 제출하세요.", ""),
-                createParentAssignmentItem(2, "수학 3단원 문제풀이 (p.45-48)", "수학", "마감임박", "내일 09:00", "텍스트 작성", false, "",
-                        "", "교과서 45쪽부터 48쪽까지의 문제를 풀고, 어려운 문제의 번호와 이유를 텍스트로 남겨주세요.", ""),
-                createParentAssignmentItem(3, "국어 독서록 작성", "국어", "제출완료", "어제 18:00", "파일 제출", true, "어제 16:30",
-                        "", "이번 달 추천 도서를 읽고 독서록을 작성하여 제출하세요.", "홍길동전 독서록을 작성하여 첨부합니다."),
-                createParentAssignmentItem(4, "영어 단어 쓰기", "영어", "반려", "2일 전", "텍스트 작성", true, "",
-                        "글씨를 조금 더 바르게 써주세요. 재제출 바랍니다.", "알파벳 A부터 Z까지 5번씩 쓰고 사진을 찍어 제출하세요.", "영어 단어를 써서 제출했습니다.")
-        ));
+        Integer selectedChildId = null;
+        ParentAssignmentChildDTO selectedChild = null;
 
-        model.addAttribute("child2Assignments", Arrays.asList(
-                createParentAssignmentItem(5, "국어 받아쓰기 연습", "국어", "진행", "내일 15:00", "텍스트 작성", false, "",
-                        "", "받아쓰기 문장을 공책에 연습하고 작성 내용을 제출하세요.", ""),
-                createParentAssignmentItem(6, "수학 덧셈 문제풀이", "수학", "제출완료", "어제 12:00", "파일 제출", true, "어제 10:20",
-                        "", "덧셈 문제풀이 활동지를 작성하여 제출하세요.", "")
-        ));
+        if (!children.isEmpty()) {
+            selectedChild = children.get(0);
+            selectedChildId = selectedChild.getStudentId();
+
+            if (childId != null) {
+                for (ParentAssignmentChildDTO child : children) {
+                    if (child.getStudentId() == childId.intValue()) {
+                        selectedChild = child;
+                        selectedChildId = childId;
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<StudentAssignmentItemDTO> assignmentList = List.of();
+        if (selectedChildId != null) {
+            assignmentList = parentAssignmentService.getParentAssignmentList(loginUser.getMember_id(), classId, selectedChildId);
+        }
+
+        model.addAttribute("selectedChildId", selectedChildId);
+        model.addAttribute("selectedChild", selectedChild);
+        model.addAttribute("assignmentList", assignmentList);
 
         return "common/layout/parentLayout";
+    }
+
+    @GetMapping("/parent/classes/{classId}/assignments/{assignmentId}/download")
+    public void downloadParentAssignmentFile(@PathVariable("classId") int classId,
+                                             @PathVariable("assignmentId") int assignmentId,
+                                             @RequestParam("childId") int childId,
+                                             HttpSession session,
+                                             HttpServletResponse response) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        StudentAssignmentItemDTO detail = parentAssignmentService.getParentAssignmentDetail(
+                loginUser.getMember_id(), classId, childId, assignmentId);
+
+        if (!detail.isCanDownload()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        File file = new File(detail.getUploadPath());
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        response.setContentType("application/octet-stream");
+        String encodedName = URLEncoder.encode(detail.getAttachedFile(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
+        response.setContentLengthLong(file.length());
+
+        try (FileInputStream in = new FileInputStream(file);
+             OutputStream out = response.getOutputStream()) {
+            in.transferTo(out);
+            out.flush();
+        }
     }
 
     @GetMapping("/parent/classes/{classId}/reports")

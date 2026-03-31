@@ -182,73 +182,101 @@
     </select>
 
     <select id="selectParentClassList" parameterType="int" resultType="com.spring.dto.ClassVO">
-	    SELECT
-	        C.CLASS_ID     AS classId,
-	        C.YEAR         AS year,
-	        C.SEMESTER     AS semester,
-	        C.GRADE        AS grade,
-	        C.CLASS_NO     AS classNo,
-	        C.CLASS_NAME   AS className,
-	        C.CLASS_STATUS AS classStatus,
-	        C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
-	        C.INVITE_CODE  AS inviteCode,
-	        C.DEFAULT_DUE_TIME AS defaultDueTime,
-	        C.DESCRIPTION  AS description,
-	        T.TEACHER_NAME AS teacherName,
-	        S.STUDENT_NAME AS childName,
-	        (
-	            SELECT COUNT(*)
-	            FROM STUDENT_CLASS SC2
-	            WHERE SC2.CLASS_ID = C.CLASS_ID
-	        ) AS memberCount
-	    FROM CLASS C
-	    JOIN STUDENT_CLASS SC
-	      ON SC.CLASS_ID = C.CLASS_ID
-	    JOIN STUDENT_PARENT SP
-	      ON SP.STUDENT_ID = SC.STUDENT_ID
-	    JOIN STUDENT S
-	      ON S.STUDENT_ID = SC.STUDENT_ID
-	    LEFT JOIN TEACHER_CLASS TC
-	      ON TC.CLASS_ID = C.CLASS_ID
-	     AND TC.STATUS = 'ACTIVE'
-	    LEFT JOIN TEACHER T
-	      ON T.TEACHER_ID = TC.TEACHER_ID
-	    WHERE SP.PARENT_ID = #{parentId}
-	    	AND SC.END_DATE IS NULL
-	    ORDER BY C.CREATED_AT DESC
-	</select>
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            MAX(T.TEACHER_NAME) AS teacherName,
+            LISTAGG(S.STUDENT_NAME, ', ') WITHIN GROUP (ORDER BY S.STUDENT_NAME) AS childName,
+            (
+                SELECT COUNT(*)
+                FROM STUDENT_CLASS SC2
+                WHERE SC2.CLASS_ID = C.CLASS_ID
+                  AND SC2.END_DATE IS NULL
+            ) AS memberCount
+        FROM CLASS C
+        JOIN STUDENT_CLASS SC
+          ON SC.CLASS_ID = C.CLASS_ID
+        JOIN STUDENT_PARENT SP
+          ON SP.STUDENT_ID = SC.STUDENT_ID
+         AND SP.LINK_STATUS = 1
+        JOIN STUDENT S
+          ON S.STUDENT_ID = SC.STUDENT_ID
+        LEFT JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+         AND TC.STATUS = 'ACTIVE'
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE SP.PARENT_ID = #{parentId}
+          AND SC.END_DATE IS NULL
+        GROUP BY
+            C.CLASS_ID,
+            C.YEAR,
+            C.SEMESTER,
+            C.GRADE,
+            C.CLASS_NO,
+            C.CLASS_NAME,
+            C.CLASS_STATUS,
+            C.ALLOW_SUBMISSION_MODIFY_YN,
+            C.INVITE_CODE,
+            C.DEFAULT_DUE_TIME,
+            C.DESCRIPTION,
+            C.CREATED_AT
+        ORDER BY C.CREATED_AT DESC
+    </select>
 
-	<select id="selectParentClassDetail" parameterType="map" resultType="com.spring.dto.ClassVO">
-	    SELECT DISTINCT
-	        C.CLASS_ID     AS classId,
-	        C.YEAR         AS year,
-	        C.SEMESTER     AS semester,
-	        C.GRADE        AS grade,
-	        C.CLASS_NO     AS classNo,
-	        C.CLASS_NAME   AS className,
-	        C.CLASS_STATUS AS classStatus,
-	        C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
-	        C.INVITE_CODE  AS inviteCode,
-	        C.DEFAULT_DUE_TIME AS defaultDueTime,
-	        C.DESCRIPTION  AS description,
-	        T.TEACHER_NAME AS teacherName,
-	        S.STUDENT_NAME AS childName
-	    FROM CLASS C
-	    JOIN STUDENT_CLASS SC
-	      ON SC.CLASS_ID = C.CLASS_ID
-	    JOIN STUDENT_PARENT SP
-	      ON SP.STUDENT_ID = SC.STUDENT_ID
-	    JOIN STUDENT S
-	      ON S.STUDENT_ID = SC.STUDENT_ID
-	    LEFT JOIN TEACHER_CLASS TC
-	      ON TC.CLASS_ID = C.CLASS_ID
-	     AND TC.STATUS = 'ACTIVE'
-	    LEFT JOIN TEACHER T
-	      ON T.TEACHER_ID = TC.TEACHER_ID
-	    WHERE SP.PARENT_ID = #{parentId}
-	      AND C.CLASS_ID = #{classId}
-	      AND SC.END_DATE IS NULL
-	</select>
+    <select id="selectParentClassDetail" parameterType="map" resultType="com.spring.dto.ClassVO">
+        SELECT
+            C.CLASS_ID     AS classId,
+            C.YEAR         AS year,
+            C.SEMESTER     AS semester,
+            C.GRADE        AS grade,
+            C.CLASS_NO     AS classNo,
+            C.CLASS_NAME   AS className,
+            C.CLASS_STATUS AS classStatus,
+            C.ALLOW_SUBMISSION_MODIFY_YN AS allowSubmissionModifyYn,
+            C.INVITE_CODE  AS inviteCode,
+            C.DEFAULT_DUE_TIME AS defaultDueTime,
+            C.DESCRIPTION  AS description,
+            MAX(T.TEACHER_NAME) AS teacherName,
+            LISTAGG(S.STUDENT_NAME, ', ') WITHIN GROUP (ORDER BY S.STUDENT_NAME) AS childName
+        FROM CLASS C
+        JOIN STUDENT_CLASS SC
+          ON SC.CLASS_ID = C.CLASS_ID
+        JOIN STUDENT_PARENT SP
+          ON SP.STUDENT_ID = SC.STUDENT_ID
+         AND SP.LINK_STATUS = 1
+        JOIN STUDENT S
+          ON S.STUDENT_ID = SC.STUDENT_ID
+        LEFT JOIN TEACHER_CLASS TC
+          ON TC.CLASS_ID = C.CLASS_ID
+         AND TC.STATUS = 'ACTIVE'
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = TC.TEACHER_ID
+        WHERE SP.PARENT_ID = #{parentId}
+          AND C.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+        GROUP BY
+            C.CLASS_ID,
+            C.YEAR,
+            C.SEMESTER,
+            C.GRADE,
+            C.CLASS_NO,
+            C.CLASS_NAME,
+            C.CLASS_STATUS,
+            C.ALLOW_SUBMISSION_MODIFY_YN,
+            C.INVITE_CODE,
+            C.DEFAULT_DUE_TIME,
+            C.DESCRIPTION
+    </select>
 	
 	<select id="selectNextStudentClassId" resultType="int">
 	    SELECT NVL(MAX(STUDENT_CLASS_ID), 0) + 1

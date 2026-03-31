@@ -1,11 +1,18 @@
 package com.spring.controller.student;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,16 +22,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.security.CustomUser;
+import com.spring.dto.student.StudentAssignmentItemDTO;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
 import com.spring.service.StudentLearnProgressService;
+import com.spring.service.StudentAssignmentService;
 import com.spring.service.StudentLearnService;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -41,6 +53,12 @@ public class StudentPageController {
     
     @Autowired
     private StudentLearnProgressService studentLearnProgressService;
+
+    @Autowired
+    private StudentAssignmentService studentAssignmentService;
+
+    @Autowired
+    private ServletContext servletContext;
     
     @GetMapping("/student")
     public String studentHome(Model model) {
@@ -333,26 +351,87 @@ public class StudentPageController {
         setStudentLayoutBase(model);
         setStudentClassDetailBase(model, classId, session);
 
-        List<Map<String, Object>> assignmentList = new ArrayList<>();
-        assignmentList.add(createAssignmentItem(1, "과학 실험 관찰 보고서", "과학", "진행", "오늘 18:00",
-                "파일 제출", false, "", "",
-                "오늘 수업시간에 진행한 강낭콩 싹틔우기 관찰 결과를 보고서 양식에 맞추어 작성해 제출하세요.",
-                "", ""));
-        assignmentList.add(createAssignmentItem(2, "수학 3단원 문제풀이 (p.45-48)", "수학", "마감임박", "내일 09:00",
-                "텍스트 작성", false, "", "",
-                "교과서 45쪽부터 48쪽까지의 문제를 풀고, 어려운 문제의 번호와 이유를 텍스트로 남겨주세요.",
-                "", ""));
-        assignmentList.add(createAssignmentItem(3, "국어 독서록 작성", "국어", "제출완료", "어제 18:00",
-                "파일 제출", true, "어제 16:30", "",
-                "이번 달 추천 도서를 읽고 독서록을 작성하여 제출하세요.",
-                "홍길동전 독서록을 작성하여 첨부합니다.", "독서록_김민수.hwp"));
-        assignmentList.add(createAssignmentItem(4, "영어 단어 쓰기", "영어", "반려", "2일 전",
-                "텍스트 작성", true, "", "글씨를 조금 더 바르게 써주세요. 재제출 바랍니다.",
-                "알파벳 A부터 Z까지 5번씩 쓰고 사진을 찍어 제출하세요.",
-                "", ""));
-        model.addAttribute("assignmentList", assignmentList);
+        MemberVO loginUser = getLoginUser(session);
+        model.addAttribute("assignmentList",
+                loginUser == null ? List.of() : studentAssignmentService.getStudentAssignmentList(loginUser.getMember_id(), classId));
 
         return "common/layout/studentLayout";
+    }
+
+    @GetMapping("/student/classes/{classId}/assignments/{assignmentId}")
+    @ResponseBody
+    public StudentAssignmentItemDTO studentAssignmentDetail(@PathVariable("classId") int classId,
+                                                            @PathVariable("assignmentId") int assignmentId,
+                                                            HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+        return studentAssignmentService.getStudentAssignmentDetail(loginUser.getMember_id(), classId, assignmentId);
+    }
+
+    @PostMapping("/student/classes/{classId}/assignments/{assignmentId}/submit")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> submitStudentAssignment(@PathVariable("classId") int classId,
+                                                                       @PathVariable("assignmentId") int assignmentId,
+                                                                       @RequestParam(value = "content", required = false) String content,
+                                                                       @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
+                                                                       HttpSession session) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            MemberVO loginUser = getLoginUser(session);
+            if (loginUser == null) {
+                throw new IllegalArgumentException("로그인이 필요합니다.");
+            }
+
+            String saveDir = servletContext.getRealPath("/resources/upload/assignment");
+            StudentAssignmentItemDTO saved = studentAssignmentService.submitStudentAssignment(
+                    loginUser.getMember_id(), classId, assignmentId, content, uploadFile, saveDir);
+
+            result.put("success", true);
+            result.put("assignment", saved);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @GetMapping("/student/classes/{classId}/assignments/{assignmentId}/download")
+    public void downloadStudentAssignmentFile(@PathVariable("classId") int classId,
+                                              @PathVariable("assignmentId") int assignmentId,
+                                              HttpSession session,
+                                              HttpServletResponse response) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        StudentAssignmentItemDTO detail = studentAssignmentService.getStudentAssignmentDetail(loginUser.getMember_id(), classId, assignmentId);
+        if (!detail.isCanDownload()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        File file = new File(detail.getUploadPath());
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        response.setContentType("application/octet-stream");
+        String encodedName = URLEncoder.encode(detail.getAttachedFile(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
+        response.setContentLengthLong(file.length());
+
+        try (FileInputStream in = new FileInputStream(file);
+             OutputStream out = response.getOutputStream()) {
+            in.transferTo(out);
+            out.flush();
+        }
     }
 
     @GetMapping("/student/classes/{classId}/reports")
