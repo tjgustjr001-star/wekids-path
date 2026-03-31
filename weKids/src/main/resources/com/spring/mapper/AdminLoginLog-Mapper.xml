@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.admin.AdminLoginLogDAO">
+
+    <update id="updateLastLoginAt" parameterType="int">
+        UPDATE MEMBER
+        SET LAST_LOGIN_AT = SYSDATE
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+    <insert id="insertSuccessLoginLog" parameterType="map">
+        INSERT INTO LOGIN_LOG (
+            LOGIN_LOG_ID,
+            MEMBER_ID,
+            LOGIN_ID,
+            LOGIN_RESULT,
+            LOGIN_TYPE,
+            CREATED_AT
+        ) VALUES (
+            SEQ_LOGIN_LOG.NEXTVAL,
+            #{memberId},
+            #{loginId},
+            'SUCCESS',
+            'NORMAL',
+            SYSDATE
+        )
+    </insert>
+
+</mapper>

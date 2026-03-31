@@ -10,4 +10,6 @@ public interface AdminClassService {
 	List<AdminClassListDTO> getClassList() throws SQLException;
 
 	void modifyClassStatus(int classId, String classStatus) throws SQLException;
+	
+	int getActiveClassCount() throws SQLException;
 }

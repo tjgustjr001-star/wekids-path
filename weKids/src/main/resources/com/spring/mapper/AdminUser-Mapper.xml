@@ -232,4 +232,63 @@
 		'LINK-' || #{memberId}
 	)
 </insert>
+<select id="selectNextLoginLogId" resultType="int">
+    SELECT NVL(MAX(login_log_id), 0) + 1
+    FROM login_log
+</select>
+
+<insert id="insertLoginLog" parameterType="com.spring.dto.admin.AdminLoginLogDTO">
+    INSERT INTO login_log (
+        login_log_id,
+        member_id,
+        login_id,
+        login_result,
+        login_type,
+        ip_address,
+        user_agent,
+        fail_reason,
+        created_at
+    ) VALUES (
+        #{loginLogId},
+        #{memberId},
+        #{loginId},
+        #{loginResult},
+        #{loginType},
+        #{ipAddress},
+        #{userAgent},
+        #{failReason},
+        SYSDATE
+    )
+</insert>
+<select id="selectTotalUserCount" resultType="int">
+    SELECT COUNT(*)
+    FROM MEMBER
+    WHERE ACCOUNT_STATUS != 'DELETED'
+</select>
+
+<select id="selectWeeklyLoginTrend"
+        resultType="com.spring.dto.admin.WeeklyLoginTrendDTO">
+    SELECT
+        day_list.day_label AS dayLabel,
+        NVL(login_data.login_count, 0) AS loginCount
+    FROM (
+        SELECT
+            TO_CHAR(TRUNC(SYSDATE) - (7 - LEVEL), 'YYYY-MM-DD') AS day_key,
+            TO_CHAR(TRUNC(SYSDATE) - (7 - LEVEL), 'MM/DD') AS day_label
+        FROM DUAL
+        CONNECT BY LEVEL &lt;= 7
+    ) day_list
+    LEFT JOIN (
+        SELECT
+            TO_CHAR(created_at, 'YYYY-MM-DD') AS day_key,
+            COUNT(*) AS login_count
+        FROM login_log
+        WHERE login_result = 'SUCCESS'
+          AND created_at &gt;= TRUNC(SYSDATE) - 6
+          AND created_at &lt; TRUNC(SYSDATE) + 1
+        GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+    ) login_data
+        ON day_list.day_key = login_data.day_key
+    ORDER BY day_list.day_key
+</select>
 </mapper>

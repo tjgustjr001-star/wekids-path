@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 public interface AdminUserDAO {
 
@@ -30,4 +31,8 @@ public interface AdminUserDAO {
 
     void insertStudent(@Param("memberId") int memberId,
                        @Param("registDTO") AdminStudentRegistDTO registDTO) throws Exception;
+    
+    int selectTotalUserCount() throws SQLException;
+    
+    List<WeeklyLoginTrendDTO> selectWeeklyLoginTrend() throws SQLException;
 }

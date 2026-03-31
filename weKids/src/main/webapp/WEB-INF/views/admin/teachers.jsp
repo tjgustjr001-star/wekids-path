@@ -245,3 +245,17 @@
         </form>
     </div>
 </div>
+
+<script>
+    const trendLabels = [
+        <c:forEach var="item" items="${trendList}" varStatus="status">
+            '${item.monthLabel}'<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+
+    const trendData = [
+        <c:forEach var="item" items="${trendList}" varStatus="status">
+            ${item.joinCount}<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+</script>

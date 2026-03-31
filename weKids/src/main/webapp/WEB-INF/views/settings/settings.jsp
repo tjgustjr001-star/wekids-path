@@ -1,27 +1,9 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>설정</title>
-
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<body>
 
 <div class="settings-page">
 
-    <div class="settings-back-wrap">
-        <a href="#" class="settings-back-btn" onclick="goSettingsBack(); return false;">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span>뒤로가기</span>
-        </a>
-    </div>
-
-<div class="settings-header-card">
+    <div class="settings-header-card">
         <h1>설정</h1>
         <p>개인정보 및 환경설정을 관리하세요.</p>
     </div>
@@ -160,46 +142,3 @@
     </div>
 
 </div>
-
-
-<script>
-(function () {
-    var settingsPathKeyword = '/settings';
-    var referrer = document.referrer || '';
-    var currentOrigin = window.location.origin;
-
-    function isInternalSettingsPage(url) {
-        return !!url && url.indexOf(settingsPathKeyword) !== -1;
-    }
-
-    function isSameOrigin(url) {
-        return !!url && url.indexOf(currentOrigin) === 0;
-    }
-
-    if (isSameOrigin(referrer) && !isInternalSettingsPage(referrer)) {
-        sessionStorage.setItem('settingsEntryUrl', referrer);
-    }
-})();
-
-function goSettingsBack() {
-    var savedUrl = sessionStorage.getItem('settingsEntryUrl');
-    var currentUrl = window.location.href;
-    var contextPath = '${pageContext.request.contextPath}';
-
-    if (savedUrl && savedUrl !== currentUrl) {
-        window.location.href = savedUrl;
-        return;
-    }
-
-    if (document.referrer && document.referrer !== currentUrl && document.referrer.indexOf('/settings') === -1) {
-        history.back();
-        return;
-    }
-
-    window.location.href = contextPath + '/index';
-}
-</script>
-
-</body>
-
-</html>

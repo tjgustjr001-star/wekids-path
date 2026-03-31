@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
+import com.spring.dto.admin.MonthlyJoinCountDTO;
 import com.spring.service.admin.AdminClassService;
 import com.spring.service.admin.AdminStatsService;
 import com.spring.service.admin.AdminTeacherService;
@@ -30,12 +31,15 @@ public class AdminController {
 	private AdminClassService adminClassService;
 	@Autowired
 	private AdminUserService adminUserService;
-	
 	@Autowired
 	private AdminStatsService adminStatsService;
 	
     @GetMapping({"", "/", "/home"})
-    public String home(Model model) {
+    public String home(Model model) throws SQLException {
+        model.addAttribute("totalUserCount", adminUserService.getTotalUserCount());
+        model.addAttribute("activeClassCount", adminClassService.getActiveClassCount());
+        model.addAttribute("newTeacherCount", adminTeacherService.getNewTeacherCount());
+        model.addAttribute("weeklyLoginTrend", adminUserService.getWeeklyLoginTrend());
         model.addAttribute("contentPage", "/WEB-INF/views/admin/home.jsp");
         return "admin/layout/adminLayout";
     }
@@ -43,10 +47,14 @@ public class AdminController {
     @GetMapping("/teachers")
 	public String teachers(Model model) throws SQLException {
 		List<AdminTeacherListDTO> teacherList = adminTeacherService.getTeacherList();
+		 List<MonthlyJoinCountDTO> trendList = adminTeacherService.getTeacherJoinTrend();
 
 		model.addAttribute("teacherList", teacherList);
 		model.addAttribute("contentPage", "/WEB-INF/views/admin/teachers.jsp");
+		model.addAttribute("trendList", trendList);
 		return "admin/layout/adminLayout";
+		
+		
 	}
     @PostMapping("/teachers/regist")
     public String registTeacher(AdminTeacherRegistDTO registDTO) throws Exception {

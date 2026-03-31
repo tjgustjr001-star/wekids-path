@@ -11,6 +11,7 @@ import com.spring.dao.admin.AdminUserDAO;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
@@ -19,6 +20,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 	private AdminUserDAO adminUserDAO;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
 	@Override
 	public List<AdminUserListDTO> getUserList() throws SQLException {
 		return adminUserDAO.selectUserList();
@@ -33,15 +35,26 @@ public class AdminUserServiceImpl implements AdminUserService {
 	public void modifyUserStatus(int memberId, String accountStatus) throws SQLException {
 		adminUserDAO.updateUserStatus(memberId, accountStatus);
 	}
+
 	@Override
 	public void registStudent(AdminStudentRegistDTO registDTO) throws Exception {
-	    int memberId = adminUserDAO.selectNextMemberId();
-	    int authorityId = adminUserDAO.selectNextAuthorityId();
+		int memberId = adminUserDAO.selectNextMemberId();
+		int authorityId = adminUserDAO.selectNextAuthorityId();
 
-	    registDTO.setInitialPassword(passwordEncoder.encode(registDTO.getInitialPassword()));
+		registDTO.setInitialPassword(passwordEncoder.encode(registDTO.getInitialPassword()));
 
-	    adminUserDAO.insertStudentMember(memberId, registDTO);
-	    adminUserDAO.insertStudentAuthority(authorityId, memberId);
-	    adminUserDAO.insertStudent(memberId, registDTO);
+		adminUserDAO.insertStudentMember(memberId, registDTO);
+		adminUserDAO.insertStudentAuthority(authorityId, memberId);
+		adminUserDAO.insertStudent(memberId, registDTO);
+	}
+
+	@Override
+	public int getTotalUserCount() throws SQLException {
+		return adminUserDAO.selectTotalUserCount();
+	}
+	
+	@Override
+	public List<WeeklyLoginTrendDTO> getWeeklyLoginTrend() throws SQLException {
+	    return adminUserDAO.selectWeeklyLoginTrend();
 	}
 }

@@ -139,7 +139,7 @@ button {
 
 .page-title-box h1 {
     font-size: 42px;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 10px;
 }
 
@@ -169,10 +169,19 @@ button {
     margin-bottom: 28px;
 }
 
+
 .icon-box {
     width: 52px;
     height: 52px;
     border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.icon-box i {
+    line-height: 1;
 }
 
 .icon-box.blue { background: rgba(0,139,255,0.15); }

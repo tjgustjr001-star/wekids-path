@@ -41,5 +41,10 @@
             updated_at = SYSDATE
         WHERE class_id = #{classId}
     </update>
+    <select id="selectActiveClassCount" resultType="int">
+    SELECT COUNT(*)
+    FROM CLASS
+    WHERE CLASS_STATUS = 'ACTIVE'
+</select>
 
 </mapper>

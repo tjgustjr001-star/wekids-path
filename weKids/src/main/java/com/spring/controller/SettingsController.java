@@ -56,6 +56,8 @@ public class SettingsController {
 
         model.addAttribute("role", roleCode);
         model.addAttribute("baseSettingsPath", getBaseSettingsPath(roleCode));
+        model.addAttribute("contentPage", "/WEB-INF/views/settings/settings.jsp");
+        model.addAttribute("pageTitle", "설정");
 
         MemberVO profile = settingsService.getMyProfile(memberId, roleCode);
         model.addAttribute("member", profile);
@@ -73,7 +75,7 @@ public class SettingsController {
             model.addAttribute("childList", childList);
         }
 
-        return "settings/settings";
+        return resolveLayout(roleCode);
     }
 
     @GetMapping("/profile")
@@ -539,6 +541,18 @@ public class SettingsController {
         }
 
         return merged;
+    }
+
+    private String resolveLayout(String roleCode) {
+        String normalizedRoleCode = normalizeRoleCode(roleCode);
+
+        if ("TEACHER".equalsIgnoreCase(normalizedRoleCode)) {
+            return "common/layout/teacherLayout";
+        }
+        if ("PARENT".equalsIgnoreCase(normalizedRoleCode)) {
+            return "common/layout/parentLayout";
+        }
+        return "common/layout/studentLayout";
     }
 
     private String normalizeRoleCode(String roleCode) {

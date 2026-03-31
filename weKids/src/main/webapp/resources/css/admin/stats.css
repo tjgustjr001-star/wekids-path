@@ -14,7 +14,7 @@
 
 .admin-stats-title {
     font-size: 42px;
-    font-weight: 800;
+    font-weight: 700;
     color: #f8fafc;
     margin-bottom: 10px;
 }
@@ -136,11 +136,12 @@
 
 .admin-stats-chart-grid {
     display: grid;
-    gap: 20px;
+    gap: 30px;
 }
 
 .admin-stats-chart-grid-top {
     grid-template-columns: 1.15fr 0.85fr;
+    
 }
 
 .admin-stats-chart-grid-bottom {
@@ -149,6 +150,7 @@
 
 .admin-stats-panel {
     padding: 24px 24px 20px;
+    
 }
 
 .admin-stats-panel-head {
@@ -160,9 +162,9 @@
 }
 
 .admin-stats-panel-head h2 {
-    font-size: 20px;
-    font-weight: 800;
-    color: #f8fafc;
+    font-size: 30px;
+    font-weight: 700;
+    color: #fff;
 }
 
 .admin-stats-panel-meta,
@@ -228,14 +230,14 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    padding: 22px 24px;
+    padding: 20px 24px;
     border-bottom: 1px solid #334155;
     background: rgba(30, 41, 59, 0.8);
 }
 
-.admin-stats-board-head h2 {
+.admin-stats-board-head h4 {
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
     color: #f8fafc;
 }
 
@@ -254,10 +256,10 @@
 }
 
 .admin-stats-table th {
-    padding: 18px 20px;
+    padding: 20px 20px;
     text-align: left;
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 16px;
+    font-weight: 700;
     color: #cbd5e1;
     white-space: nowrap;
 }
@@ -266,7 +268,7 @@
     padding: 20px;
     border-top: 1px solid rgba(71, 85, 105, 0.5);
     color: #e2e8f0;
-    font-size: 15px;
+    font-size: 14px;
     vertical-align: middle;
 }
 
@@ -275,7 +277,7 @@
 }
 
 .admin-stats-cell-strong {
-    font-weight: 800;
+    font-weight: 500;
     color: #f8fafc;
 }
 
@@ -320,7 +322,7 @@
     background: #334155;
     color: #e2e8f0;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 500;
     text-decoration: none;
     transition: 0.2s ease;
 }
@@ -391,7 +393,7 @@
 }
 
 .admin-stat-detail-status-badge.active {
-    color: #62e3a7;
+    color: #00d47b;
     background: rgba(98, 227, 167, 0.12);
     border: 1px solid rgba(98, 227, 167, 0.35);
 }

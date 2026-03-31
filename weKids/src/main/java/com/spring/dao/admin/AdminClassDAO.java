@@ -13,4 +13,6 @@ public interface AdminClassDAO {
 
 	void updateClassStatus(@Param("classId") int classId,
 						   @Param("classStatus") String classStatus) throws SQLException;
+	
+	int selectActiveClassCount() throws SQLException;
 }

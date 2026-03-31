@@ -12,6 +12,8 @@
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/common-sidebar.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/common-sidebar-icons.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/common-class.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/main.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/parent-layout.css">
 	
 </head>

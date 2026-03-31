@@ -149,6 +149,35 @@
 		'교사'
 	)
 </insert>
+<select id="selectTeacherJoinTrend"
+        resultType="com.spring.dto.admin.MonthlyJoinCountDTO">
+
+    SELECT
+        base_month.month_label AS monthLabel,
+        NVL(join_data.join_count, 0) AS joinCount
+    FROM (
+        SELECT
+            TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -(6 - LEVEL)), 'YYYY-MM') AS month_key,
+            TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -(6 - LEVEL)), 'MM') || '월' AS month_label
+        FROM DUAL
+        CONNECT BY LEVEL &lt;= 6
+    ) base_month
+    LEFT JOIN (
+        SELECT
+            TO_CHAR(m.CREATED_AT, 'YYYY-MM') AS month_key,
+            COUNT(*) AS join_count
+        FROM MEMBER m
+        INNER JOIN AUTHORITY a
+            ON m.MEMBER_ID = a.MEMBER_ID
+        WHERE a.ROLE_CODE = 'TEACHER'
+          AND m.CREATED_AT &gt;= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -5)
+          AND m.CREATED_AT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)
+        GROUP BY TO_CHAR(m.CREATED_AT, 'YYYY-MM')
+    ) join_data
+        ON base_month.month_key = join_data.month_key
+    ORDER BY base_month.month_key
+
+</select>
 <insert id="insertTeacher" parameterType="map">
 	INSERT INTO teacher (
 		teacher_id,
@@ -162,4 +191,14 @@
 		SYSDATE
 	)
 </insert>
+
+<select id="selectNewTeacherCount" resultType="int">
+    SELECT COUNT(*)
+    FROM MEMBER m
+    INNER JOIN AUTHORITY a
+        ON m.MEMBER_ID = a.MEMBER_ID
+    WHERE a.ROLE_CODE = 'TEACHER'
+      AND m.CREATED_AT >= ADD_MONTHS(TRUNC(SYSDATE), -3)
+      AND m.ACCOUNT_STATUS != 'DELETED'
+</select>
 </mapper>

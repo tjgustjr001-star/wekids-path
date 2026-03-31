@@ -24,4 +24,9 @@ public class AdminClassServiceImpl implements AdminClassService {
 	public void modifyClassStatus(int classId, String classStatus) throws SQLException {
 		adminClassDAO.updateClassStatus(classId, classStatus);
 	}
+	
+	@Override
+	public int getActiveClassCount() throws SQLException {
+	    return adminClassDAO.selectActiveClassCount();
+	}
 }

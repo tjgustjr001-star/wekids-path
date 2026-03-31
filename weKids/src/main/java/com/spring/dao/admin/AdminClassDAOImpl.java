@@ -30,4 +30,10 @@ public class AdminClassDAOImpl implements AdminClassDAO {
 
 		session.update("AdminClass-Mapper.updateClassStatus", paramMap);
 	}
+	
+	@Override
+	public int selectActiveClassCount() throws SQLException {
+	    Integer count = session.selectOne("AdminClass-Mapper.selectActiveClassCount");
+	    return count == null ? 0 : count;
+	}
 }

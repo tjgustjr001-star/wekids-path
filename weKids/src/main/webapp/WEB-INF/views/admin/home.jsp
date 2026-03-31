@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <div class="dashboard-page">
     <div class="page-title-box">
         <h1>관리자 홈</h1>
@@ -9,34 +10,36 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-top">
-                <div class="icon-box blue"></div>
+                <div class="icon-box blue">
+  <i class="fa-solid fa-user-astronaut"></i>
+</div>
                 <span class="trend positive">+12%</span>
             </div>
             <div class="stat-label">전체 사용자</div>
-            <div class="stat-value">12,345</div>
+            <div class="stat-value"><span id="userCountText">${totalUserCount}</span></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
-                <div class="icon-box green"></div>
+                <div class="icon-box green"><i class="fa-solid fa-book-open"></i></div>
                 <span class="trend positive">+5%</span>
             </div>
             <div class="stat-label">활성 클래스</div>
-            <div class="stat-value">842</div>
+            <div class="stat-value"><span id="activeClassCountText">${activeClassCount}</span></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
-                <div class="icon-box pink"></div>
+                <div class="icon-box pink"><i class="fa-solid fa-user-gear"></i></div>
                 <span class="trend negative">-2%</span>
             </div>
             <div class="stat-label">신규 가입 교사</div>
-            <div class="stat-value">38</div>
+            <div class="stat-value"><span id="newTeacherCountText">${newTeacherCount}</span></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
-                <div class="icon-box gray"></div>
+                <div class="icon-box gray"><i class="fa-regular fa-hourglass-half"></i></div>
                 <span class="trend warning">주의</span>
             </div>
             <div class="stat-label">미해결 문의</div>
@@ -92,3 +95,16 @@
         </section>
     </div>
 </div>
+<script>
+    const weeklyTrendLabels = [
+        <c:forEach var="item" items="${weeklyLoginTrend}" varStatus="status">
+            '${item.dayLabel}'<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+
+    const weeklyTrendData = [
+        <c:forEach var="item" items="${weeklyLoginTrend}" varStatus="status">
+            ${item.loginCount}<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+</script>

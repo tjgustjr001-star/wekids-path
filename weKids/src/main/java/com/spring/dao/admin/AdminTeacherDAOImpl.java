@@ -13,6 +13,7 @@ import com.spring.dto.admin.AdminTeacherClassDTO;
 import com.spring.dto.admin.AdminTeacherDetailDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
+import com.spring.dto.admin.MonthlyJoinCountDTO;
 
 @Repository
 public class AdminTeacherDAOImpl implements AdminTeacherDAO {
@@ -80,5 +81,16 @@ public class AdminTeacherDAOImpl implements AdminTeacherDAO {
 		paramMap.put("registDTO", registDTO);
 
 		session.insert("AdminTeacher-Mapper.insertTeacher", paramMap);
+	}
+
+	@Override
+	public List<MonthlyJoinCountDTO> selectTeacherJoinTrend() throws SQLException {
+		return session.selectList("AdminTeacher-Mapper.selectTeacherJoinTrend");
+	}
+	
+	@Override
+	public int selectNewTeacherCount() throws SQLException {
+	    Integer count = session.selectOne("AdminTeacher-Mapper.selectNewTeacherCount");
+	    return count == null ? 0 : count;
 	}
 }

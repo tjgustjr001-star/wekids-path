@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 @Repository
 public class AdminUserDAOImpl implements AdminUserDAO {
@@ -72,5 +73,16 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 		paramMap.put("registDTO", registDTO);
 
 		session.insert("AdminUser-Mapper.insertStudent", paramMap);
+	}
+	
+	@Override
+	public int selectTotalUserCount() throws SQLException {
+	    Integer count = session.selectOne("AdminUser-Mapper.selectTotalUserCount");
+	    return count == null ? 0 : count;
+	}
+	
+	@Override
+	public List<WeeklyLoginTrendDTO> selectWeeklyLoginTrend() throws SQLException {
+	    return session.selectList("AdminUser-Mapper.selectWeeklyLoginTrend");
 	}
 }

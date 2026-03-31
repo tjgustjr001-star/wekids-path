@@ -33,13 +33,13 @@ window.addEventListener('DOMContentLoaded', function () {
     function defaultScaleOptions() {
         return {
             x: {
-                ticks: { color: '#94a3b8', font: { size: 12 } },
+                ticks: { color: '#94a3b8', font: { size: 10 } },
                 grid: { color: 'rgba(71, 85, 105, 0.25)' },
                 border: { color: 'rgba(71, 85, 105, 0.35)' }
             },
             y: {
                 beginAtZero: true,
-                ticks: { color: '#94a3b8', font: { size: 12 } },
+                ticks: { color: '#94a3b8', font: { size: 10 } },
                 grid: { color: 'rgba(71, 85, 105, 0.25)' },
                 border: { color: 'rgba(71, 85, 105, 0.35)' }
             }

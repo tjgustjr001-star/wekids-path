@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/admin/stats.css">
 
@@ -30,7 +32,7 @@
         <article class="admin-stats-kpi-card">
             <div class="admin-stats-kpi-top">
                 <div class="admin-stats-kpi-icon blue">
-                    <span>👥</span>
+                    <span><i class="fa-solid fa-user-astronaut"></i></span>
                 </div>
                 <span class="admin-stats-kpi-change positive">
                     ${dashboardStat.userChangeText}
@@ -45,7 +47,7 @@
         <article class="admin-stats-kpi-card">
             <div class="admin-stats-kpi-top">
                 <div class="admin-stats-kpi-icon green">
-                    <span>📚</span>
+                    <span><i class="fa-solid fa-book-open"></i></span>
                 </div>
                 <span class="admin-stats-kpi-change positive">
                     ${dashboardStat.activeClassChangeText}
@@ -60,7 +62,7 @@
         <article class="admin-stats-kpi-card">
             <div class="admin-stats-kpi-top">
                 <div class="admin-stats-kpi-icon purple">
-                    <span>📝</span>
+                    <span><i class="fa-solid fa-clipboard-list"></i></span>
                 </div>
                 <span class="admin-stats-kpi-change positive">
                     ${dashboardStat.assignmentSubmitChangeText}
@@ -75,7 +77,7 @@
         <article class="admin-stats-kpi-card">
             <div class="admin-stats-kpi-top">
                 <div class="admin-stats-kpi-icon amber">
-                    <span>✅</span>
+                    <span><i class="fa-solid fa-chart-line"></i></span>
                 </div>
                 <span class="admin-stats-kpi-change neutral">
                     ${dashboardStat.learnCompleteRateText}
@@ -162,7 +164,7 @@
 
     <article class="admin-stats-board">
         <div class="admin-stats-board-head">
-            <h2>클래스별 상세 통계</h2>
+            <h4>클래스별 상세 통계</h4>
             <span class="admin-stats-board-meta">
                 총 <fmt:formatNumber value="${classStatsCount}" pattern="#,##0"/>개 클래스
             </span>

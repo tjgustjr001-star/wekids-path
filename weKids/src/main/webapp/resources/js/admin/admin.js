@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', function() {
     function getEl(id) {
         return document.getElementById(id);
     }
@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     function closeAllMenus(selector) {
-        document.querySelectorAll(selector).forEach(function (menu) {
+        document.querySelectorAll(selector).forEach(function(menu) {
             menu.classList.remove('open');
         });
     }
@@ -37,14 +37,14 @@ window.addEventListener('DOMContentLoaded', function () {
     function setupToggleMenu(buttonSelector, menuSelector) {
         const buttons = document.querySelectorAll(buttonSelector);
 
-        buttons.forEach(function (button) {
-            button.addEventListener('click', function (e) {
+        buttons.forEach(function(button) {
+            button.addEventListener('click', function(e) {
                 e.stopPropagation();
 
                 const menu = button.nextElementSibling;
                 if (!menu || !menu.matches(menuSelector)) return;
 
-                document.querySelectorAll(menuSelector).forEach(function (item) {
+                document.querySelectorAll(menuSelector).forEach(function(item) {
                     if (item !== menu) {
                         item.classList.remove('open');
                     }
@@ -56,8 +56,8 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupOutsideClose(menuSelector, modalSelectorList) {
-        document.addEventListener('click', function (e) {
-            const clickedInsideExcludedModal = modalSelectorList.some(function (selector) {
+        document.addEventListener('click', function(e) {
+            const clickedInsideExcludedModal = modalSelectorList.some(function(selector) {
                 const modal = document.querySelector(selector);
                 return modal && modal.contains(e.target);
             });
@@ -82,19 +82,19 @@ window.addEventListener('DOMContentLoaded', function () {
 
     function bindModalClose(modal, closeBtn, cancelBtn) {
         if (closeBtn) {
-            closeBtn.addEventListener('click', function () {
+            closeBtn.addEventListener('click', function() {
                 closeModal(modal);
             });
         }
 
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', function () {
+            cancelBtn.addEventListener('click', function() {
                 closeModal(modal);
             });
         }
 
         if (modal) {
-            modal.addEventListener('click', function (e) {
+            modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     closeModal(modal);
                 }
@@ -135,7 +135,7 @@ window.addEventListener('DOMContentLoaded', function () {
     function filterElements(rows, options) {
         let visibleCount = 0;
 
-        rows.forEach(function (row) {
+        rows.forEach(function(row) {
             const isVisible = options.matcher(row);
 
             row.style.display = isVisible ? '' : 'none';
@@ -153,40 +153,59 @@ window.addEventListener('DOMContentLoaded', function () {
     /* =========================
        대시보드 차트
     ========================= */
-    createChart(getEl('weeklyTrendChart'), {
-        type: 'line',
-        data: {
-            labels: ['월', '화', '수', '목', '금', '토', '일'],
-            datasets: [{
-                label: '접속자 수',
-                data: [4920, 8610, 5535, 11070, 7995, 3690, 2460],
-                borderColor: '#4379F2',
-                backgroundColor: '#4379F2',
-                borderWidth: 3,
-                tension: 0.35,
-                pointRadius: 5,
-                pointHoverRadius: 6,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+
+	const weeklyTrendCanvas = document.getElementById('weeklyTrendChart');
+	const weeklyTrendSource = document.getElementById('weeklyTrendSource');
+    if (weeklyTrendCanvas && typeof Chart !== 'undefined') {
+        const existingChart = Chart.getChart(weeklyTrendCanvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        const ctx = weeklyTrendCanvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.25)');
+        gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
+
+        createChart(getEl('weeklyTrendChart'), {
+            type: 'line',
+            data: {
+                labels: weeklyTrendLabels,
+                datasets: [{
+                    label: '로그인 횟수',
+                    data: weeklyTrendData,
+                    borderColor: '#ec4899',
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 5
+                }]
             },
-            scales: {
-                x: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55, 65, 81, 0.5)' }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
                 },
-                y: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55, 65, 81, 0.5)' }
+                scales: {
+                    x: {
+                        ticks: { color: '#9CA3AF' },
+                        grid: { color: 'rgba(55, 65, 81, 0.15)', drawBorder: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#9CA3AF',
+                            precision: 0
+                        },
+                        grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     /* =========================
        클래스 관리
@@ -240,7 +259,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const keyword = classSearchInput ? classSearchInput.value.trim().toLowerCase() : '';
 
         filterElements(classCards, {
-            matcher: function (card) {
+            matcher: function(card) {
                 const status = card.getAttribute('data-status') || '';
                 const name = (card.getAttribute('data-name') || '').toLowerCase();
                 const teacher = (card.getAttribute('data-teacher') || '').toLowerCase();
@@ -270,9 +289,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    classTabButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            classTabButtons.forEach(function (item) {
+    classTabButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            classTabButtons.forEach(function(item) {
                 item.classList.remove('active');
             });
 
@@ -286,8 +305,8 @@ window.addEventListener('DOMContentLoaded', function () {
         classSearchInput.addEventListener('input', filterClassCards);
     }
 
-    detailButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
+    detailButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
             currentOpenedCard = btn.closest('.class-card');
 
             const name = btn.getAttribute('data-name') || '';
@@ -316,7 +335,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     if (modalActivateBtn) {
-        modalActivateBtn.addEventListener('click', function () {
+        modalActivateBtn.addEventListener('click', function() {
             updateClassCardStatus(currentOpenedCard, 'ACTIVE');
 
             if (modalClassStatus) {
@@ -330,7 +349,7 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     if (modalBlindBtn) {
-        modalBlindBtn.addEventListener('click', function () {
+        modalBlindBtn.addEventListener('click', function() {
             updateClassCardStatus(currentOpenedCard, 'BLINDED');
 
             if (modalClassStatus) {
@@ -389,6 +408,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     const teacherTrendCanvas = getEl('teacherTrendChart');
+
     if (teacherTrendCanvas && typeof Chart !== 'undefined') {
         destroyChartIfExists(teacherTrendCanvas);
 
@@ -400,10 +420,10 @@ window.addEventListener('DOMContentLoaded', function () {
         new Chart(teacherTrendCanvas, {
             type: 'line',
             data: {
-                labels: ['9월', '10월', '11월', '12월', '1월', '2월', '3월'],
+                labels: trendLabels,
                 datasets: [{
                     label: '신규 교사',
-                    data: [12, 19, 15, 8, 24, 38, 45],
+                    data: trendData,
                     borderColor: '#4379F2',
                     backgroundColor: gradient,
                     fill: true,
@@ -425,7 +445,11 @@ window.addEventListener('DOMContentLoaded', function () {
                         grid: { color: 'rgba(55, 65, 81, 0.2)', drawBorder: false }
                     },
                     y: {
-                        ticks: { color: '#9CA3AF' },
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#9CA3AF',
+                            precision: 0
+                        },
                         grid: { color: 'rgba(55, 65, 81, 0.4)', drawBorder: false }
                     }
                 }
@@ -446,7 +470,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         filterElements(teacherRows, {
             countTarget: teacherTotalCount,
-            matcher: function (row) {
+            matcher: function(row) {
                 const name = (row.getAttribute('data-name') || '').toLowerCase();
                 const email = (row.getAttribute('data-email') || '').toLowerCase();
                 const school = row.getAttribute('data-school') || '';
@@ -481,7 +505,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const cancelAddTeacherBtn = getEl('cancelAddTeacherBtn');
 
     if (openAddTeacherModalBtn) {
-        openAddTeacherModalBtn.addEventListener('click', function () {
+        openAddTeacherModalBtn.addEventListener('click', function() {
             openModal(addTeacherModal);
         });
     }
@@ -492,7 +516,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const addTeacherForm = getEl('addTeacherForm');
         if (!addTeacherForm) return;
 
-        addTeacherForm.addEventListener('submit', function (e) {
+        addTeacherForm.addEventListener('submit', function(e) {
             const teacherName = getTrimmedValue('teacherNameInput');
             const loginId = getTrimmedValue('teacherLoginIdInput');
             const email = getTrimmedValue('teacherEmailInput');
@@ -508,7 +532,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const downloadTeacherListBtn = getEl('downloadTeacherListBtn');
     if (downloadTeacherListBtn) {
-        downloadTeacherListBtn.addEventListener('click', function () {
+        downloadTeacherListBtn.addEventListener('click', function() {
             alert('목록이 다운로드 되었습니다.');
         });
     }
@@ -595,7 +619,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         filterElements(userRows, {
             countTarget: userCountText,
-            matcher: function (row) {
+            matcher: function(row) {
                 const role = row.getAttribute('data-role') || '';
                 const name = (row.getAttribute('data-name') || '').toLowerCase();
                 const loginId = (row.getAttribute('data-login-id') || '').toLowerCase();
@@ -612,9 +636,9 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    userTabButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            userTabButtons.forEach(function (item) {
+    userTabButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            userTabButtons.forEach(function(item) {
                 item.classList.remove('active');
             });
 
@@ -634,7 +658,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const cancelCreateStudentBtn = getEl('cancelCreateStudentBtn');
 
     if (openCreateStudentModalBtn) {
-        openCreateStudentModalBtn.addEventListener('click', function () {
+        openCreateStudentModalBtn.addEventListener('click', function() {
             openModal(createStudentModal);
         });
     }
@@ -645,7 +669,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const createStudentForm = getEl('createStudentForm');
         if (!createStudentForm) return;
 
-        createStudentForm.addEventListener('submit', function (e) {
+        createStudentForm.addEventListener('submit', function(e) {
             const studentName = getTrimmedValue('studentNameInput');
             const loginId = getTrimmedValue('studentLoginIdInput');
             const email = getTrimmedValue('studentEmailInput');
