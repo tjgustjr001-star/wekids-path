@@ -126,21 +126,23 @@
         SELECT
             LC.LEARN_ID AS "learnId",
             LC.TITLE AS "title",
-            DBMS_LOB.SUBSTR(LF.FEEDBACK_CONTENT, 4000, 1) AS "feedback"
+            TO_CHAR(LC.END_DATE, 'YYYY-MM-DD') AS "endDate",
+            TO_CHAR(LC.START_DATE, 'YYYY-MM-DD') AS "deadline"
         FROM LEARN_CONT LC
         JOIN LEARN_LIST LL
           ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
-        JOIN LEARN_PRO LP
-          ON LP.LEARN_ID = LC.LEARN_ID
-         AND LP.STUDENT_ID = #{studentId}
-        JOIN LEARN_FBD LF
-          ON LF.PROGRESS_ID = LP.PROGRESS_ID
         <include refid="activeStudentClassJoin"/>
         WHERE LL.CLASS_ID = #{classId}
           AND NVL(LC.DELETE_YN, 0) = 0
-          AND NVL(TRIM(DBMS_LOB.SUBSTR(LF.FEEDBACK_CONTENT, 4000, 1)), '') &lt;&gt; ''
+          AND NOT EXISTS (
+                SELECT 1
+                FROM LEARN_PRO LP
+                WHERE LP.LEARN_ID = LC.LEARN_ID
+                  AND LP.STUDENT_ID = #{studentId}
+                  AND UPPER(NVL(LP.STATUS, '')) = 'COMPLETED'
+          )
           AND <include refid="learnPeriodCondition"/>
-        ORDER BY LF.CREATED_AT DESC, LC.LEARN_ID DESC
+        ORDER BY LC.END_DATE ASC NULLS LAST, LC.LEARN_ID DESC
     </select>
 
     <!-- =========================

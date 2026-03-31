@@ -236,7 +236,7 @@
             </div>
 
             <div class="detail-block">
-                <h4>학습 피드백</h4>
+                <h4>미완료 학습</h4>
                 <div id="learningFeedbackList" class="detail-list-box">
                     <div class="empty-inline-text">없음</div>
                 </div>

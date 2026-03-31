@@ -127,7 +127,7 @@
         missingAssignmentList.innerHTML = html;
     }
 
-    function renderLearningFeedbacks(items) {
+    function renderPendingLearnings(items) {
         if (!learningFeedbackList) return;
 
         if (!items || items.length === 0) {
@@ -140,7 +140,8 @@
             html += ''
                 + '<div class="detail-list-item">'
                 + '  <div class="item-title">' + escapeHtml(item.title) + '</div>'
-                + '  <div class="item-text">' + escapeHtml(item.feedback || '-') + '</div>'
+                 + '  <div class="item-sub">상태: ' + escapeHtml(item.status || '미완료') + '</div>'
+                + '  <div class="item-sub">마감일: ' + escapeHtml(item.endDate || '-') + '</div>'
                 + '</div>';
         });
 
@@ -160,7 +161,8 @@
             html += ''
                 + '<div class="detail-list-item">'
                 + '  <div class="item-title">' + escapeHtml(item.title) + '</div>'
-                + '  <div class="item-text">' + escapeHtml(item.feedback || '-') + '</div>'
+                 + '  <div class="item-sub">상태: ' + escapeHtml(item.status || '미완료') + '</div>'
+                + '  <div class="item-sub">마감일: ' + escapeHtml(item.endDate || '-') + '</div>'
                 + '</div>';
         });
 
@@ -218,7 +220,7 @@
 
         fillSummary(snapshot.summary || {});
         renderMissingAssignments(snapshot.missingAssignments || []);
-        renderLearningFeedbacks(snapshot.learningFeedbacks || []);
+        renderPendingLearnings(snapshot.pendingLearnings || []);
         renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
     }
 
