@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.admin.AdminStatsDAO">
+
+    <select id="selectDashboardOverview" resultType="hashmap">
+        WITH ACTIVE_STUDENT AS (
+            SELECT SC.CLASS_ID, COUNT(*) AS STUDENT_COUNT
+            FROM STUDENT_CLASS SC
+            WHERE SC.END_DATE IS NULL
+            GROUP BY SC.CLASS_ID
+        ),
+        ACTIVE_LEARN AS (
+            SELECT LL.CLASS_ID, COUNT(*) AS LEARN_COUNT
+            FROM LEARN_LIST LL
+            JOIN LEARN_CONT LC
+              ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+            WHERE NVL(LC.DELETE_YN, 0) = 0
+            GROUP BY LL.CLASS_ID
+        ),
+        LEARN_TARGET AS (
+            SELECT SUM(NVL(S.STUDENT_COUNT, 0) * NVL(L.LEARN_COUNT, 0)) AS TOTAL_TARGET_COUNT
+            FROM CLASS C
+            LEFT JOIN ACTIVE_STUDENT S ON S.CLASS_ID = C.CLASS_ID
+            LEFT JOIN ACTIVE_LEARN L ON L.CLASS_ID = C.CLASS_ID
+            WHERE C.CLASS_STATUS IN ('ACTIVE', 'ARCHIVED', 'BLINDED')
+        ),
+        LEARN_COMPLETED AS (
+            SELECT COUNT(*) AS COMPLETED_COUNT
+            FROM LEARN_PRO LP
+            JOIN LEARN_CONT LC
+              ON LC.LEARN_ID = LP.LEARN_ID
+            JOIN LEARN_LIST LL
+              ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+            JOIN STUDENT_CLASS SC
+              ON SC.STUDENT_ID = LP.STUDENT_ID
+             AND SC.CLASS_ID = LL.CLASS_ID
+             AND SC.END_DATE IS NULL
+            WHERE NVL(LC.DELETE_YN, 0) = 0
+              AND LP.STATUS = 'COMPLETED'
+        ),
+        LATEST_SUB AS (
+            SELECT S.*
+            FROM ASSIGN_SUB S
+            JOIN (
+                SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+                FROM ASSIGN_SUB
+                GROUP BY ASSIGN_ID, STUDENT_ID
+            ) MX
+              ON MX.MAX_SUB_ID = S.SUB_ID
+        ),
+        ASSIGN_SUBMITTED AS (
+            SELECT COUNT(*) AS SUBMITTED_COUNT
+            FROM LATEST_SUB LS
+            WHERE LS.SUBMIT_AT IS NOT NULL
+        )
+        SELECT
+            (SELECT COUNT(*)
+               FROM MEMBER M
+              WHERE M.ACCOUNT_STATUS != 'DELETED') AS "totalUsers",
+            (SELECT COUNT(*)
+               FROM CLASS C
+              WHERE C.CLASS_STATUS = 'ACTIVE') AS "activeClassCount",
+            (SELECT NVL(SUBMITTED_COUNT, 0)
+               FROM ASSIGN_SUBMITTED) AS "submittedAssignmentCount",
+            (SELECT NVL(COMPLETED_COUNT, 0)
+               FROM LEARN_COMPLETED) AS "completedLearnCount",
+            (SELECT NVL(TOTAL_TARGET_COUNT, 0)
+               FROM LEARN_TARGET) AS "totalLearnTargetCount"
+        FROM DUAL
+    </select>
+
+    <select id="selectUserTypeList" resultType="hashmap">
+        SELECT
+            A.ROLE_CODE AS "roleCode",
+            COUNT(*) AS "value"
+        FROM AUTHORITY A
+        JOIN MEMBER M
+          ON M.MEMBER_ID = A.MEMBER_ID
+        WHERE M.ACCOUNT_STATUS != 'DELETED'
+        GROUP BY A.ROLE_CODE
+        ORDER BY
+            CASE A.ROLE_CODE
+                WHEN 'STUDENT' THEN 1
+                WHEN 'PARENT' THEN 2
+                WHEN 'TEACHER' THEN 3
+                WHEN 'ADMIN' THEN 4
+                ELSE 9
+            END
+    </select>
+
+    <select id="selectUserGrowthList" parameterType="string" resultType="hashmap">
+        SELECT
+            T.LABEL AS "label",
+            SUM(T.STUDENT_COUNT) AS "studentCount",
+            SUM(T.PARENT_COUNT) AS "parentCount",
+            SUM(T.TEACHER_COUNT) AS "teacherCount"
+        FROM (
+            SELECT
+                <choose>
+                    <when test='_parameter == "month"'>
+                        TO_CHAR(TRUNC(M.CREATED_AT, 'IW'), 'MM/DD') AS LABEL,
+                        TRUNC(M.CREATED_AT, 'IW') AS SORT_DATE
+                    </when>
+                    <when test='_parameter == "year"'>
+                        TO_CHAR(TRUNC(M.CREATED_AT, 'MM'), 'YYYY/MM') AS LABEL,
+                        TRUNC(M.CREATED_AT, 'MM') AS SORT_DATE
+                    </when>
+                    <otherwise>
+                        TO_CHAR(TRUNC(M.CREATED_AT), 'MM/DD') AS LABEL,
+                        TRUNC(M.CREATED_AT) AS SORT_DATE
+                    </otherwise>
+                </choose>,
+                CASE WHEN A.ROLE_CODE = 'STUDENT' THEN 1 ELSE 0 END AS STUDENT_COUNT,
+                CASE WHEN A.ROLE_CODE = 'PARENT' THEN 1 ELSE 0 END AS PARENT_COUNT,
+                CASE WHEN A.ROLE_CODE = 'TEACHER' THEN 1 ELSE 0 END AS TEACHER_COUNT
+            FROM MEMBER M
+            JOIN AUTHORITY A
+              ON A.MEMBER_ID = M.MEMBER_ID
+            WHERE M.ACCOUNT_STATUS != 'DELETED'
+              AND M.CREATED_AT >=
+                <choose>
+                    <when test='_parameter == "month"'>
+                        TRUNC(SYSDATE) - 27
+                    </when>
+                    <when test='_parameter == "year"'>
+                        ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -11)
+                    </when>
+                    <otherwise>
+                        TRUNC(SYSDATE) - 6
+                    </otherwise>
+                </choose>
+        ) T
+        GROUP BY T.LABEL, T.SORT_DATE
+        ORDER BY T.SORT_DATE
+    </select>
+
+    <select id="selectClassStatsList" resultType="hashmap">
+        WITH LATEST_SUB AS (
+            SELECT S.*
+            FROM ASSIGN_SUB S
+            JOIN (
+                SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+                FROM ASSIGN_SUB
+                GROUP BY ASSIGN_ID, STUDENT_ID
+            ) MX
+              ON MX.MAX_SUB_ID = S.SUB_ID
+        )
+        SELECT
+            C.CLASS_ID AS "classId",
+            C.CLASS_NAME AS "classDisplayName",
+            C.CLASS_STATUS AS "classStatus",
+            (
+                SELECT COUNT(*)
+                FROM STUDENT_CLASS SC
+                WHERE SC.CLASS_ID = C.CLASS_ID
+                  AND SC.END_DATE IS NULL
+            ) AS "studentCount",
+            (
+                SELECT COUNT(*)
+                FROM LEARN_LIST LL
+                JOIN LEARN_CONT LC
+                  ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+                WHERE LL.CLASS_ID = C.CLASS_ID
+                  AND NVL(LC.DELETE_YN, 0) = 0
+            ) AS "totalLearnCount",
+            (
+                SELECT COUNT(*)
+                FROM LEARN_PRO LP
+                JOIN LEARN_CONT LC
+                  ON LC.LEARN_ID = LP.LEARN_ID
+                JOIN LEARN_LIST LL
+                  ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+                JOIN STUDENT_CLASS SC
+                  ON SC.STUDENT_ID = LP.STUDENT_ID
+                 AND SC.CLASS_ID = LL.CLASS_ID
+                 AND SC.END_DATE IS NULL
+                WHERE LL.CLASS_ID = C.CLASS_ID
+                  AND NVL(LC.DELETE_YN, 0) = 0
+                  AND LP.STATUS = 'COMPLETED'
+            ) AS "completedLearnCount",
+            (
+                SELECT COUNT(*)
+                FROM ASSIGNMENT A
+                WHERE A.CLASS_ID = C.CLASS_ID
+                  AND NVL(A.DELETE_YN, 0) = 0
+            ) AS "totalAssignmentCount",
+            (
+                SELECT COUNT(*)
+                FROM ASSIGNMENT A
+                JOIN LATEST_SUB LS
+                  ON LS.ASSIGN_ID = A.ASSIGN_ID
+                WHERE A.CLASS_ID = C.CLASS_ID
+                  AND NVL(A.DELETE_YN, 0) = 0
+                  AND LS.SUBMIT_AT IS NOT NULL
+            ) AS "submittedAssignmentCount"
+        FROM CLASS C
+        WHERE C.CLASS_STATUS IN ('ACTIVE', 'ARCHIVED', 'BLINDED')
+        ORDER BY
+            CASE C.CLASS_STATUS
+                WHEN 'ACTIVE' THEN 1
+                WHEN 'ARCHIVED' THEN 2
+                WHEN 'BLINDED' THEN 3
+                ELSE 9
+            END,
+            C.CLASS_ID DESC
+    </select>
+
+    <select id="selectClassDetailSummary" parameterType="int" resultType="hashmap">
+        SELECT
+            C.CLASS_ID AS "classId",
+            C.CLASS_NAME AS "classDisplayName",
+            C.CLASS_STATUS AS "classStatus",
+            NVL((
+                SELECT COUNT(*)
+                FROM STUDENT_CLASS SC
+                WHERE SC.CLASS_ID = C.CLASS_ID
+                  AND SC.END_DATE IS NULL
+            ), 0) AS "studentCount",
+            NVL((
+                SELECT MAX(T.TEACHER_NAME)
+                FROM TEACHER_CLASS TC
+                JOIN TEACHER T
+                  ON T.TEACHER_ID = TC.TEACHER_ID
+                WHERE TC.CLASS_ID = C.CLASS_ID
+            ), '-') AS "teacherName",
+            NVL(TO_CHAR(C.CREATED_AT, 'YYYY.MM.DD'), '-') AS "createdDateText"
+        FROM CLASS C
+        WHERE C.CLASS_ID = #{classId}
+    </select>
+
+    <select id="selectSubmissionTrendList" parameterType="int" resultType="hashmap">
+        WITH ACTIVE_STUDENT AS (
+            SELECT COUNT(*) AS STUDENT_COUNT
+            FROM STUDENT_CLASS
+            WHERE CLASS_ID = #{classId}
+              AND END_DATE IS NULL
+        ),
+        LATEST_SUB AS (
+            SELECT S.*
+            FROM ASSIGN_SUB S
+            JOIN (
+                SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+                FROM ASSIGN_SUB
+                GROUP BY ASSIGN_ID, STUDENT_ID
+            ) MX
+              ON MX.MAX_SUB_ID = S.SUB_ID
+        ),
+        BASE AS (
+            SELECT
+                A.ASSIGN_ID AS SORT_ID,
+                CASE
+                    WHEN LENGTH(A.TITLE) > 12 THEN SUBSTR(A.TITLE, 1, 12) || '...'
+                    ELSE A.TITLE
+                END AS "label",
+                COUNT(LS.SUB_ID) AS "submittedCount",
+                GREATEST((SELECT STUDENT_COUNT FROM ACTIVE_STUDENT) - COUNT(LS.SUB_ID), 0) AS "unsubmittedCount"
+            FROM ASSIGNMENT A
+            LEFT JOIN LATEST_SUB LS
+              ON LS.ASSIGN_ID = A.ASSIGN_ID
+             AND LS.SUBMIT_AT IS NOT NULL
+            WHERE A.CLASS_ID = #{classId}
+              AND NVL(A.DELETE_YN, 0) = 0
+            GROUP BY A.ASSIGN_ID, A.TITLE
+            ORDER BY A.ASSIGN_ID DESC
+        )
+        SELECT *
+        FROM (
+            SELECT B.*
+            FROM BASE B
+            ORDER BY B.SORT_ID DESC
+        )
+        WHERE ROWNUM &lt;= 7
+    </select>
+
+    <select id="selectClassLearnStatusList" parameterType="int" resultType="hashmap">
+        WITH ACTIVE_STUDENT AS (
+            SELECT COUNT(*) AS STUDENT_COUNT
+            FROM STUDENT_CLASS
+            WHERE CLASS_ID = #{classId}
+              AND END_DATE IS NULL
+        ),
+        BASE AS (
+            SELECT
+                LC.LEARN_ID AS SORT_ID,
+                CASE
+                    WHEN LENGTH(LC.TITLE) > 12 THEN SUBSTR(LC.TITLE, 1, 12) || '...'
+                    ELSE LC.TITLE
+                END AS "label",
+                (
+                    SELECT COUNT(*)
+                    FROM LEARN_PRO LP
+                    WHERE LP.LEARN_ID = LC.LEARN_ID
+                      AND LP.STATUS = 'COMPLETED'
+                ) AS "completedCount",
+                GREATEST(
+                    (SELECT STUDENT_COUNT FROM ACTIVE_STUDENT) -
+                    (
+                        SELECT COUNT(*)
+                        FROM LEARN_PRO LP
+                        WHERE LP.LEARN_ID = LC.LEARN_ID
+                          AND LP.STATUS = 'COMPLETED'
+                    ),
+                    0
+                ) AS "incompleteCount"
+            FROM LEARN_LIST LL
+            JOIN LEARN_CONT LC
+              ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+            WHERE LL.CLASS_ID = #{classId}
+              AND NVL(LC.DELETE_YN, 0) = 0
+            ORDER BY LC.LEARN_ID DESC
+        )
+        SELECT *
+        FROM (
+            SELECT B.*
+            FROM BASE B
+            ORDER BY B.SORT_ID DESC
+        )
+        WHERE ROWNUM &lt;= 7
+    </select>
+
+    <select id="selectStudentStatsList" parameterType="int" resultType="hashmap">
+        WITH LATEST_SUB AS (
+            SELECT S.*
+            FROM ASSIGN_SUB S
+            JOIN (
+                SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+                FROM ASSIGN_SUB
+                GROUP BY ASSIGN_ID, STUDENT_ID
+            ) MX
+              ON MX.MAX_SUB_ID = S.SUB_ID
+        ),
+        LAST_ASSIGN_STATUS AS (
+            SELECT *
+            FROM (
+                SELECT
+                    A.CLASS_ID,
+                    LS.STUDENT_ID,
+                    CASE
+                        WHEN NVL(TRIM(LS.RETURN_REASON), '') != '' THEN '반려'
+                        WHEN UPPER(NVL(LS.SUBMIT_STATUS, '')) IN ('RETURNED', 'REJECTED') OR LS.SUBMIT_STATUS = '반려' THEN '반려'
+                        WHEN UPPER(NVL(LS.SUBMIT_STATUS, '')) IN ('FEEDBACK_COMPLETED') OR LS.SUBMIT_STATUS = '확인완료' THEN '확인완료'
+                        WHEN UPPER(NVL(LS.SUBMIT_STATUS, '')) IN ('LATE', 'LATE_SUBMIT', 'LATE_SUBMITTED') OR LS.SUBMIT_STATUS = '늦은제출' THEN '늦은제출'
+                        WHEN LS.SUBMIT_AT IS NOT NULL THEN '제출완료'
+                        ELSE '-'
+                    END AS LAST_STATUS,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY A.CLASS_ID, LS.STUDENT_ID
+                        ORDER BY NVL(LS.SUBMIT_AT, A.CREATED_AT) DESC, LS.SUB_ID DESC
+                    ) AS RN
+                FROM ASSIGNMENT A
+                LEFT JOIN LATEST_SUB LS
+                  ON LS.ASSIGN_ID = A.ASSIGN_ID
+                WHERE A.CLASS_ID = #{classId}
+                  AND NVL(A.DELETE_YN, 0) = 0
+            )
+            WHERE RN = 1
+        )
+        SELECT
+            S.STUDENT_ID AS "studentId",
+            S.STUDENT_NAME AS "studentName",
+            (
+                SELECT COUNT(*)
+                FROM LEARN_LIST LL
+                JOIN LEARN_CONT LC
+                  ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+                WHERE LL.CLASS_ID = SC.CLASS_ID
+                  AND NVL(LC.DELETE_YN, 0) = 0
+            ) AS "totalLearnCount",
+            (
+                SELECT COUNT(*)
+                FROM LEARN_PRO LP
+                JOIN LEARN_CONT LC
+                  ON LC.LEARN_ID = LP.LEARN_ID
+                JOIN LEARN_LIST LL
+                  ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+                WHERE LL.CLASS_ID = SC.CLASS_ID
+                  AND LP.STUDENT_ID = S.STUDENT_ID
+                  AND NVL(LC.DELETE_YN, 0) = 0
+                  AND LP.STATUS = 'COMPLETED'
+            ) AS "completedLearnCount",
+            (
+                SELECT COUNT(*)
+                FROM ASSIGNMENT A
+                WHERE A.CLASS_ID = SC.CLASS_ID
+                  AND NVL(A.DELETE_YN, 0) = 0
+            ) AS "totalAssignmentCount",
+            (
+                SELECT COUNT(*)
+                FROM ASSIGNMENT A
+                JOIN LATEST_SUB LS
+                  ON LS.ASSIGN_ID = A.ASSIGN_ID
+                WHERE A.CLASS_ID = SC.CLASS_ID
+                  AND NVL(A.DELETE_YN, 0) = 0
+                  AND LS.STUDENT_ID = S.STUDENT_ID
+                  AND LS.SUBMIT_AT IS NOT NULL
+            ) AS "submittedAssignmentCount",
+            NVL(LA.LAST_STATUS, '-') AS "lastAssignmentStatusText"
+        FROM STUDENT_CLASS SC
+        JOIN STUDENT S
+          ON S.STUDENT_ID = SC.STUDENT_ID
+        LEFT JOIN LAST_ASSIGN_STATUS LA
+          ON LA.CLASS_ID = SC.CLASS_ID
+         AND LA.STUDENT_ID = S.STUDENT_ID
+        WHERE SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+        ORDER BY S.STUDENT_NAME
+    </select>
+
+</mapper>

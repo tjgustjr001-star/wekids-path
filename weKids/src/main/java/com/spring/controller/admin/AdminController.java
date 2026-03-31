@@ -16,6 +16,7 @@ import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
 import com.spring.service.admin.AdminClassService;
+import com.spring.service.admin.AdminStatsService;
 import com.spring.service.admin.AdminTeacherService;
 import com.spring.service.admin.AdminUserService;
 
@@ -29,6 +30,10 @@ public class AdminController {
 	private AdminClassService adminClassService;
 	@Autowired
 	private AdminUserService adminUserService;
+	
+	@Autowired
+	private AdminStatsService adminStatsService;
+	
     @GetMapping({"", "/", "/home"})
     public String home(Model model) {
         model.addAttribute("contentPage", "/WEB-INF/views/admin/home.jsp");
@@ -134,8 +139,21 @@ public class AdminController {
     }
 
     @GetMapping("/stats")
-    public String stats(Model model) {
+    public String stats(@RequestParam(value = "period", required = false, defaultValue = "week") String period,
+                        Model model) throws Exception {
+
+        model.addAllAttributes(adminStatsService.getStatsPageData(period));
         model.addAttribute("contentPage", "/WEB-INF/views/admin/stats.jsp");
+        return "admin/layout/adminLayout";
+    }
+
+    @GetMapping("/stats/classes/{classId}")
+    public String statsDetail(@PathVariable("classId") int classId,
+                              @RequestParam(value = "period", required = false, defaultValue = "week") String period,
+                              Model model) throws Exception {
+
+        model.addAllAttributes(adminStatsService.getStatsDetailPageData(classId, period));
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/statsDetail.jsp");
         return "admin/layout/adminLayout";
     }
 }
