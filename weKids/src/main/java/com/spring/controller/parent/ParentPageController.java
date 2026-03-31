@@ -317,13 +317,31 @@ public class ParentPageController {
 
         int parentId = loginUser.getMember_id();
 
-        List<ParentChildVO> childList = settingsService.getLinkedChildren(parentId);
-        
+        List<ParentChildVO> childList = reportService.getParentReportChildren(parentId, classId);
+
+        Integer safeStudentId = studentId;
+        if (safeStudentId != null) {
+            boolean matched = false;
+            for (ParentChildVO child : childList) {
+                if (child != null && child.getStudentId() == safeStudentId.intValue()) {
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                safeStudentId = null;
+            }
+        }
+
         List<ReportListDTO> reportList =
-                reportService.getParentReportList(parentId, classId, studentId, periodFilter);
+                reportService.getParentReportList(parentId, classId, safeStudentId, periodFilter);
+
+        model.addAttribute("pageTitle", "자녀 리포트 확인");
+        model.addAttribute("currentUri", "/parent/classes/" + classId + "/reports");
+        setParentClassDetailBase(model, classId, session);
 
         model.addAttribute("classId", classId);
-        model.addAttribute("selectedStudentId", studentId);
+        model.addAttribute("selectedStudentId", safeStudentId);
         model.addAttribute("periodFilter", periodFilter);
         model.addAttribute("childList", childList);
         model.addAttribute("reportList", reportList);
@@ -336,7 +354,7 @@ public class ParentPageController {
     @ResponseBody
     public ReportDetailDTO getParentReportDetail(@PathVariable("classId") int classId,
                                                  @PathVariable("reportId") int reportId,
-                                                 @RequestParam("studentId") int studentId,
+                                                 @RequestParam(value = "studentId", required = false) Integer studentId,
                                                  HttpSession session) throws Exception {
 
         MemberVO loginUser = getLoginUser(session);

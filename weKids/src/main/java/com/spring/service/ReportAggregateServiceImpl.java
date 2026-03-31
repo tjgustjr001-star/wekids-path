@@ -31,7 +31,7 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
         int totalAssignmentCount = reportAggregateDAO.countTotalAssignment(classId, studentId, startDate, endDate);
         int submittedAssignmentCount = reportAggregateDAO.countSubmittedAssignment(classId, studentId, startDate, endDate);
 
-        List<Map<String, Object>> learningFeedbackRows =
+        List<Map<String, Object>> pendingLearningRows =
                 reportAggregateDAO.selectLearningFeedbacks(classId, studentId, startDate, endDate);
 
         List<Map<String, Object>> missingAssignmentRows =
@@ -52,7 +52,7 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
         summary.setAssignmentSubmissionRate(calculateRate(submittedAssignmentCount, totalAssignmentCount));
 
         snapshot.setSummary(summary);
-        snapshot.setLearningFeedbacks(toLearningFeedbackList(learningFeedbackRows));
+        snapshot.setPendingLearnings(toPendingLearningList(pendingLearningRows));
         snapshot.setMissingAssignments(toMissingAssignmentList(missingAssignmentRows));
         snapshot.setAssignmentFeedbacks(toAssignmentFeedbackList(assignmentFeedbackRows));
 
@@ -74,7 +74,7 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
         int submittedAssignmentCountSum = 0;
 
         List<ReportSnapshotDTO.MissingAssignment> mergedMissingAssignments = new ArrayList<>();
-        List<ReportSnapshotDTO.LearningFeedback> mergedLearningFeedbacks = new ArrayList<>();
+        List<ReportSnapshotDTO.PendingLearning> mergedPendingLearnings = new ArrayList<>();
         List<ReportSnapshotDTO.AssignmentFeedback> mergedAssignmentFeedbacks = new ArrayList<>();
 
         if (studentIds != null) {
@@ -94,8 +94,8 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
                 totalAssignmentCountSum += totalAssignmentCount;
                 submittedAssignmentCountSum += submittedAssignmentCount;
 
-                mergedLearningFeedbacks.addAll(
-                        toLearningFeedbackList(
+                mergedPendingLearnings.addAll(
+                        toPendingLearningList(
                                 reportAggregateDAO.selectLearningFeedbacks(classId, studentId, startDate, endDate)
                         )
                 );
@@ -127,7 +127,7 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
 
         snapshot.setSummary(summary);
         snapshot.setMissingAssignments(limitMissingAssignments(mergedMissingAssignments, 20));
-        snapshot.setLearningFeedbacks(limitLearningFeedbacks(mergedLearningFeedbacks, 20));
+        snapshot.setPendingLearnings(limitPendingLearnings(mergedPendingLearnings, 20));
         snapshot.setAssignmentFeedbacks(limitAssignmentFeedbacks(mergedAssignmentFeedbacks, 20));
 
         return objectMapper.writeValueAsString(snapshot);
@@ -162,8 +162,8 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
         return result;
     }
 
-    private List<ReportSnapshotDTO.LearningFeedback> toLearningFeedbackList(List<Map<String, Object>> rows) {
-        List<ReportSnapshotDTO.LearningFeedback> result = new ArrayList<>();
+    private List<ReportSnapshotDTO.PendingLearning> toPendingLearningList(List<Map<String, Object>> rows) {
+        List<ReportSnapshotDTO.PendingLearning> result = new ArrayList<>();
 
         if (rows == null) {
             return result;
@@ -174,10 +174,17 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
                 continue;
             }
 
-            ReportSnapshotDTO.LearningFeedback item = new ReportSnapshotDTO.LearningFeedback();
+            ReportSnapshotDTO.PendingLearning item = new ReportSnapshotDTO.PendingLearning();
             item.setLearnId(toInt(row.get("learnId")));
             item.setTitle(toStr(row.get("title")));
-            item.setFeedback(toStr(row.get("feedback")));
+            item.setStatus("미완료");
+
+            String endDate = toStr(row.get("endDate"));
+            if (endDate.isEmpty()) {
+                endDate = toStr(row.get("deadline"));
+            }
+            item.setEndDate(endDate);
+
             result.add(item);
         }
 
@@ -218,8 +225,8 @@ public class ReportAggregateServiceImpl implements ReportAggregateService {
         return new ArrayList<>(items.subList(0, limit));
     }
 
-    private List<ReportSnapshotDTO.LearningFeedback> limitLearningFeedbacks(
-            List<ReportSnapshotDTO.LearningFeedback> items, int limit) {
+    private List<ReportSnapshotDTO.PendingLearning> limitPendingLearnings(
+            List<ReportSnapshotDTO.PendingLearning> items, int limit) {
 
         if (items == null) {
             return new ArrayList<>();

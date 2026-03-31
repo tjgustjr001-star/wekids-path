@@ -5,10 +5,6 @@
 
 <mapper namespace="com.spring.dao.ReportDAO">
 
-    <!-- =========================
-         ResultMap
-         ========================= -->
-
     <resultMap id="reportListMap" type="com.spring.dto.report.ReportListDTO">
         <id property="reportId" column="REPORT_ID"/>
         <result property="classId" column="CLASS_ID"/>
@@ -43,9 +39,13 @@
         <result property="createdAt" column="CREATED_AT"/>
     </resultMap>
 
-    <!-- =========================
-         Next ID
-         ========================= -->
+    <resultMap id="parentClassChildMap" type="com.spring.dto.ParentChildVO">
+        <result property="studentId" column="STUDENT_ID"/>
+        <result property="studentName" column="STUDENT_NAME"/>
+        <result property="className" column="CLASS_NAME"/>
+        <result property="grade" column="GRADE"/>
+        <result property="classNo" column="CLASS_NO"/>
+    </resultMap>
 
     <select id="selectNextReportId" resultType="int">
         SELECT NVL(MAX(REPORT_ID), 0) + 1
@@ -56,10 +56,6 @@
         SELECT NVL(MAX(REPORT_VIEW_ID), 0) + 1
         FROM REPORT_VIEW
     </select>
-
-    <!-- =========================
-         Insert
-         ========================= -->
 
     <insert id="insertReport" parameterType="com.spring.dto.report.ReportVO">
         INSERT INTO REPORT (
@@ -107,12 +103,6 @@
         )
     </insert>
 
-    <!-- =========================
-         공통 기간 필터
-         periodFilter:
-         THIS_MONTH / LAST_MONTH / THIS_WEEK / LAST_WEEK
-         ========================= -->
-
     <sql id="studentPeriodFilter">
         <if test="periodFilter != null and periodFilter != ''">
             AND (
@@ -127,59 +117,89 @@
         </if>
     </sql>
 
-    <!-- =========================
-         Teacher List
-         ========================= -->
-
     <select id="selectTeacherReportList" resultMap="reportListMap">
-        SELECT
-            R.REPORT_ID,
-            R.CLASS_ID,
-            R.STUDENT_ID,
-            S.STUDENT_NAME AS STUDENT_NAME,
-            T.TEACHER_NAME AS TEACHER_NAME,
-            R.REPORT_TYPE,
-            R.PERIOD_TYPE,
-            R.TITLE,
-            TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
-            TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
-            TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
-            (
-	    SELECT COUNT(*)
-	    FROM REPORT_VIEW RV, STUDENT_PARENT SP
-	    WHERE SP.PARENT_ID = RV.VIEWER_ID
-	      AND SP.STUDENT_ID = R.STUDENT_ID
-	      AND NVL(SP.LINK_STATUS, 1) = 1
-	      AND RV.REPORT_ID = R.REPORT_ID
-	) AS PARENT_VIEW_COUNT,
-	            (
-	    SELECT TO_CHAR(MAX(RV.VIEWER_AT), 'YYYY-MM-DD HH24:MI')
-	    FROM REPORT_VIEW RV, STUDENT_PARENT SP
-	    WHERE SP.PARENT_ID = RV.VIEWER_ID
-	      AND SP.STUDENT_ID = R.STUDENT_ID
-	      AND NVL(SP.LINK_STATUS, 1) = 1
-	      AND RV.REPORT_ID = R.REPORT_ID
-	) AS PARENT_VIEWED_AT
-	        FROM REPORT R
-	        LEFT JOIN STUDENT S
-	          ON S.STUDENT_ID = R.STUDENT_ID
-	        LEFT JOIN TEACHER T
-	          ON T.TEACHER_ID = R.TEACHER_ID
-	        WHERE R.CLASS_ID = #{classId}
-	          AND R.TEACHER_ID = #{teacherId}
-	        ORDER BY R.CREATED_AT DESC, R.REPORT_ID DESC
-    </select>
-
-    <!-- =========================
-         Student List
-         ========================= -->
+	    SELECT
+	        R.REPORT_ID,
+	        R.CLASS_ID,
+	        R.STUDENT_ID,
+	        CASE
+	            WHEN R.REPORT_TYPE = 'CLASS' THEN '학급 전체'
+	            ELSE S.STUDENT_NAME
+	        END AS STUDENT_NAME,
+	        T.TEACHER_NAME AS TEACHER_NAME,
+	        R.REPORT_TYPE,
+	        R.PERIOD_TYPE,
+	        R.TITLE,
+	        TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+	        TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+	        TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+	        CASE
+	            WHEN R.REPORT_TYPE = 'CLASS' THEN (
+	                SELECT COUNT(DISTINCT RV.VIEWER_ID)
+	                FROM REPORT_VIEW RV
+	                WHERE RV.REPORT_ID = R.REPORT_ID
+	                  AND EXISTS (
+	                      SELECT 1
+	                      FROM STUDENT_PARENT SP, STUDENT_CLASS SC
+	                      WHERE SP.PARENT_ID = RV.VIEWER_ID
+	                        AND NVL(SP.LINK_STATUS, 1) = 1
+	                        AND SC.STUDENT_ID = SP.STUDENT_ID
+	                        AND SC.CLASS_ID = R.CLASS_ID
+	                        AND SC.END_DATE IS NULL
+	                  )
+	            )
+	            ELSE (
+	                SELECT COUNT(*)
+	                FROM REPORT_VIEW RV, STUDENT_PARENT SP
+	                WHERE RV.REPORT_ID = R.REPORT_ID
+	                  AND SP.PARENT_ID = RV.VIEWER_ID
+	                  AND SP.STUDENT_ID = R.STUDENT_ID
+	                  AND NVL(SP.LINK_STATUS, 1) = 1
+	            )
+	        END AS PARENT_VIEW_COUNT,
+	        CASE
+	            WHEN R.REPORT_TYPE = 'CLASS' THEN (
+	                SELECT TO_CHAR(MAX(RV.VIEWER_AT), 'YYYY-MM-DD HH24:MI')
+	                FROM REPORT_VIEW RV
+	                WHERE RV.REPORT_ID = R.REPORT_ID
+	                  AND EXISTS (
+	                      SELECT 1
+	                      FROM STUDENT_PARENT SP, STUDENT_CLASS SC
+	                      WHERE SP.PARENT_ID = RV.VIEWER_ID
+	                        AND NVL(SP.LINK_STATUS, 1) = 1
+	                        AND SC.STUDENT_ID = SP.STUDENT_ID
+	                        AND SC.CLASS_ID = R.CLASS_ID
+	                        AND SC.END_DATE IS NULL
+	                  )
+	            )
+	            ELSE (
+	                SELECT TO_CHAR(MAX(RV.VIEWER_AT), 'YYYY-MM-DD HH24:MI')
+	                FROM REPORT_VIEW RV, STUDENT_PARENT SP
+	                WHERE RV.REPORT_ID = R.REPORT_ID
+	                  AND SP.PARENT_ID = RV.VIEWER_ID
+	                  AND SP.STUDENT_ID = R.STUDENT_ID
+	                  AND NVL(SP.LINK_STATUS, 1) = 1
+	            )
+	        END AS PARENT_VIEWED_AT
+	    FROM REPORT R
+	    LEFT JOIN STUDENT S
+	      ON S.STUDENT_ID = R.STUDENT_ID
+	    LEFT JOIN TEACHER T
+	      ON T.TEACHER_ID = R.TEACHER_ID
+	    WHERE R.CLASS_ID = #{classId}
+	      AND R.TEACHER_ID = #{teacherId}
+	    ORDER BY R.START_DATE DESC, R.CREATED_AT DESC, R.REPORT_ID DESC
+	</select>
 
     <select id="selectStudentReportList" resultMap="reportListMap">
         SELECT
             R.REPORT_ID,
             R.CLASS_ID,
             R.STUDENT_ID,
-            S.STUDENT_NAME AS STUDENT_NAME,
+            CASE
+                WHEN R.REPORT_TYPE = 'CLASS' THEN '학급 전체'
+                ELSE S.STUDENT_NAME
+            END AS STUDENT_NAME,
             T.TEACHER_NAME AS TEACHER_NAME,
             R.REPORT_TYPE,
             R.PERIOD_TYPE,
@@ -195,22 +215,23 @@
         LEFT JOIN TEACHER T
           ON T.TEACHER_ID = R.TEACHER_ID
         WHERE R.CLASS_ID = #{classId}
-          AND R.STUDENT_ID = #{studentId}
-          AND R.REPORT_TYPE = 'PERSONAL'
+          AND (
+                R.REPORT_TYPE = 'CLASS'
+                OR (R.REPORT_TYPE = 'PERSONAL' AND R.STUDENT_ID = #{studentId})
+          )
           <include refid="studentPeriodFilter"/>
         ORDER BY R.START_DATE DESC, R.CREATED_AT DESC, R.REPORT_ID DESC
     </select>
-
-    <!-- =========================
-         Parent List
-         ========================= -->
 
     <select id="selectParentReportList" resultMap="reportListMap">
         SELECT
             R.REPORT_ID,
             R.CLASS_ID,
             R.STUDENT_ID,
-            S.STUDENT_NAME AS STUDENT_NAME,
+            CASE
+                WHEN R.REPORT_TYPE = 'CLASS' THEN '학급 전체'
+                ELSE S.STUDENT_NAME
+            END AS STUDENT_NAME,
             T.TEACHER_NAME AS TEACHER_NAME,
             R.REPORT_TYPE,
             R.PERIOD_TYPE,
@@ -231,33 +252,64 @@
                   AND RV.VIEWER_ID = #{parentId}
             ) AS PARENT_VIEWED_AT
         FROM REPORT R
-        JOIN STUDENT_PARENT SP
-          ON SP.STUDENT_ID = R.STUDENT_ID
-         AND SP.PARENT_ID = #{parentId}
-         AND NVL(SP.LINK_STATUS, 1) = 1
         LEFT JOIN STUDENT S
           ON S.STUDENT_ID = R.STUDENT_ID
         LEFT JOIN TEACHER T
           ON T.TEACHER_ID = R.TEACHER_ID
         WHERE R.CLASS_ID = #{classId}
-          AND R.REPORT_TYPE = 'PERSONAL'
+          AND (
+                R.REPORT_TYPE = 'CLASS'
+                OR (
+                    R.REPORT_TYPE = 'PERSONAL'
+                    AND EXISTS (
+                        SELECT 1
+                        FROM STUDENT_PARENT SP
+                        WHERE SP.STUDENT_ID = R.STUDENT_ID
+                          AND SP.PARENT_ID = #{parentId}
+                          AND NVL(SP.LINK_STATUS, 1) = 1
+                    )
+                )
+          )
           <if test="studentId != null">
-              AND R.STUDENT_ID = #{studentId}
+              AND (
+                    R.REPORT_TYPE = 'CLASS'
+                    OR R.STUDENT_ID = #{studentId}
+              )
           </if>
           <include refid="studentPeriodFilter"/>
         ORDER BY R.START_DATE DESC, R.CREATED_AT DESC, R.REPORT_ID DESC
     </select>
 
-    <!-- =========================
-         Detail
-         ========================= -->
+    <select id="selectParentClassChildren" resultMap="parentClassChildMap">
+        SELECT DISTINCT
+            S.STUDENT_ID,
+            S.STUDENT_NAME,
+            C.CLASS_NAME,
+            C.GRADE,
+            C.CLASS_NO
+        FROM STUDENT_PARENT SP
+        JOIN STUDENT S
+          ON S.STUDENT_ID = SP.STUDENT_ID
+        JOIN STUDENT_CLASS SC
+          ON SC.STUDENT_ID = SP.STUDENT_ID
+         AND SC.CLASS_ID = #{classId}
+         AND SC.END_DATE IS NULL
+        JOIN CLASS C
+          ON C.CLASS_ID = SC.CLASS_ID
+        WHERE SP.PARENT_ID = #{parentId}
+          AND NVL(SP.LINK_STATUS, 1) = 1
+        ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC
+    </select>
 
     <select id="selectReportDetail" resultMap="reportDetailMap">
         SELECT
             R.REPORT_ID,
             R.CLASS_ID,
             R.STUDENT_ID,
-            S.STUDENT_NAME AS STUDENT_NAME,
+            CASE
+                WHEN R.REPORT_TYPE = 'CLASS' THEN '학급 전체'
+                ELSE S.STUDENT_NAME
+            END AS STUDENT_NAME,
             T.TEACHER_NAME AS TEACHER_NAME,
             C.CLASS_NAME,
             R.REPORT_TYPE,
@@ -279,10 +331,6 @@
         WHERE R.REPORT_ID = #{reportId}
     </select>
 
-    <!-- =========================
-         View Check
-         ========================= -->
-
     <select id="countParentReportView" resultType="int">
         SELECT COUNT(*)
         FROM REPORT_VIEW
@@ -290,18 +338,14 @@
           AND VIEWER_ID = #{viewerId}
     </select>
 
-    <!-- =========================
-         Access Validation
-         ========================= -->
-
     <select id="countTeacherClass" resultType="int">
-	    SELECT COUNT(*)
-	    FROM TEACHER_CLASS TC
-	    WHERE TC.TEACHER_ID = #{teacherId}
-	      AND TC.CLASS_ID = #{classId}
-	      AND TC.STATUS = 'ACTIVE'
-	      AND TC.END_DATE IS NULL
-	</select>
+        SELECT COUNT(*)
+        FROM TEACHER_CLASS TC
+        WHERE TC.TEACHER_ID = #{teacherId}
+          AND TC.CLASS_ID = #{classId}
+          AND TC.STATUS = 'ACTIVE'
+          AND TC.END_DATE IS NULL
+    </select>
 
     <select id="countStudentClass" resultType="int">
         SELECT COUNT(*)
@@ -320,6 +364,17 @@
          AND SC.END_DATE IS NULL
         WHERE SP.PARENT_ID = #{parentId}
           AND SP.STUDENT_ID = #{studentId}
+          AND NVL(SP.LINK_STATUS, 1) = 1
+    </select>
+
+    <select id="countParentClass" resultType="int">
+        SELECT COUNT(DISTINCT SP.STUDENT_ID)
+        FROM STUDENT_PARENT SP
+        JOIN STUDENT_CLASS SC
+          ON SC.STUDENT_ID = SP.STUDENT_ID
+         AND SC.CLASS_ID = #{classId}
+         AND SC.END_DATE IS NULL
+        WHERE SP.PARENT_ID = #{parentId}
           AND NVL(SP.LINK_STATUS, 1) = 1
     </select>
 

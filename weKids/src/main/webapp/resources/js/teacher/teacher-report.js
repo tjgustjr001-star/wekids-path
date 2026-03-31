@@ -27,6 +27,37 @@
     const assignmentFeedbackList = document.getElementById('assignmentFeedbackList');
     const detailComent = document.getElementById('detailComent');
 
+
+    function formatDate(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+    }
+
+    function applyPeriodPreset() {
+        const periodTypeSelect = document.getElementById('periodType');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+
+        if (!periodTypeSelect || !startDateInput || !endDateInput) {
+            return;
+        }
+
+        const today = new Date();
+        const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const startDate = new Date(endDate);
+
+        if (periodTypeSelect.value === 'MONTHLY') {
+            startDate.setDate(startDate.getDate() - 29);
+        } else {
+            startDate.setDate(startDate.getDate() - 6);
+        }
+
+        startDateInput.value = formatDate(startDate);
+        endDateInput.value = formatDate(endDate);
+    }
+
     function toggleStudentSelect() {
         if (!reportTypeSelect || !studentSelectGroup) {
             return;
@@ -259,6 +290,16 @@
     if (reportTypeSelect) {
         reportTypeSelect.addEventListener('change', toggleStudentSelect);
         toggleStudentSelect();
+    }
+
+    const periodTypeSelect = document.getElementById('periodType');
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    if (periodTypeSelect) {
+        periodTypeSelect.addEventListener('change', applyPeriodPreset);
+    }
+    if (startDateInput && !startDateInput.value && endDateInput && !endDateInput.value) {
+        applyPeriodPreset();
     }
 
     if (closeBtn) {

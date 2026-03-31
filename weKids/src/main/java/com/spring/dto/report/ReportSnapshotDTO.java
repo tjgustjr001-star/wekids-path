@@ -42,6 +42,35 @@ public class ReportSnapshotDTO {
         this.assignmentFeedbacks = assignmentFeedbacks;
     }
 
+    private List<PendingLearning> pendingLearnings;
+
+    public List<PendingLearning> getPendingLearnings() {
+        return pendingLearnings;
+    }
+
+    public void setPendingLearnings(List<PendingLearning> pendingLearnings) {
+        this.pendingLearnings = pendingLearnings;
+    }
+
+    public static class PendingLearning {
+        private int learnId;
+        private String title;
+        private String status;
+        private String endDate;
+
+        public int getLearnId() { return learnId; }
+        public void setLearnId(int learnId) { this.learnId = learnId; }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+
+        public String getEndDate() { return endDate; }
+        public void setEndDate(String endDate) { this.endDate = endDate; }
+    }
+    
     public static class Summary {
         private int completedLearningCount;
         private int totalLearningCount;

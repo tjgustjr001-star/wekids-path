@@ -83,25 +83,27 @@
         missingAssignmentList.innerHTML = html;
     }
 
-    function renderLearningFeedbacks(items) {
-        if (!learningFeedbackList) return;
+	function renderPendingLearnings(items) {
+	    if (!learningFeedbackList) return;
 
-        if (!items || items.length === 0) {
-            setEmptyList(learningFeedbackList, '없음');
-            return;
-        }
+	    if (!items || items.length === 0) {
+	        setEmptyList(learningFeedbackList, '없음');
+	        return;
+	    }
 
-        let html = '';
-        items.forEach(function (item) {
-            html += ''
-                + '<div class="detail-list-item">'
-                + '  <div class="item-title">' + escapeHtml(item.title) + '</div>'
-                + '  <div class="item-text">' + escapeHtml(item.feedback || '-') + '</div>'
-                + '</div>';
-        });
+	    let html = '';
 
-        learningFeedbackList.innerHTML = html;
-    }
+	    items.forEach(function (item) {
+	        html += ''
+	            + '<div class="detail-list-item">'
+	            + '  <div class="item-title">' + escapeHtml(item.title || '-') + '</div>'
+	            + '  <div class="item-sub">상태: ' + escapeHtml(item.status || '미완료') + '</div>'
+	            + '  <div class="item-sub">마감일: ' + escapeHtml(item.endDate || '-') + '</div>'
+	            + '</div>';
+	    });
+
+	    learningFeedbackList.innerHTML = html;
+	}
 
     function renderAssignmentFeedbacks(items) {
         if (!assignmentFeedbackList) return;
@@ -169,10 +171,10 @@
 
         const snapshot = safeJsonParse(detail.reportContent);
 
-        fillSummary(snapshot.summary || {});
-        renderMissingAssignments(snapshot.missingAssignments || []);
-        renderLearningFeedbacks(snapshot.learningFeedbacks || []);
-        renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
+		fillSummary(snapshot.summary || {});
+		renderMissingAssignments(snapshot.missingAssignments || []);
+		renderPendingLearnings(snapshot.pendingLearnings || []);
+		renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
     }
 
     function fetchReportDetail(reportId) {
@@ -191,6 +193,36 @@
         });
     }
 
+	function bindTypeFilters() {
+	    const chips = document.querySelectorAll('.filter-chip[data-report-type]');
+	    const cards = document.querySelectorAll('.student-report-card');
+
+	    if (!chips.length || !cards.length) {
+	        return;
+	    }
+
+	    chips.forEach(function (chip) {
+	        chip.addEventListener('click', function () {
+	            const selectedType = chip.getAttribute('data-report-type');
+
+	            chips.forEach(function (item) {
+	                item.classList.remove('is-active');
+	            });
+	            chip.classList.add('is-active');
+
+	            cards.forEach(function (card) {
+	                const reportType = card.getAttribute('data-report-type');
+
+	                if (selectedType === 'ALL' || reportType === selectedType) {
+	                    card.style.display = '';
+	                } else {
+	                    card.style.display = 'none';
+	                }
+	            });
+	        });
+	    });
+	}
+	
     function bindDetailButtons() {
         const buttons = document.querySelectorAll('.detail-btn');
 
@@ -229,4 +261,5 @@
     });
 
     bindDetailButtons();
+	bindTypeFilters();
 })();

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.dao.ReportDAO;
+import com.spring.dto.ParentChildVO;
 import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportGenerateRequestDTO;
 import com.spring.dto.report.ReportListDTO;
@@ -82,12 +83,22 @@ public class ReportServiceImpl implements ReportService {
                                                    Integer studentId,
                                                    String periodFilter) throws Exception {
 
+        validateParentClassAccess(parentId, classId);
+
         if (studentId != null) {
             validateParentClassAccess(parentId, studentId, classId);
         }
 
         List<ReportListDTO> list = reportDAO.selectParentReportList(parentId, classId, studentId, periodFilter);
         return list == null ? new ArrayList<ReportListDTO>() : list;
+    }
+
+    @Override
+    public List<ParentChildVO> getParentReportChildren(int parentId,
+                                                       int classId) throws Exception {
+        validateParentClassAccess(parentId, classId);
+        List<ParentChildVO> list = reportDAO.selectParentClassChildren(parentId, classId);
+        return list == null ? new ArrayList<ParentChildVO>() : list;
     }
 
     @Override
@@ -115,8 +126,10 @@ public class ReportServiceImpl implements ReportService {
         validateDetailExists(detail);
         validateDetailClass(detail, classId);
 
-        if (detail.getStudentId() == null || detail.getStudentId().intValue() != studentId) {
-            throw new IllegalArgumentException("해당 학생의 리포트가 아닙니다.");
+        if (!"CLASS".equalsIgnoreCase(detail.getReportType())) {
+            if (detail.getStudentId() == null || detail.getStudentId().intValue() != studentId) {
+                throw new IllegalArgumentException("해당 학생의 리포트가 아닙니다.");
+            }
         }
 
         return detail;
@@ -124,18 +137,28 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportDetailDTO getParentReportDetail(int parentId,
-                                                 int studentId,
+                                                 Integer studentId,
                                                  int classId,
                                                  int reportId) throws Exception {
 
-        validateParentClassAccess(parentId, studentId, classId);
+        validateParentClassAccess(parentId, classId);
 
         ReportDetailDTO detail = reportDAO.selectReportDetail(reportId);
         validateDetailExists(detail);
         validateDetailClass(detail, classId);
 
-        if (detail.getStudentId() == null || detail.getStudentId().intValue() != studentId) {
-            throw new IllegalArgumentException("선택한 자녀의 리포트가 아닙니다.");
+        if ("CLASS".equalsIgnoreCase(detail.getReportType())) {
+            // 학급 리포트는 해당 클래스에 연결된 학부모면 열람 가능
+        } else {
+            if (studentId == null) {
+                throw new IllegalArgumentException("자녀 정보가 필요합니다.");
+            }
+
+            validateParentClassAccess(parentId, studentId, classId);
+
+            if (detail.getStudentId() == null || detail.getStudentId().intValue() != studentId.intValue()) {
+                throw new IllegalArgumentException("선택한 자녀의 리포트가 아닙니다.");
+            }
         }
 
         int exists = reportDAO.countParentReportView(reportId, parentId);
@@ -218,16 +241,16 @@ public class ReportServiceImpl implements ReportService {
 
     private String buildPersonalTitle(String periodType, String startDate, String endDate) {
         if ("MONTHLY".equalsIgnoreCase(periodType)) {
-            return startDate + " ~ " + endDate + " 월간 개인 리포트";
+            return "월간 개인 리포트";
         }
-        return startDate + " ~ " + endDate + " 주간 개인 리포트";
+        return "주간 개인 리포트";
     }
 
     private String buildClassTitle(String periodType, String startDate, String endDate) {
         if ("MONTHLY".equalsIgnoreCase(periodType)) {
-            return startDate + " ~ " + endDate + " 월간 학급 요약 리포트";
+            return "월간 학급 요약 리포트";
         }
-        return startDate + " ~ " + endDate + " 주간 학급 요약 리포트";
+        return "주간 학급 요약 리포트";
     }
 
     private void validateTeacherClassAccess(int teacherId, int classId) throws Exception {
@@ -248,6 +271,13 @@ public class ReportServiceImpl implements ReportService {
         int count = reportDAO.countParentStudentClass(parentId, studentId, classId);
         if (count <= 0) {
             throw new IllegalArgumentException("해당 자녀의 클래스에 접근할 수 없습니다.");
+        }
+    }
+
+    private void validateParentClassAccess(int parentId, int classId) throws Exception {
+        int count = reportDAO.countParentClass(parentId, classId);
+        if (count <= 0) {
+            throw new IllegalArgumentException("해당 클래스에 접근할 수 없습니다.");
         }
     }
 

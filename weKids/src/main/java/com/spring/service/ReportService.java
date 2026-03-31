@@ -2,6 +2,7 @@ package com.spring.service;
 
 import java.util.List;
 
+import com.spring.dto.ParentChildVO;
 import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportGenerateRequestDTO;
 import com.spring.dto.report.ReportListDTO;
@@ -24,6 +25,9 @@ public interface ReportService {
                                             Integer studentId,
                                             String periodFilter) throws Exception;
 
+    List<ParentChildVO> getParentReportChildren(int parentId,
+                                                int classId) throws Exception;
+
     ReportDetailDTO getTeacherReportDetail(int teacherId,
                                            int classId,
                                            int reportId) throws Exception;
@@ -33,7 +37,7 @@ public interface ReportService {
                                            int reportId) throws Exception;
 
     ReportDetailDTO getParentReportDetail(int parentId,
-                                          int studentId,
+                                          Integer studentId,
                                           int classId,
                                           int reportId) throws Exception;
 }

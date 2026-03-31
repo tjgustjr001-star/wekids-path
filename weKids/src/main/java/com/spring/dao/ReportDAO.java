@@ -28,6 +28,9 @@ public interface ReportDAO {
                                                @Param("studentId") Integer studentId,
                                                @Param("periodFilter") String periodFilter) throws Exception;
 
+    java.util.List<com.spring.dto.ParentChildVO> selectParentClassChildren(@Param("parentId") int parentId,
+                                                                            @Param("classId") int classId) throws Exception;
+
     ReportDetailDTO selectReportDetail(@Param("reportId") int reportId) throws Exception;
 
     int countParentReportView(@Param("reportId") int reportId,
@@ -46,4 +49,7 @@ public interface ReportDAO {
     int countParentStudentClass(@Param("parentId") int parentId,
                                 @Param("studentId") int studentId,
                                 @Param("classId") int classId) throws Exception;
+
+    int countParentClass(@Param("parentId") int parentId,
+                         @Param("classId") int classId) throws Exception;
 }

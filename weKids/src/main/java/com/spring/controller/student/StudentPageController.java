@@ -453,10 +453,20 @@ public class StudentPageController {
 
         int studentId = loginUser.getMember_id();
 
+        ClassVO classInfo = classService.getStudentClassDetail(studentId, classId);
+        if (classInfo == null) {
+            return "redirect:/student/classes";
+        }
+
         List<ReportListDTO> reportList =
                 reportService.getStudentReportList(studentId, classId, periodFilter);
 
+        model.addAttribute("pageTitle", "리포트 확인");
+        model.addAttribute("currentUri", "/student/classes/" + classId + "/reports");
+        setStudentClassDetailBase(model, classId, session);
+
         model.addAttribute("classId", classId);
+        model.addAttribute("classInfo", classInfo);
         model.addAttribute("periodFilter", periodFilter);
         model.addAttribute("reportList", reportList);
 

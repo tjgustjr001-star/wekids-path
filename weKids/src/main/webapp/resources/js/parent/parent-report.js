@@ -88,25 +88,27 @@
         missingAssignmentList.innerHTML = html;
     }
 
-    function renderLearningFeedbacks(items) {
-        if (!learningFeedbackList) return;
+	function renderPendingLearnings(items) {
+	    if (!learningFeedbackList) return;
 
-        if (!items || items.length === 0) {
-            setEmptyList(learningFeedbackList, '없음');
-            return;
-        }
+	    if (!items || items.length === 0) {
+	        setEmptyList(learningFeedbackList, '없음');
+	        return;
+	    }
 
-        let html = '';
-        items.forEach(function (item) {
-            html += ''
-                + '<div class="detail-list-item">'
-                + '  <div class="item-title">' + escapeHtml(item.title) + '</div>'
-                + '  <div class="item-text">' + escapeHtml(item.feedback || '-') + '</div>'
-                + '</div>';
-        });
+	    let html = '';
 
-        learningFeedbackList.innerHTML = html;
-    }
+	    items.forEach(function (item) {
+	        html += ''
+	            + '<div class="detail-list-item">'
+	            + '  <div class="item-title">' + escapeHtml(item.title || '-') + '</div>'
+	            + '  <div class="item-sub">상태: ' + escapeHtml(item.status || '미완료') + '</div>'
+	            + '  <div class="item-sub">마감일: ' + escapeHtml(item.endDate || '-') + '</div>'
+	            + '</div>';
+	    });
+
+	    learningFeedbackList.innerHTML = html;
+	}
 
     function renderAssignmentFeedbacks(items) {
         if (!assignmentFeedbackList) return;
@@ -157,7 +159,9 @@
         }
 
         if (detailStudentName) {
-            detailStudentName.textContent = detail.studentName || '-';
+            detailStudentName.textContent = detail.reportType === 'CLASS'
+                ? '학급 전체'
+                : (detail.studentName || '-');
         }
 
         if (detailPeriodType) {
@@ -182,17 +186,20 @@
 
         const snapshot = safeJsonParse(detail.reportContent);
 
-        fillSummary(snapshot.summary || {});
-        renderMissingAssignments(snapshot.missingAssignments || []);
-        renderLearningFeedbacks(snapshot.learningFeedbacks || []);
-        renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
+		fillSummary(snapshot.summary || {});
+		renderMissingAssignments(snapshot.missingAssignments || []);
+		renderPendingLearnings(snapshot.pendingLearnings || []);
+		renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
     }
 
-    function fetchReportDetail(reportId, studentId) {
-        const url = contextPath
+    function fetchReportDetail(reportId, studentId, reportType) {
+        let url = contextPath
             + '/parent/classes/' + classId
-            + '/reports/' + reportId
-            + '?studentId=' + encodeURIComponent(studentId);
+            + '/reports/' + reportId;
+
+        if (reportType !== 'CLASS' && studentId) {
+            url += '?studentId=' + encodeURIComponent(studentId);
+        }
 
         return fetch(url, {
             method: 'GET',
@@ -207,6 +214,48 @@
         });
     }
 
+	function applyListFilters() {
+	    const activeChip = document.querySelector('.filter-chip[data-report-type].is-active');
+	    const selectedType = activeChip ? activeChip.getAttribute('data-report-type') : 'ALL';
+	    const selectedStudentId = studentSelect ? studentSelect.value : '';
+
+	    const cards = document.querySelectorAll('.parent-report-card');
+
+	    cards.forEach(function (card) {
+	        const reportType = card.getAttribute('data-report-type') || '';
+	        const studentId = card.getAttribute('data-student-id') || '';
+
+	        const matchedType = (selectedType === 'ALL' || reportType === selectedType);
+	        const matchedStudent = (!selectedStudentId || reportType === 'CLASS' || studentId === selectedStudentId);
+
+	        if (matchedType && matchedStudent) {
+	            card.style.display = '';
+	        } else {
+	            card.style.display = 'none';
+	        }
+	    });
+	}
+
+	function bindTypeFilters() {
+	    const chips = document.querySelectorAll('.filter-chip[data-report-type]');
+
+	    chips.forEach(function (chip) {
+	        chip.addEventListener('click', function () {
+	            chips.forEach(function (item) {
+	                item.classList.remove('is-active');
+	            });
+	            chip.classList.add('is-active');
+	            applyListFilters();
+	        });
+	    });
+
+	    if (studentSelect) {
+	        studentSelect.addEventListener('change', function () {
+	            applyListFilters();
+	        });
+	    }
+	}
+	
     function bindDetailButtons() {
         const buttons = document.querySelectorAll('.detail-btn');
 
@@ -214,12 +263,13 @@
             button.addEventListener('click', function () {
                 const reportId = button.getAttribute('data-report-id');
                 const studentId = button.getAttribute('data-student-id');
+                const reportType = button.getAttribute('data-report-type');
 
-                if (!reportId || !studentId) {
+                if (!reportId) {
                     return;
                 }
 
-                fetchReportDetail(reportId, studentId)
+                fetchReportDetail(reportId, studentId, reportType)
                     .then(function (detail) {
                         fillDetail(detail);
                         openModal();
@@ -232,13 +282,6 @@
         });
     }
 
-    function bindFilterEvents() {
-        if (studentSelect && filterForm) {
-            studentSelect.addEventListener('change', function () {
-                filterForm.submit();
-            });
-        }
-    }
 
     if (closeBtn) {
         closeBtn.addEventListener('click', closeModal);
@@ -254,6 +297,7 @@
         }
     });
 
-    bindFilterEvents();
-    bindDetailButtons();
+		bindDetailButtons();
+	    bindTypeFilters();
+	    applyListFilters();
 })();

@@ -17,23 +17,10 @@
               method="get"
               class="report-filter-form">
             <div class="filter-chip-group">
-                <button type="submit" name="periodFilter" value="THIS_WEEK"
-                        class="filter-chip ${periodFilter eq 'THIS_WEEK' ? 'is-active' : ''}">
-                    이번 주
-                </button>
-                <button type="submit" name="periodFilter" value="LAST_WEEK"
-                        class="filter-chip ${periodFilter eq 'LAST_WEEK' ? 'is-active' : ''}">
-                    지난 주
-                </button>
-                <button type="submit" name="periodFilter" value="THIS_MONTH"
-                        class="filter-chip ${periodFilter eq 'THIS_MONTH' ? 'is-active' : ''}">
-                    이번 달
-                </button>
-                <button type="submit" name="periodFilter" value="LAST_MONTH"
-                        class="filter-chip ${periodFilter eq 'LAST_MONTH' ? 'is-active' : ''}">
-                    지난 달
-                </button>
-            </div>
+			    <button type="button" class="filter-chip is-active" data-report-type="ALL">전체</button>
+			    <button type="button" class="filter-chip" data-report-type="PERSONAL">개인</button>
+			    <button type="button" class="filter-chip" data-report-type="CLASS">학급</button>
+			</div>
         </form>
     </div>
 
@@ -47,18 +34,31 @@
             <c:choose>
                 <c:when test="${not empty reportList}">
                     <c:forEach var="report" items="${reportList}">
-                        <div class="student-report-card">
+                        <div class="student-report-card" data-report-type="${report.reportType}">
                             <div class="report-card-top">
-                                <span class="report-badge ${report.periodType eq 'MONTHLY' ? 'is-monthly' : 'is-weekly'}">
-                                    <c:choose>
-                                        <c:when test="${report.periodType eq 'MONTHLY'}">월간</c:when>
-                                        <c:otherwise>주간</c:otherwise>
-                                    </c:choose>
-                                </span>
+                                <div class="report-badge-group">
+                                    <span class="report-badge ${report.periodType eq 'MONTHLY' ? 'is-monthly' : 'is-weekly'}">
+                                        <c:choose>
+                                            <c:when test="${report.periodType eq 'MONTHLY'}">월간</c:when>
+                                            <c:otherwise>주간</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                    <span class="report-type-badge ${report.reportType eq 'CLASS' ? 'is-class' : 'is-personal'}">
+                                        <c:choose>
+                                            <c:when test="${report.reportType eq 'CLASS'}">학급</c:when>
+                                            <c:otherwise>개인</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
                                 <span class="report-created-at">${report.createdAt}</span>
                             </div>
 
-                            <h4 class="report-card-title">${report.title}</h4>
+                            <h4 class="report-card-title">
+							    <c:choose>
+							        <c:when test="${report.reportType eq 'CLASS'}">학급 요약 리포트</c:when>
+							        <c:otherwise>개인 리포트</c:otherwise>
+							    </c:choose>
+							</h4>
 
                             <div class="report-card-period">
                                 ${report.startDate} ~ ${report.endDate}
@@ -144,10 +144,10 @@
             </div>
 
             <div class="detail-block">
-                <h4>학습 피드백</h4>
-                <div id="learningFeedbackList" class="detail-list-box">
-                    <div class="empty-inline-text">없음</div>
-                </div>
+                <h4>미완료 학습</h4>
+					<div id="learningFeedbackList" class="detail-list-box">
+					    <div class="empty-inline-text">없음</div>
+					</div>
             </div>
 
             <div class="detail-block">
