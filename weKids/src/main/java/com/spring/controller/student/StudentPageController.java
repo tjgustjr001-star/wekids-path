@@ -27,12 +27,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
-import com.spring.security.CustomUser;
+import com.spring.dto.report.ReportDetailDTO;
+import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.student.StudentAssignmentItemDTO;
+import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
-import com.spring.service.StudentLearnProgressService;
+import com.spring.service.ReportService;
 import com.spring.service.StudentAssignmentService;
+import com.spring.service.StudentLearnProgressService;
 import com.spring.service.StudentLearnService;
 
 import jakarta.servlet.ServletContext;
@@ -59,6 +62,9 @@ public class StudentPageController {
 
     @Autowired
     private ServletContext servletContext;
+    
+    @Autowired
+    private ReportService reportService;
     
     @GetMapping("/student")
     public String studentHome(Model model) {
@@ -435,57 +441,45 @@ public class StudentPageController {
     }
 
     @GetMapping("/student/classes/{classId}/reports")
-    public String studentReportList(@PathVariable("classId") int classId,
+    public String studentReportPage(@PathVariable("classId") int classId,
+                                    @RequestParam(value = "periodFilter", required = false) String periodFilter,
                                     Model model,
                                     HttpSession session) throws Exception {
-        model.addAttribute("pageTitle", "리포트");
-        model.addAttribute("currentUri", "/student/classes/" + classId + "/reports");
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        int studentId = loginUser.getMember_id();
+
+        List<ReportListDTO> reportList =
+                reportService.getStudentReportList(studentId, classId, periodFilter);
+
+        model.addAttribute("classId", classId);
+        model.addAttribute("periodFilter", periodFilter);
+        model.addAttribute("reportList", reportList);
+
         model.addAttribute("contentPage", "/WEB-INF/views/student/report/listContent.jsp");
-
-        setStudentLayoutBase(model);
-        setStudentClassDetailBase(model, classId, session);
-
-        model.addAttribute("weeklyReport", createStudentReportData(
-                createReportChart(
-                        createSubjectItem(1, "국어", 3, 3, "blue"),
-                        createSubjectItem(2, "수학", 4, 5, "yellow"),
-                        createSubjectItem(3, "사회", 2, 3, "green"),
-                        createSubjectItem(4, "과학", 3, 3, "dark"),
-                        createSubjectItem(5, "영어", 2, 2, "red")
-                ),
-                createSummaryMap(12, 5, 8),
-                "이번 주",
-                "이번 주에는 수학 과목에서의 성장이 특히 돋보였습니다!\n새로운 개념을 배울 때 질문을 많이 하고 끝까지 이해하려는 모습이 훌륭해요.\n다만 사회 과목의 과제 제출이 조금 늦어지는 경향이 있으니, 스케줄 관리에 조금만 더 신경 써볼까요? 항상 응원합니다!"
-        ));
-
-        model.addAttribute("monthlyReport", createStudentReportData(
-                createReportChart(
-                        createSubjectItem(1, "국어", 10, 12, "blue"),
-                        createSubjectItem(2, "수학", 18, 20, "yellow"),
-                        createSubjectItem(3, "사회", 8, 10, "green"),
-                        createSubjectItem(4, "과학", 9, 10, "dark"),
-                        createSubjectItem(5, "영어", 7, 8, "red")
-                ),
-                createSummaryMap(45, 20, 32),
-                "이번 달",
-                "이번 달은 전반적으로 꾸준한 학습 태도를 보여주었습니다.\n특히 영어 어휘력이 많이 향상되었어요.\n다음 달에는 과학 실험 보고서 작성에 조금 더 시간을 투자해본다면 완벽할 것 같습니다!"
-        ));
-
-        model.addAttribute("semesterReport", createStudentReportData(
-                createReportChart(
-                        createSubjectItem(1, "국어", 28, 30, "blue"),
-                        createSubjectItem(2, "수학", 48, 50, "yellow"),
-                        createSubjectItem(3, "사회", 22, 25, "green"),
-                        createSubjectItem(4, "과학", 24, 25, "dark"),
-                        createSubjectItem(5, "영어", 19, 20, "red")
-                ),
-                createSummaryMap(120, 55, 96),
-                "1학기",
-                "1학기 동안 정말 고생 많았습니다!\n학기 초반에 비해 모든 과목에서 눈에 띄는 성장을 이뤄냈어요.\n스스로 학습 계획을 세우고 실천하는 능력이 크게 향상된 점을 칭찬합니다."
-        ));
-
         return "common/layout/studentLayout";
     }
+
+    @GetMapping("/student/classes/{classId}/reports/{reportId}")
+    @ResponseBody
+    public ReportDetailDTO getStudentReportDetail(@PathVariable("classId") int classId,
+                                                  @PathVariable("reportId") int reportId,
+                                                  HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        int studentId = loginUser.getMember_id();
+
+        return reportService.getStudentReportDetail(studentId, classId, reportId);
+    }
+
 
     private void setStudentLayoutBase(Model model) {
         model.addAttribute("roleKey", "student");

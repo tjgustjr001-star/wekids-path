@@ -3,20 +3,19 @@
     const contextPath = config.contextPath || '';
     const classId = config.classId || '';
 
-    const filterForm = document.getElementById('parentReportFilterForm');
-    const studentSelect = document.getElementById('studentId');
+    const reportTypeSelect = document.getElementById('reportType');
+    const studentSelectGroup = document.getElementById('studentSelectGroup');
+    const reportGenerateForm = document.getElementById('reportGenerateForm');
 
     const modal = document.getElementById('reportDetailModal');
     const backdrop = document.getElementById('reportDetailBackdrop');
     const closeBtn = document.getElementById('closeReportDetailModal');
 
     const detailTitle = document.getElementById('detailTitle');
-    const detailHeaderTitle = document.getElementById('detailHeaderTitle');
-    const detailStudentName = document.getElementById('detailStudentName');
-    const detailPeriodType = document.getElementById('detailPeriodType');
+    const detailReportType = document.getElementById('detailReportType');
     const detailPeriod = document.getElementById('detailPeriod');
+    const detailStudentName = document.getElementById('detailStudentName');
     const detailCreatedAt = document.getElementById('detailCreatedAt');
-    const detailTeacherName = document.getElementById('detailTeacherName');
 
     const summaryLearningRate = document.getElementById('summaryLearningRate');
     const summaryAssignmentRate = document.getElementById('summaryAssignmentRate');
@@ -27,6 +26,15 @@
     const learningFeedbackList = document.getElementById('learningFeedbackList');
     const assignmentFeedbackList = document.getElementById('assignmentFeedbackList');
     const detailComent = document.getElementById('detailComent');
+
+    function toggleStudentSelect() {
+        if (!reportTypeSelect || !studentSelectGroup) {
+            return;
+        }
+
+        const isClassReport = reportTypeSelect.value === 'CLASS';
+        studentSelectGroup.style.display = isClassReport ? 'none' : '';
+    }
 
     function openModal() {
         if (!modal) return;
@@ -152,28 +160,23 @@
             detailTitle.textContent = detail.title || '리포트 상세';
         }
 
-        if (detailHeaderTitle) {
-            detailHeaderTitle.textContent = detail.title || '-';
-        }
-
-        if (detailStudentName) {
-            detailStudentName.textContent = detail.studentName || '-';
-        }
-
-        if (detailPeriodType) {
-            detailPeriodType.textContent = detail.periodType === 'MONTHLY' ? '월간' : '주간';
+        if (detailReportType) {
+            detailReportType.textContent = detail.reportType === 'CLASS' ? '학급 요약 리포트' : '개인 리포트';
         }
 
         if (detailPeriod) {
-            detailPeriod.textContent = (detail.startDate || '-') + ' ~ ' + (detail.endDate || '-');
+            const typeLabel = detail.periodType === 'MONTHLY' ? '월간' : '주간';
+            detailPeriod.textContent = (detail.startDate || '-') + ' ~ ' + (detail.endDate || '-') + ' / ' + typeLabel;
+        }
+
+        if (detailStudentName) {
+            detailStudentName.textContent = detail.reportType === 'CLASS'
+                ? '학급 전체'
+                : (detail.studentName || '-');
         }
 
         if (detailCreatedAt) {
             detailCreatedAt.textContent = detail.createdAt || '-';
-        }
-
-        if (detailTeacherName) {
-            detailTeacherName.textContent = detail.teacherName || '-';
         }
 
         if (detailComent) {
@@ -188,11 +191,8 @@
         renderAssignmentFeedbacks(snapshot.assignmentFeedbacks || []);
     }
 
-    function fetchReportDetail(reportId, studentId) {
-        const url = contextPath
-            + '/parent/classes/' + classId
-            + '/reports/' + reportId
-            + '?studentId=' + encodeURIComponent(studentId);
+    function fetchReportDetail(reportId) {
+        const url = contextPath + '/teacher/classes/' + classId + '/reports/' + reportId;
 
         return fetch(url, {
             method: 'GET',
@@ -213,13 +213,11 @@
         buttons.forEach(function (button) {
             button.addEventListener('click', function () {
                 const reportId = button.getAttribute('data-report-id');
-                const studentId = button.getAttribute('data-student-id');
-
-                if (!reportId || !studentId) {
+                if (!reportId) {
                     return;
                 }
 
-                fetchReportDetail(reportId, studentId)
+                fetchReportDetail(reportId)
                     .then(function (detail) {
                         fillDetail(detail);
                         openModal();
@@ -232,12 +230,35 @@
         });
     }
 
-    function bindFilterEvents() {
-        if (studentSelect && filterForm) {
-            studentSelect.addEventListener('change', function () {
-                filterForm.submit();
-            });
-        }
+    function bindFormValidation() {
+        if (!reportGenerateForm) return;
+
+        reportGenerateForm.addEventListener('submit', function (e) {
+            const reportType = reportTypeSelect ? reportTypeSelect.value : '';
+            if (reportType === 'PERSONAL') {
+                const checkedStudents = reportGenerateForm.querySelectorAll('input[name="studentIds"]:checked');
+                if (!checkedStudents || checkedStudents.length === 0) {
+                    e.preventDefault();
+                    alert('개인 리포트는 대상 학생을 한 명 이상 선택해야 합니다.');
+                    return;
+                }
+            }
+
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+
+            if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
+                if (startDateInput.value > endDateInput.value) {
+                    e.preventDefault();
+                    alert('시작일은 종료일보다 늦을 수 없습니다.');
+                }
+            }
+        });
+    }
+
+    if (reportTypeSelect) {
+        reportTypeSelect.addEventListener('change', toggleStudentSelect);
+        toggleStudentSelect();
     }
 
     if (closeBtn) {
@@ -254,6 +275,6 @@
         }
     });
 
-    bindFilterEvents();
     bindDetailButtons();
+    bindFormValidation();
 })();

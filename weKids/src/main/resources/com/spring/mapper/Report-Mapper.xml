@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.ReportDAO">
+
+    <!-- =========================
+         ResultMap
+         ========================= -->
+
+    <resultMap id="reportListMap" type="com.spring.dto.report.ReportListDTO">
+        <id property="reportId" column="REPORT_ID"/>
+        <result property="classId" column="CLASS_ID"/>
+        <result property="studentId" column="STUDENT_ID"/>
+        <result property="studentName" column="STUDENT_NAME"/>
+        <result property="teacherName" column="TEACHER_NAME"/>
+        <result property="reportType" column="REPORT_TYPE"/>
+        <result property="periodType" column="PERIOD_TYPE"/>
+        <result property="title" column="TITLE"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="parentViewCount" column="PARENT_VIEW_COUNT"/>
+        <result property="parentViewedAt" column="PARENT_VIEWED_AT"/>
+    </resultMap>
+
+    <resultMap id="reportDetailMap" type="com.spring.dto.report.ReportDetailDTO">
+        <id property="reportId" column="REPORT_ID"/>
+        <result property="classId" column="CLASS_ID"/>
+        <result property="studentId" column="STUDENT_ID"/>
+        <result property="studentName" column="STUDENT_NAME"/>
+        <result property="teacherName" column="TEACHER_NAME"/>
+        <result property="className" column="CLASS_NAME"/>
+        <result property="reportType" column="REPORT_TYPE"/>
+        <result property="periodType" column="PERIOD_TYPE"/>
+        <result property="title" column="TITLE"/>
+        <result property="reportContent" column="REPORT_CONTENT"/>
+        <result property="coment" column="COMENT"/>
+        <result property="attachUrl" column="ATTACH_URL"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <!-- =========================
+         Next ID
+         ========================= -->
+
+    <select id="selectNextReportId" resultType="int">
+        SELECT NVL(MAX(REPORT_ID), 0) + 1
+        FROM REPORT
+    </select>
+
+    <select id="selectNextReportViewId" resultType="int">
+        SELECT NVL(MAX(REPORT_VIEW_ID), 0) + 1
+        FROM REPORT_VIEW
+    </select>
+
+    <!-- =========================
+         Insert
+         ========================= -->
+
+    <insert id="insertReport" parameterType="com.spring.dto.report.ReportVO">
+        INSERT INTO REPORT (
+            REPORT_ID,
+            CLASS_ID,
+            STUDENT_ID,
+            TEACHER_ID,
+            REPORT_TYPE,
+            PERIOD_TYPE,
+            START_DATE,
+            END_DATE,
+            TITLE,
+            REPORT_CONTENT,
+            COMENT,
+            ATTACH_URL,
+            CREATED_AT
+        ) VALUES (
+            #{reportId, jdbcType=NUMERIC},
+            #{classId, jdbcType=NUMERIC},
+            #{studentId, jdbcType=NUMERIC},
+            #{teacherId, jdbcType=NUMERIC},
+            #{reportType, jdbcType=VARCHAR},
+            #{periodType, jdbcType=VARCHAR},
+            TO_DATE(#{startDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),
+            TO_DATE(#{endDate, jdbcType=VARCHAR}, 'YYYY-MM-DD'),
+            #{title, jdbcType=VARCHAR},
+            #{reportContent, jdbcType=CLOB},
+            #{coment, jdbcType=VARCHAR},
+            #{attachUrl, jdbcType=VARCHAR},
+            SYSDATE
+        )
+    </insert>
+
+    <insert id="insertReportView">
+        INSERT INTO REPORT_VIEW (
+            REPORT_VIEW_ID,
+            REPORT_ID,
+            VIEWER_ID,
+            VIEWER_AT
+        ) VALUES (
+            #{reportViewId, jdbcType=NUMERIC},
+            #{reportId, jdbcType=NUMERIC},
+            #{viewerId, jdbcType=NUMERIC},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- =========================
+         공통 기간 필터
+         periodFilter:
+         THIS_MONTH / LAST_MONTH / THIS_WEEK / LAST_WEEK
+         ========================= -->
+
+    <sql id="studentPeriodFilter">
+        <if test="periodFilter != null and periodFilter != ''">
+            AND (
+                (#{periodFilter} = 'THIS_MONTH' AND TRUNC(R.START_DATE, 'MM') = TRUNC(SYSDATE, 'MM'))
+                OR
+                (#{periodFilter} = 'LAST_MONTH' AND TRUNC(R.START_DATE, 'MM') = ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1))
+                OR
+                (#{periodFilter} = 'THIS_WEEK' AND TRUNC(R.START_DATE) BETWEEN TRUNC(SYSDATE, 'IW') AND TRUNC(SYSDATE, 'IW') + 6)
+                OR
+                (#{periodFilter} = 'LAST_WEEK' AND TRUNC(R.START_DATE) BETWEEN TRUNC(SYSDATE, 'IW') - 7 AND TRUNC(SYSDATE, 'IW') - 1)
+            )
+        </if>
+    </sql>
+
+    <!-- =========================
+         Teacher List
+         ========================= -->
+
+    <select id="selectTeacherReportList" resultMap="reportListMap">
+        SELECT
+            R.REPORT_ID,
+            R.CLASS_ID,
+            R.STUDENT_ID,
+            S.STUDENT_NAME AS STUDENT_NAME,
+            T.TEACHER_NAME AS TEACHER_NAME,
+            R.REPORT_TYPE,
+            R.PERIOD_TYPE,
+            R.TITLE,
+            TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+            TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            (
+	    SELECT COUNT(*)
+	    FROM REPORT_VIEW RV, STUDENT_PARENT SP
+	    WHERE SP.PARENT_ID = RV.VIEWER_ID
+	      AND SP.STUDENT_ID = R.STUDENT_ID
+	      AND NVL(SP.LINK_STATUS, 1) = 1
+	      AND RV.REPORT_ID = R.REPORT_ID
+	) AS PARENT_VIEW_COUNT,
+	            (
+	    SELECT TO_CHAR(MAX(RV.VIEWER_AT), 'YYYY-MM-DD HH24:MI')
+	    FROM REPORT_VIEW RV, STUDENT_PARENT SP
+	    WHERE SP.PARENT_ID = RV.VIEWER_ID
+	      AND SP.STUDENT_ID = R.STUDENT_ID
+	      AND NVL(SP.LINK_STATUS, 1) = 1
+	      AND RV.REPORT_ID = R.REPORT_ID
+	) AS PARENT_VIEWED_AT
+	        FROM REPORT R
+	        LEFT JOIN STUDENT S
+	          ON S.STUDENT_ID = R.STUDENT_ID
+	        LEFT JOIN TEACHER T
+	          ON T.TEACHER_ID = R.TEACHER_ID
+	        WHERE R.CLASS_ID = #{classId}
+	          AND R.TEACHER_ID = #{teacherId}
+	        ORDER BY R.CREATED_AT DESC, R.REPORT_ID DESC
+    </select>
+
+    <!-- =========================
+         Student List
+         ========================= -->
+
+    <select id="selectStudentReportList" resultMap="reportListMap">
+        SELECT
+            R.REPORT_ID,
+            R.CLASS_ID,
+            R.STUDENT_ID,
+            S.STUDENT_NAME AS STUDENT_NAME,
+            T.TEACHER_NAME AS TEACHER_NAME,
+            R.REPORT_TYPE,
+            R.PERIOD_TYPE,
+            R.TITLE,
+            TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+            TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            0 AS PARENT_VIEW_COUNT,
+            NULL AS PARENT_VIEWED_AT
+        FROM REPORT R
+        LEFT JOIN STUDENT S
+          ON S.STUDENT_ID = R.STUDENT_ID
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = R.TEACHER_ID
+        WHERE R.CLASS_ID = #{classId}
+          AND R.STUDENT_ID = #{studentId}
+          AND R.REPORT_TYPE = 'PERSONAL'
+          <include refid="studentPeriodFilter"/>
+        ORDER BY R.START_DATE DESC, R.CREATED_AT DESC, R.REPORT_ID DESC
+    </select>
+
+    <!-- =========================
+         Parent List
+         ========================= -->
+
+    <select id="selectParentReportList" resultMap="reportListMap">
+        SELECT
+            R.REPORT_ID,
+            R.CLASS_ID,
+            R.STUDENT_ID,
+            S.STUDENT_NAME AS STUDENT_NAME,
+            T.TEACHER_NAME AS TEACHER_NAME,
+            R.REPORT_TYPE,
+            R.PERIOD_TYPE,
+            R.TITLE,
+            TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+            TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            (
+                SELECT COUNT(*)
+                FROM REPORT_VIEW RV
+                WHERE RV.REPORT_ID = R.REPORT_ID
+                  AND RV.VIEWER_ID = #{parentId}
+            ) AS PARENT_VIEW_COUNT,
+            (
+                SELECT TO_CHAR(MAX(RV.VIEWER_AT), 'YYYY-MM-DD HH24:MI')
+                FROM REPORT_VIEW RV
+                WHERE RV.REPORT_ID = R.REPORT_ID
+                  AND RV.VIEWER_ID = #{parentId}
+            ) AS PARENT_VIEWED_AT
+        FROM REPORT R
+        JOIN STUDENT_PARENT SP
+          ON SP.STUDENT_ID = R.STUDENT_ID
+         AND SP.PARENT_ID = #{parentId}
+         AND NVL(SP.LINK_STATUS, 1) = 1
+        LEFT JOIN STUDENT S
+          ON S.STUDENT_ID = R.STUDENT_ID
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = R.TEACHER_ID
+        WHERE R.CLASS_ID = #{classId}
+          AND R.REPORT_TYPE = 'PERSONAL'
+          <if test="studentId != null">
+              AND R.STUDENT_ID = #{studentId}
+          </if>
+          <include refid="studentPeriodFilter"/>
+        ORDER BY R.START_DATE DESC, R.CREATED_AT DESC, R.REPORT_ID DESC
+    </select>
+
+    <!-- =========================
+         Detail
+         ========================= -->
+
+    <select id="selectReportDetail" resultMap="reportDetailMap">
+        SELECT
+            R.REPORT_ID,
+            R.CLASS_ID,
+            R.STUDENT_ID,
+            S.STUDENT_NAME AS STUDENT_NAME,
+            T.TEACHER_NAME AS TEACHER_NAME,
+            C.CLASS_NAME,
+            R.REPORT_TYPE,
+            R.PERIOD_TYPE,
+            R.TITLE,
+            DBMS_LOB.SUBSTR(R.REPORT_CONTENT, 4000, 1) AS REPORT_CONTENT,
+            R.COMENT,
+            R.ATTACH_URL,
+            TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+            TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+            TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT
+        FROM REPORT R
+        LEFT JOIN STUDENT S
+          ON S.STUDENT_ID = R.STUDENT_ID
+        LEFT JOIN TEACHER T
+          ON T.TEACHER_ID = R.TEACHER_ID
+        LEFT JOIN CLASS C
+          ON C.CLASS_ID = R.CLASS_ID
+        WHERE R.REPORT_ID = #{reportId}
+    </select>
+
+    <!-- =========================
+         View Check
+         ========================= -->
+
+    <select id="countParentReportView" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT_VIEW
+        WHERE REPORT_ID = #{reportId}
+          AND VIEWER_ID = #{viewerId}
+    </select>
+
+    <!-- =========================
+         Access Validation
+         ========================= -->
+
+    <select id="countTeacherClass" resultType="int">
+	    SELECT COUNT(*)
+	    FROM TEACHER_CLASS TC
+	    WHERE TC.TEACHER_ID = #{teacherId}
+	      AND TC.CLASS_ID = #{classId}
+	      AND TC.STATUS = 'ACTIVE'
+	      AND TC.END_DATE IS NULL
+	</select>
+
+    <select id="countStudentClass" resultType="int">
+        SELECT COUNT(*)
+        FROM STUDENT_CLASS SC
+        WHERE SC.STUDENT_ID = #{studentId}
+          AND SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+    </select>
+
+    <select id="countParentStudentClass" resultType="int">
+        SELECT COUNT(*)
+        FROM STUDENT_PARENT SP
+        JOIN STUDENT_CLASS SC
+          ON SC.STUDENT_ID = SP.STUDENT_ID
+         AND SC.CLASS_ID = #{classId}
+         AND SC.END_DATE IS NULL
+        WHERE SP.PARENT_ID = #{parentId}
+          AND SP.STUDENT_ID = #{studentId}
+          AND NVL(SP.LINK_STATUS, 1) = 1
+    </select>
+
+</mapper>

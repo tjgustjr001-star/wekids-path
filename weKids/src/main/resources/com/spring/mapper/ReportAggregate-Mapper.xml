@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.ReportAggregateDAO">
+
+    <sql id="activeStudentClassJoin">
+        JOIN STUDENT_CLASS SC
+          ON SC.CLASS_ID = #{classId}
+         AND SC.STUDENT_ID = #{studentId}
+         AND SC.END_DATE IS NULL
+    </sql>
+
+    <sql id="learnPeriodCondition">
+        (
+            (
+                LC.START_DATE IS NOT NULL
+                AND LC.END_DATE IS NOT NULL
+                AND LC.START_DATE &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+                AND LC.END_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            )
+            OR
+            (
+                LC.START_DATE IS NOT NULL
+                AND LC.END_DATE IS NULL
+                AND LC.START_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                                      AND TO_DATE(#{endDate}, 'YYYY-MM-DD') + 0.99999
+            )
+            OR
+            (
+                LC.START_DATE IS NULL
+                AND LC.CREATED_AT BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                                     AND TO_DATE(#{endDate}, 'YYYY-MM-DD') + 0.99999
+            )
+        )
+    </sql>
+
+    <sql id="assignmentPeriodCondition">
+        (
+            A.DUE_AT BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                         AND TO_DATE(#{endDate}, 'YYYY-MM-DD') + 0.99999
+        )
+    </sql>
+
+    <sql id="latestAssignmentSubCte">
+        LAST_SUB AS (
+            SELECT S.*
+            FROM ASSIGN_SUB S
+            JOIN (
+                SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+                FROM ASSIGN_SUB
+                GROUP BY ASSIGN_ID, STUDENT_ID
+            ) MX
+              ON MX.MAX_SUB_ID = S.SUB_ID
+        ),
+        LAST_FDB AS (
+            SELECT F.*
+            FROM ASSIGN_FDB F
+            JOIN (
+                SELECT SUB_ID, MAX(ASSIGN_FBD_ID) AS MAX_FDB_ID
+                FROM ASSIGN_FDB
+                GROUP BY SUB_ID
+            ) MXF
+              ON MXF.MAX_FDB_ID = F.ASSIGN_FBD_ID
+        ),
+        ASSIGN_STATUS_VIEW AS (
+            SELECT
+                A.ASSIGN_ID,
+                SUB.STUDENT_ID,
+                SUB.SUB_ID,
+                A.TITLE,
+                A.DUE_AT,
+                CASE
+                    WHEN SUB.SUB_ID IS NULL THEN '미제출'
+                    WHEN NVL(TRIM(SUB.RETURN_REASON), '') &lt;&gt; '' THEN '반려'
+                    WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('RETURNED', 'REJECTED') OR SUB.SUBMIT_STATUS = '반려' THEN '반려'
+                    WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('FEEDBACK_COMPLETED') OR SUB.SUBMIT_STATUS = '확인완료' THEN '확인완료'
+                    WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('RESUBMIT', 'RESUBMITTED') OR SUB.SUBMIT_STATUS = '재제출' THEN '재제출'
+                    WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('LATE', 'LATE_SUBMIT', 'LATE_SUBMITTED') OR SUB.SUBMIT_STATUS = '늦은제출' THEN '늦은제출'
+                    WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('COMPLETED', 'COMPLETE', 'SUBMITTED') OR SUB.SUBMIT_STATUS = '제출완료' THEN '제출완료'
+                    WHEN SUB.SUBMIT_AT IS NOT NULL AND A.DUE_AT IS NOT NULL AND SUB.SUBMIT_AT &gt; A.DUE_AT THEN '늦은제출'
+                    ELSE '미제출'
+                END AS NORMALIZED_STATUS
+            FROM ASSIGNMENT A
+            LEFT JOIN LAST_SUB SUB
+                   ON SUB.ASSIGN_ID = A.ASSIGN_ID
+                  AND SUB.STUDENT_ID = #{studentId}
+            WHERE A.CLASS_ID = #{classId}
+              AND NVL(A.DELETE_YN, 0) = 0
+              AND <include refid="assignmentPeriodCondition"/>
+        )
+    </sql>
+
+    <!-- =========================
+         학습 집계
+         ========================= -->
+
+    <select id="countTotalLearning" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM LEARN_CONT LC
+        JOIN LEARN_LIST LL
+          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+        <include refid="activeStudentClassJoin"/>
+        WHERE LL.CLASS_ID = #{classId}
+          AND NVL(LC.DELETE_YN, 0) = 0
+          AND <include refid="learnPeriodCondition"/>
+    </select>
+
+    <select id="countCompletedLearning" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM LEARN_CONT LC
+        JOIN LEARN_LIST LL
+          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+        JOIN LEARN_PRO LP
+          ON LP.LEARN_ID = LC.LEARN_ID
+         AND LP.STUDENT_ID = #{studentId}
+         AND UPPER(NVL(LP.STATUS, '')) = 'COMPLETED'
+        <include refid="activeStudentClassJoin"/>
+        WHERE LL.CLASS_ID = #{classId}
+          AND NVL(LC.DELETE_YN, 0) = 0
+          AND <include refid="learnPeriodCondition"/>
+    </select>
+
+    <select id="selectLearningFeedbacks" parameterType="map" resultType="map">
+        SELECT
+            LC.LEARN_ID AS "learnId",
+            LC.TITLE AS "title",
+            DBMS_LOB.SUBSTR(LF.FEEDBACK_CONTENT, 4000, 1) AS "feedback"
+        FROM LEARN_CONT LC
+        JOIN LEARN_LIST LL
+          ON LL.LEARN_LIST_ID = LC.LEARN_LIST_ID
+        JOIN LEARN_PRO LP
+          ON LP.LEARN_ID = LC.LEARN_ID
+         AND LP.STUDENT_ID = #{studentId}
+        JOIN LEARN_FBD LF
+          ON LF.PROGRESS_ID = LP.PROGRESS_ID
+        <include refid="activeStudentClassJoin"/>
+        WHERE LL.CLASS_ID = #{classId}
+          AND NVL(LC.DELETE_YN, 0) = 0
+          AND NVL(TRIM(DBMS_LOB.SUBSTR(LF.FEEDBACK_CONTENT, 4000, 1)), '') &lt;&gt; ''
+          AND <include refid="learnPeriodCondition"/>
+        ORDER BY LF.CREATED_AT DESC, LC.LEARN_ID DESC
+    </select>
+
+    <!-- =========================
+         과제 집계
+         ========================= -->
+
+    <select id="countTotalAssignment" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM ASSIGNMENT A
+        <include refid="activeStudentClassJoin"/>
+        WHERE A.CLASS_ID = #{classId}
+          AND NVL(A.DELETE_YN, 0) = 0
+          AND <include refid="assignmentPeriodCondition"/>
+    </select>
+
+    <select id="countSubmittedAssignment" parameterType="map" resultType="int">
+        WITH <include refid="latestAssignmentSubCte"/>
+        SELECT COUNT(*)
+        FROM ASSIGN_STATUS_VIEW V
+        WHERE V.NORMALIZED_STATUS IN ('제출완료', '재제출', '늦은제출', '확인완료')
+    </select>
+
+    <select id="selectMissingAssignments" parameterType="map" resultType="map">
+        WITH <include refid="latestAssignmentSubCte"/>
+        SELECT
+            V.ASSIGN_ID AS "assignmentId",
+            V.TITLE AS "title",
+            TO_CHAR(V.DUE_AT, 'YYYY-MM-DD') AS "dueDate"
+        FROM ASSIGN_STATUS_VIEW V
+        WHERE V.NORMALIZED_STATUS = '미제출'
+        ORDER BY V.DUE_AT ASC NULLS LAST, V.ASSIGN_ID DESC
+    </select>
+
+    <select id="selectAssignmentFeedbacks" parameterType="map" resultType="map">
+        WITH <include refid="latestAssignmentSubCte"/>
+        SELECT
+            A.ASSIGN_ID AS "assignmentId",
+            A.TITLE AS "title",
+            DBMS_LOB.SUBSTR(FDB.FEEDBACK_CONTENT, 4000, 1) AS "feedback"
+        FROM ASSIGNMENT A
+        JOIN LAST_SUB SUB
+          ON SUB.ASSIGN_ID = A.ASSIGN_ID
+         AND SUB.STUDENT_ID = #{studentId}
+        JOIN LAST_FDB FDB
+          ON FDB.SUB_ID = SUB.SUB_ID
+        <include refid="activeStudentClassJoin"/>
+        WHERE A.CLASS_ID = #{classId}
+          AND NVL(A.DELETE_YN, 0) = 0
+          AND NVL(TRIM(DBMS_LOB.SUBSTR(FDB.FEEDBACK_CONTENT, 4000, 1)), '') &lt;&gt; ''
+          AND <include refid="assignmentPeriodCondition"/>
+        ORDER BY FDB.CREATED_AT DESC, A.ASSIGN_ID DESC
+    </select>
+
+    <!-- =========================
+         학급 요약용 학생 목록
+         ========================= -->
+
+    <select id="selectClassStudentIds" parameterType="int" resultType="int">
+        SELECT SC.STUDENT_ID
+        FROM STUDENT_CLASS SC
+        WHERE SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+        ORDER BY SC.STUDENT_ID ASC
+    </select>
+
+</mapper>

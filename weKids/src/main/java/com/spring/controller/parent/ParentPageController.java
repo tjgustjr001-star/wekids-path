@@ -20,17 +20,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.dto.ParentChildVO;
 import com.spring.dto.parent.ParentAssignmentChildDTO;
+import com.spring.dto.report.ReportDetailDTO;
+import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.student.StudentAssignmentItemDTO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
 import com.spring.service.ParentAssignmentService;
+import com.spring.service.ReportService;
 import com.spring.service.SettingsService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,6 +55,10 @@ public class ParentPageController {
     @Autowired
     private ParentAssignmentService parentAssignmentService;
 	
+    @Autowired
+    private ReportService reportService;
+
+    
     @GetMapping("/parent")
     public String parentHome(Model model) {
         model.addAttribute("pageTitle", "학부모 홈");
@@ -296,97 +304,49 @@ public class ParentPageController {
     }
 
     @GetMapping("/parent/classes/{classId}/reports")
-    public String parentReportList(@PathVariable("classId") int classId,
+    public String parentReportPage(@PathVariable("classId") int classId,
+                                   @RequestParam(value = "studentId", required = false) Integer studentId,
+                                   @RequestParam(value = "periodFilter", required = false) String periodFilter,
                                    Model model,
                                    HttpSession session) throws Exception {
-        model.addAttribute("pageTitle", "리포트");
-        model.addAttribute("currentUri", "/parent/classes/" + classId + "/reports");
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        int parentId = loginUser.getMember_id();
+
+        List<ParentChildVO> childList = settingsService.getLinkedChildren(parentId);
+        
+        List<ReportListDTO> reportList =
+                reportService.getParentReportList(parentId, classId, studentId, periodFilter);
+
+        model.addAttribute("classId", classId);
+        model.addAttribute("selectedStudentId", studentId);
+        model.addAttribute("periodFilter", periodFilter);
+        model.addAttribute("childList", childList);
+        model.addAttribute("reportList", reportList);
+
         model.addAttribute("contentPage", "/WEB-INF/views/parent/report/listContent.jsp");
-
-        setParentLayoutBase(model);
-        setParentClassDetailBase(model, classId, session);
-
-        List<Map<String, Object>> allChildren = new ArrayList<>();
-        allChildren.add(createParentAssignmentChild(1, "김학생", "초등 3학년"));
-        allChildren.add(createParentAssignmentChild(2, "김동생", "초등 1학년"));
-
-        List<Map<String, Object>> reportChildren = (classId == 1)
-                ? Arrays.asList(allChildren.get(0))
-                : allChildren;
-
-        model.addAttribute("reportChildren", reportChildren);
-        model.addAttribute("selectedChildId", reportChildren.get(0).get("id"));
-
-        model.addAttribute("child1WeeklyReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 3, 3, "blue"),
-                        createParentReportSubject(2, "수학", 4, 5, "yellow"),
-                        createParentReportSubject(3, "사회", 2, 3, "green"),
-                        createParentReportSubject(4, "과학", 3, 3, "dark"),
-                        createParentReportSubject(5, "영어", 2, 2, "red")
-                ),
-                12, 5, 8,
-                "이번 주에는 수학 과목에서의 성장이 특히 돋보였습니다!\n스스로 질문을 많이 하고 끝까지 이해하려는 모습이 훌륭해요."
-        ));
-
-        model.addAttribute("child1MonthlyReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 10, 12, "blue"),
-                        createParentReportSubject(2, "수학", 18, 20, "yellow"),
-                        createParentReportSubject(3, "사회", 8, 10, "green"),
-                        createParentReportSubject(4, "과학", 9, 10, "dark"),
-                        createParentReportSubject(5, "영어", 7, 8, "red")
-                ),
-                45, 20, 32,
-                "이번 달은 전반적으로 꾸준한 학습 태도를 보여주었습니다.\n다음 달에는 과학 실험 보고서 작성에 조금 더 집중해보면 좋겠습니다."
-        ));
-
-        model.addAttribute("child1SemesterReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 28, 30, "blue"),
-                        createParentReportSubject(2, "수학", 48, 50, "yellow"),
-                        createParentReportSubject(3, "사회", 22, 25, "green"),
-                        createParentReportSubject(4, "과학", 24, 25, "dark"),
-                        createParentReportSubject(5, "영어", 19, 20, "red")
-                ),
-                120, 55, 96,
-                "1학기 동안 정말 고생 많았습니다!\n모든 과목에서 눈에 띄는 성장을 이뤄냈고 스스로 학습 계획을 세우는 능력이 향상되었습니다."
-        ));
-
-        model.addAttribute("child2WeeklyReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 2, 3, "blue"),
-                        createParentReportSubject(2, "수학", 3, 4, "yellow"),
-                        createParentReportSubject(3, "사회", 3, 3, "green"),
-                        createParentReportSubject(4, "과학", 3, 3, "dark")
-                ),
-                8, 4, 6,
-                "사회 과목에 대한 흥미가 매우 높습니다!\n국어 독해력 향상을 위해 매일 조금씩 책 읽는 습관을 기르면 더욱 좋을 것 같습니다."
-        ));
-
-        model.addAttribute("child2MonthlyReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 8, 10, "blue"),
-                        createParentReportSubject(2, "수학", 14, 16, "yellow"),
-                        createParentReportSubject(3, "사회", 10, 10, "green"),
-                        createParentReportSubject(4, "과학", 8, 10, "dark")
-                ),
-                35, 16, 25,
-                "이번 달은 지난 달보다 수학 문제 풀이 속도가 눈에 띄게 빨라졌습니다.\n가정에서도 꾸준히 연습할 수 있도록 지도 부탁드립니다."
-        ));
-
-        model.addAttribute("child2SemesterReport", createParentReportData(
-                createParentReportChart(
-                        createParentReportSubject(1, "국어", 25, 30, "blue"),
-                        createParentReportSubject(2, "수학", 40, 45, "yellow"),
-                        createParentReportSubject(3, "사회", 28, 30, "green"),
-                        createParentReportSubject(4, "과학", 22, 25, "dark")
-                ),
-                90, 42, 75,
-                "1학기 동안 학교 생활에 잘 적응하며 건강하게 학습을 진행했습니다.\n2학기에는 국어 어휘력 확장에 초점을 맞추면 좋겠습니다."
-        ));
-
         return "common/layout/parentLayout";
+    }
+
+    @GetMapping("/parent/classes/{classId}/reports/{reportId}")
+    @ResponseBody
+    public ReportDetailDTO getParentReportDetail(@PathVariable("classId") int classId,
+                                                 @PathVariable("reportId") int reportId,
+                                                 @RequestParam("studentId") int studentId,
+                                                 HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        int parentId = loginUser.getMember_id();
+
+        return reportService.getParentReportDetail(parentId, studentId, classId, reportId);
     }
 
     private void setParentLayoutBase(Model model) {

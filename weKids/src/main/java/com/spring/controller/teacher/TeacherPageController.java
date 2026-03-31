@@ -26,11 +26,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
-import com.spring.dto.teacher.TeacherClassCreateDTO;
-import com.spring.dto.teacher.TeacherClassManageDTO;
+import com.spring.dto.report.ReportDetailDTO;
+import com.spring.dto.report.ReportGenerateRequestDTO;
+import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.teacher.TeacherAssignmentDetailDTO;
 import com.spring.dto.teacher.TeacherAssignmentSaveDTO;
 import com.spring.dto.teacher.TeacherAssignmentStudentWorkDTO;
+import com.spring.dto.teacher.TeacherClassCreateDTO;
+import com.spring.dto.teacher.TeacherClassManageDTO;
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
 import com.spring.dto.teacher.TeacherLearnProgressDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
@@ -39,6 +42,7 @@ import com.spring.dto.teacher.TeacherStudentObservationSaveDTO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
+import com.spring.service.ReportService;
 import com.spring.service.TeacherAssignmentService;
 import com.spring.service.TeacherLearnService;
 
@@ -61,6 +65,9 @@ public class TeacherPageController {
 
     @Autowired
     private TeacherAssignmentService teacherAssignmentService;
+    
+    @Autowired
+    private ReportService reportService;
     
     @GetMapping("/teacher")
     public String teacherHome(Model model, HttpServletRequest request) {
@@ -775,18 +782,76 @@ public class TeacherPageController {
     }
 
     @GetMapping("/teacher/classes/{classId}/reports")
-    public String teacherReportList(@PathVariable("classId") int classId,
+    public String teacherReportPage(@PathVariable("classId") int classId,
                                     Model model,
                                     HttpServletRequest request,
-                                    HttpSession session) {
+                                    HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        int teacherId = loginUser.getMember_id();
+
+        ClassVO classInfo = classService.getTeacherClassDetail(teacherId, classId);
+        if (classInfo == null) {
+            return "redirect:/teacher/classes";
+        }
+
+        List<ReportListDTO> reportList = reportService.getTeacherReportList(teacherId, classId);
+
+        List<TeacherStudentManageDTO> studentList =
+                classService.getTeacherStudentManageList(teacherId, classId);
+
         model.addAttribute("pageTitle", "리포트 관리");
         model.addAttribute("currentUri", "/teacher/classes/" + classId + "/reports");
         model.addAttribute("contentPage", "/WEB-INF/views/teacher/report/listContent.jsp");
 
-        setTeacherClassDetailLayout(model, request, classId, getTeacherClassName(classId, session));
+        setTeacherClassDetailLayout(model, request, classId, classInfo.getClassName());
+
+        model.addAttribute("classId", classId);
+        model.addAttribute("classInfo", classInfo);
+        model.addAttribute("reportList", reportList);
+        model.addAttribute("studentList", studentList);
+        model.addAttribute("reportGenerateRequestDTO", new ReportGenerateRequestDTO());
 
         return "common/layout/teacherLayout";
     }
+
+    @PostMapping("/teacher/classes/{classId}/reports/generate")
+    public String generateTeacherReports(@PathVariable("classId") int classId,
+                                         ReportGenerateRequestDTO dto,
+                                         HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        int teacherId = loginUser.getMember_id();
+
+        reportService.generateReports(teacherId, classId, dto);
+
+        return "redirect:/teacher/classes/" + classId + "/reports";
+    }
+
+    @GetMapping("/teacher/classes/{classId}/reports/{reportId}")
+    @ResponseBody
+    public ReportDetailDTO getTeacherReportDetail(@PathVariable("classId") int classId,
+                                                  @PathVariable("reportId") int reportId,
+                                                  HttpSession session) throws Exception {
+
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        int teacherId = loginUser.getMember_id();
+
+        return reportService.getTeacherReportDetail(teacherId, classId, reportId);
+    }
+
 
     private void setTeacherLayoutBase(Model model, HttpServletRequest request) {
         model.addAttribute("roleKey", "teacher");

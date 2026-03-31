@@ -1,258 +1,175 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/student/student-report.css">
 
 <section class="student-report-page">
-    <div class="student-report-topbar">
-        <div class="student-report-title-group">
-            <h2 class="student-report-page-title">학습 리포트</h2>
-
-            <div class="student-report-tab-group">
-                <button type="button" class="student-report-tab-btn active" data-tab="weekly">주간</button>
-                <button type="button" class="student-report-tab-btn" data-tab="monthly">월간</button>
-                <button type="button" class="student-report-tab-btn" data-tab="semester">학기</button>
-            </div>
-        </div>
-
-        <div class="student-report-rate-badge" id="studentReportRateBadge">
-            <span class="student-report-star-icon"></span>
-            <span>${weeklyReport.tabLabel} 과제 제출율: ${weeklyReport.overallRate}%</span>
+    <div class="student-report-header">
+        <div>
+            <h2>리포트 확인</h2>
+            <p>주간/월간 학습 리포트를 확인할 수 있습니다.</p>
         </div>
     </div>
 
-    <div class="student-report-panel period-panel active" data-tab="weekly"
-         data-tab-label="${weeklyReport.tabLabel}"
-         data-overall-rate="${weeklyReport.overallRate}">
-        <div class="student-report-grid">
-            <div class="student-report-chart-card">
-                <div class="student-report-card-head">
-                    <h3>
-                        <span class="student-report-head-icon chart"></span>
-                        과목별 제출 현황
-                    </h3>
-                    <span class="student-report-unit">단위: 건</span>
-                </div>
-
-                <div class="student-report-chart-wrap">
-                    <c:forEach var="item" items="${weeklyReport.chart}">
-                        <div class="student-report-chart-item">
-                            <div class="student-report-chart-bars">
-                                <div class="student-report-chart-bar total">
-                                    <div class="student-report-chart-fill gray" style="height:${item.totalHeight}%;"></div>
-                                </div>
-                                <div class="student-report-chart-bar submitted">
-                                    <div class="student-report-chart-fill ${item.colorClass}" style="height:${item.submittedHeight}%;"></div>
-                                </div>
-                            </div>
-                            <div class="student-report-chart-values">
-                                <span>${item.submitted}</span>
-                                <span>${item.total}</span>
-                            </div>
-                            <div class="student-report-chart-label">${item.subject}</div>
-                        </div>
-                    </c:forEach>
-                </div>
-
-                <div class="student-report-legend">
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot green"></span>
-                        <span>제출 완료</span>
-                    </div>
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot gray"></span>
-                        <span>전체 과제</span>
-                    </div>
-                </div>
+    <!-- 필터 -->
+    <div class="report-filter-section">
+        <form action="${pageContext.request.contextPath}/student/classes/${classId}/reports"
+              method="get"
+              class="report-filter-form">
+            <div class="filter-chip-group">
+                <button type="submit" name="periodFilter" value="THIS_WEEK"
+                        class="filter-chip ${periodFilter eq 'THIS_WEEK' ? 'is-active' : ''}">
+                    이번 주
+                </button>
+                <button type="submit" name="periodFilter" value="LAST_WEEK"
+                        class="filter-chip ${periodFilter eq 'LAST_WEEK' ? 'is-active' : ''}">
+                    지난 주
+                </button>
+                <button type="submit" name="periodFilter" value="THIS_MONTH"
+                        class="filter-chip ${periodFilter eq 'THIS_MONTH' ? 'is-active' : ''}">
+                    이번 달
+                </button>
+                <button type="submit" name="periodFilter" value="LAST_MONTH"
+                        class="filter-chip ${periodFilter eq 'LAST_MONTH' ? 'is-active' : ''}">
+                    지난 달
+                </button>
             </div>
-
-            <div class="student-report-side">
-                <div class="student-report-summary-card">
-                    <h3>${weeklyReport.tabLabel} 학습 요약</h3>
-                    <div class="student-report-summary-list">
-                        <div class="student-report-summary-item">
-                            <span>완료한 학습</span>
-                            <strong>${weeklyReport.summary.completed}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>제출한 과제</span>
-                            <strong>${weeklyReport.summary.submitted}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>학습 시간</span>
-                            <strong>${weeklyReport.summary.hours}시간</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="student-report-comment-card">
-                    <h3>
-                        <span class="student-report-head-icon comment"></span>
-                        선생님 코멘트
-                    </h3>
-                    <div class="student-report-comment-box">
-                        <span class="student-report-comment-teacher">김선생 선생님</span>
-                        ${weeklyReport.comment}
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 
-    <div class="student-report-panel period-panel" data-tab="monthly"
-         data-tab-label="${monthlyReport.tabLabel}"
-         data-overall-rate="${monthlyReport.overallRate}">
-        <div class="student-report-grid">
-            <div class="student-report-chart-card">
-                <div class="student-report-card-head">
-                    <h3>
-                        <span class="student-report-head-icon chart"></span>
-                        과목별 제출 현황
-                    </h3>
-                    <span class="student-report-unit">단위: 건</span>
-                </div>
-
-                <div class="student-report-chart-wrap">
-                    <c:forEach var="item" items="${monthlyReport.chart}">
-                        <div class="student-report-chart-item">
-                            <div class="student-report-chart-bars">
-                                <div class="student-report-chart-bar total">
-                                    <div class="student-report-chart-fill gray" style="height:${item.totalHeight}%;"></div>
-                                </div>
-                                <div class="student-report-chart-bar submitted">
-                                    <div class="student-report-chart-fill ${item.colorClass}" style="height:${item.submittedHeight}%;"></div>
-                                </div>
-                            </div>
-                            <div class="student-report-chart-values">
-                                <span>${item.submitted}</span>
-                                <span>${item.total}</span>
-                            </div>
-                            <div class="student-report-chart-label">${item.subject}</div>
-                        </div>
-                    </c:forEach>
-                </div>
-
-                <div class="student-report-legend">
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot green"></span>
-                        <span>제출 완료</span>
-                    </div>
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot gray"></span>
-                        <span>전체 과제</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="student-report-side">
-                <div class="student-report-summary-card">
-                    <h3>${monthlyReport.tabLabel} 학습 요약</h3>
-                    <div class="student-report-summary-list">
-                        <div class="student-report-summary-item">
-                            <span>완료한 학습</span>
-                            <strong>${monthlyReport.summary.completed}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>제출한 과제</span>
-                            <strong>${monthlyReport.summary.submitted}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>학습 시간</span>
-                            <strong>${monthlyReport.summary.hours}시간</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="student-report-comment-card">
-                    <h3>
-                        <span class="student-report-head-icon comment"></span>
-                        선생님 코멘트
-                    </h3>
-                    <div class="student-report-comment-box">
-                        <span class="student-report-comment-teacher">김선생 선생님</span>
-                        ${monthlyReport.comment}
-                    </div>
-                </div>
-            </div>
+    <!-- 목록 -->
+    <div class="report-list-section">
+        <div class="section-title-row">
+            <h3>리포트 목록</h3>
         </div>
-    </div>
 
-    <div class="student-report-panel period-panel" data-tab="semester"
-         data-tab-label="${semesterReport.tabLabel}"
-         data-overall-rate="${semesterReport.overallRate}">
-        <div class="student-report-grid">
-            <div class="student-report-chart-card">
-                <div class="student-report-card-head">
-                    <h3>
-                        <span class="student-report-head-icon chart"></span>
-                        과목별 제출 현황
-                    </h3>
-                    <span class="student-report-unit">단위: 건</span>
-                </div>
+        <div class="student-report-list">
+            <c:choose>
+                <c:when test="${not empty reportList}">
+                    <c:forEach var="report" items="${reportList}">
+                        <div class="student-report-card">
+                            <div class="report-card-top">
+                                <span class="report-badge ${report.periodType eq 'MONTHLY' ? 'is-monthly' : 'is-weekly'}">
+                                    <c:choose>
+                                        <c:when test="${report.periodType eq 'MONTHLY'}">월간</c:when>
+                                        <c:otherwise>주간</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="report-created-at">${report.createdAt}</span>
+                            </div>
 
-                <div class="student-report-chart-wrap">
-                    <c:forEach var="item" items="${semesterReport.chart}">
-                        <div class="student-report-chart-item">
-                            <div class="student-report-chart-bars">
-                                <div class="student-report-chart-bar total">
-                                    <div class="student-report-chart-fill gray" style="height:${item.totalHeight}%;"></div>
-                                </div>
-                                <div class="student-report-chart-bar submitted">
-                                    <div class="student-report-chart-fill ${item.colorClass}" style="height:${item.submittedHeight}%;"></div>
-                                </div>
+                            <h4 class="report-card-title">${report.title}</h4>
+
+                            <div class="report-card-period">
+                                ${report.startDate} ~ ${report.endDate}
                             </div>
-                            <div class="student-report-chart-values">
-                                <span>${item.submitted}</span>
-                                <span>${item.total}</span>
+
+                            <div class="report-card-bottom">
+                                <button type="button"
+                                        class="detail-btn"
+                                        data-report-id="${report.reportId}">
+                                    상세 보기
+                                </button>
                             </div>
-                            <div class="student-report-chart-label">${item.subject}</div>
                         </div>
                     </c:forEach>
-                </div>
-
-                <div class="student-report-legend">
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot green"></span>
-                        <span>제출 완료</span>
+                </c:when>
+                <c:otherwise>
+                    <div class="report-empty-box">
+                        조회 가능한 리포트가 없습니다.
                     </div>
-                    <div class="student-report-legend-item">
-                        <span class="student-report-legend-dot gray"></span>
-                        <span>전체 과제</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="student-report-side">
-                <div class="student-report-summary-card">
-                    <h3>${semesterReport.tabLabel} 학습 요약</h3>
-                    <div class="student-report-summary-list">
-                        <div class="student-report-summary-item">
-                            <span>완료한 학습</span>
-                            <strong>${semesterReport.summary.completed}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>제출한 과제</span>
-                            <strong>${semesterReport.summary.submitted}건</strong>
-                        </div>
-                        <div class="student-report-summary-item">
-                            <span>학습 시간</span>
-                            <strong>${semesterReport.summary.hours}시간</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="student-report-comment-card">
-                    <h3>
-                        <span class="student-report-head-icon comment"></span>
-                        선생님 코멘트
-                    </h3>
-                    <div class="student-report-comment-box">
-                        <span class="student-report-comment-teacher">김선생 선생님</span>
-                        ${semesterReport.comment}
-                    </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </section>
 
+<!-- 상세 모달 -->
+<div class="report-detail-modal" id="reportDetailModal" style="display:none;">
+    <div class="report-detail-backdrop" id="reportDetailBackdrop"></div>
+
+    <div class="report-detail-dialog">
+        <div class="report-detail-header">
+            <h3 id="detailTitle">리포트 상세</h3>
+            <button type="button" class="modal-close-btn" id="closeReportDetailModal">닫기</button>
+        </div>
+
+        <div class="report-detail-body">
+            <div class="detail-info-grid">
+                <div class="detail-info-box">
+                    <span>기간 유형</span>
+                    <strong id="detailPeriodType"></strong>
+                </div>
+                <div class="detail-info-box">
+                    <span>기간</span>
+                    <strong id="detailPeriod"></strong>
+                </div>
+                <div class="detail-info-box">
+                    <span>생성일</span>
+                    <strong id="detailCreatedAt"></strong>
+                </div>
+                <div class="detail-info-box">
+                    <span>담당 교사</span>
+                    <strong id="detailTeacherName"></strong>
+                </div>
+            </div>
+
+            <div class="detail-block">
+                <h4>요약 통계</h4>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <span>학습 완료율</span>
+                        <strong id="summaryLearningRate">0%</strong>
+                    </div>
+                    <div class="summary-card">
+                        <span>과제 제출률</span>
+                        <strong id="summaryAssignmentRate">0%</strong>
+                    </div>
+                    <div class="summary-card">
+                        <span>완료 학습</span>
+                        <strong id="summaryLearningCount">0 / 0</strong>
+                    </div>
+                    <div class="summary-card">
+                        <span>제출 과제</span>
+                        <strong id="summaryAssignmentCount">0 / 0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-block">
+                <h4>미제출 과제</h4>
+                <div id="missingAssignmentList" class="detail-list-box">
+                    <div class="empty-inline-text">없음</div>
+                </div>
+            </div>
+
+            <div class="detail-block">
+                <h4>학습 피드백</h4>
+                <div id="learningFeedbackList" class="detail-list-box">
+                    <div class="empty-inline-text">없음</div>
+                </div>
+            </div>
+
+            <div class="detail-block">
+                <h4>과제 피드백</h4>
+                <div id="assignmentFeedbackList" class="detail-list-box">
+                    <div class="empty-inline-text">없음</div>
+                </div>
+            </div>
+
+            <div class="detail-block">
+                <h4>교사 코멘트</h4>
+                <div id="detailComent" class="detail-comment-box">-</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.reportPageConfig = {
+        contextPath: '${pageContext.request.contextPath}',
+        classId: '${classId}',
+        role: 'student'
+    };
+</script>
 <script src="${pageContext.request.contextPath}/resources/js/student/student-report.js"></script>
