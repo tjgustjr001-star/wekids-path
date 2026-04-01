@@ -1,8 +1,9 @@
 @charset "UTF-8";
 
 .parent-assignment-page {
-    max-width: 1180px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
 }
 
 .parent-assignment-topbar {
@@ -10,7 +11,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     flex-wrap: wrap;
 }
 
@@ -222,6 +223,8 @@
 }
 
 .parent-assignment-grid {
+    padding: 16px;
+
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
@@ -424,7 +427,7 @@
     height: 40px;
     border: 0;
     background: transparent;
-    font-size: 34px;
+    font-size: 24px;
     line-height: 1;
     color: #94a3b8;
     cursor: pointer;

@@ -2,20 +2,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/student/student-assignment.css">
 
-<div class="class-content-shell">
-    <div class="class-content-hero">
-        <div class="class-content-hero__icon"><i class="fa-regular fa-clipboard"></i></div>
-        <div class="class-content-hero__text">
-            <h1 class="class-content-hero__title">과제</h1>
-            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
-        </div>
-    </div>
 <section class="student-assignment-page" data-context-path="${pageContext.request.contextPath}" data-class-id="${classId}">
-    <div class="class-content-panel">
     <input type="hidden" id="assignmentCsrfName" value="${_csrf.parameterName}">
     <input type="hidden" id="assignmentCsrfToken" value="${_csrf.token}">
 
-    <div class="assignment-topbar">
+    <div class="class-page-hero">
+        <div class="class-page-hero-icon">
+            <span class="menu-icon calendar-mini-icon"></span>
+        </div>
+        <div class="class-page-hero-text">
+            <h1 class="class-page-hero-title">과제</h1>
+            <p class="class-page-hero-subtitle">
+                <c:choose>
+                    <c:when test="${not empty classInfo.className}">${classInfo.className}</c:when>
+                    <c:when test="${not empty className}">${className}</c:when>
+                    <c:otherwise>현재 클래스</c:otherwise>
+                </c:choose>
+            </p>
+        </div>
+    </div>
+
+<div class="assignment-topbar">
         <h2 class="assignment-page-title">내 과제 목록</h2>
     </div>
 
@@ -124,10 +131,7 @@
             </div>
         </c:forEach>
     </div>
-
-    </div>
 </section>
-</div>
 
 <div class="assignment-modal-overlay" id="assignmentModalOverlay">
     <div class="assignment-modal">

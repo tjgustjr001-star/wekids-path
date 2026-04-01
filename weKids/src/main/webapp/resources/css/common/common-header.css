@@ -1,7 +1,11 @@
 @charset "UTF-8";
 
 .top-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
     height: var(--header-height);
+    flex: 0 0 var(--header-height);
     background: var(--white);
     border-bottom: 1px solid var(--border-color);
     display: flex;

@@ -3,21 +3,28 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/parent/parent-assignment.css">
 
-<div class="class-content-shell">
-    <div class="class-content-hero">
-        <div class="class-content-hero__icon"><i class="fa-regular fa-clipboard"></i></div>
-        <div class="class-content-hero__text">
-            <h1 class="class-content-hero__title">과제 조회</h1>
-            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
-        </div>
-    </div>
 <section class="parent-assignment-page"
          data-context-path="${pageContext.request.contextPath}"
          data-class-id="${classId}"
          data-selected-child-id="${selectedChildId}">
-    <div class="class-content-panel">
 
-    <div class="parent-assignment-topbar">
+    <div class="class-page-hero">
+        <div class="class-page-hero-icon">
+            <span class="menu-icon calendar-mini-icon"></span>
+        </div>
+        <div class="class-page-hero-text">
+            <h1 class="class-page-hero-title">과제</h1>
+            <p class="class-page-hero-subtitle">
+                <c:choose>
+                    <c:when test="${not empty classInfo.className}">${classInfo.className}</c:when>
+                    <c:when test="${not empty className}">${className}</c:when>
+                    <c:otherwise>현재 클래스</c:otherwise>
+                </c:choose>
+            </p>
+        </div>
+    </div>
+
+<div class="parent-assignment-topbar">
         <h2 class="parent-assignment-page-title">과제 조회</h2>
 
         <c:if test="${not empty assignmentChildren}">
@@ -138,10 +145,7 @@
             </div>
         </c:otherwise>
     </c:choose>
-
-    </div>
 </section>
-</div>
 
 <div class="parent-assignment-modal-overlay" id="parentAssignmentModalOverlay">
     <div class="parent-assignment-modal">

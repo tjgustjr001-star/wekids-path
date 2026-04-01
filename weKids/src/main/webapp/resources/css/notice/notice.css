@@ -30,8 +30,8 @@ a {
 
 .notice_page {
     width: 100%;
-    max-width: 1160px;
-    margin: 36px auto 50px;
+    max-width: none;
+    margin: 0;
 }
 
 .notice_header {
@@ -39,7 +39,7 @@ a {
     justify-content: space-between;
     align-items: center;
     gap: 18px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .notice_header_left {
@@ -86,7 +86,7 @@ a {
 
 .notice_top_box {
     padding: 28px 34px 20px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
 }
 
 .notice_top_info {
@@ -1014,3 +1014,8 @@ a {
     font-size: 14px;
 }
 
+.notice_action_row{
+    display:flex;
+    justify-content:flex-end;
+    margin:0 0 20px 0;
+}

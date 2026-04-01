@@ -1,15 +1,16 @@
 @charset "UTF-8";
 
 .student-assignment-page {
-    max-width: 1180px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
 }
 
 .assignment-topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .assignment-page-title {
@@ -22,6 +23,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
+    padding: 16px;
 }
 
 .assignment-card {

@@ -15,51 +15,37 @@
 </c:if>
 
 
-<div class="class-content-shell">
-    <div class="class-content-hero">
-        <div class="class-content-hero__icon"><i class="fa-regular fa-bell"></i></div>
-        <div class="class-content-hero__text">
-            <h1 class="class-content-hero__title">가정통신문</h1>
-            <p class="class-content-hero__subtitle"><c:choose><c:when test="${not empty classInfo.className}">${classInfo.className}</c:when><c:when test="${not empty className}">${className}</c:when><c:otherwise>현재 클래스</c:otherwise></c:choose></p>
-        </div>
-    </div>
 <section class="notice_page">
-    <div class="notice_header">
-        <div class="notice_header_left">
-            <div class="notice_icon_box">
-                <img src="${pageContext.request.contextPath}/resources/images/free-icon-notification-bell-12328821.png" alt="가정통신문">
-            </div>
-            <div>
-                <h1 class="notice_title">가정통신문</h1>
-                <p class="notice_sub_title">
-                    <c:choose>
-                        <c:when test="${not empty classInfo.className}">
-                            ${classInfo.className}
-                        </c:when>
-                        <c:when test="${not empty className}">
-                            ${className}
-                        </c:when>
-                        <c:otherwise>
-                            현재 클래스
-                        </c:otherwise>
-                    </c:choose>
-                </p>
-            </div>
+    <div class="class-page-hero">
+    
+        <div class="class-page-hero-icon">
+            <span class="menu-icon bell-mini-icon"></span>
         </div>
-
-        <c:if test="${isTeacher}">
-            <button type="button"
-                    class="write_btn"
-                    id="openWriteBtn"
-                    data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
-                    data-return-url="${currentUri}">
-                새 가정통신문 작성
-            </button>
-        </c:if>
+        <div class="class-page-hero-text">
+            <h1 class="class-page-hero-title">가정통신문</h1>
+            <p class="class-page-hero-subtitle">
+                <c:choose>
+                    <c:when test="${not empty classInfo.className}">${classInfo.className}</c:when>
+                    <c:when test="${not empty className}">${className}</c:when>
+                    <c:otherwise>현재 클래스</c:otherwise>
+                </c:choose>
+            </p>
+        </div>
     </div>
 
-    <div class="class-content-panel">
-        <div class="notice_top_box">
+	<c:if test="${isTeacher}">
+	    <div class="notice_action_row">
+	        <button type="button"
+	                class="write_btn"
+	                id="openWriteBtn"
+	                data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
+	                data-return-url="${currentUri}">
+	            새 가정통신문 작성
+	        </button>
+	    </div>
+	</c:if>
+
+    <div class="notice_top_box">
         <div class="notice_top_info">
             <h2>전체 가정통신문</h2>
             <p>
@@ -169,15 +155,11 @@
         </c:choose>
     </div>
 
-        </div>
-    </div>
-
     <div class="pagination">
         <button type="button" id="prevBtn" class="page_btn">&lt;</button>
         <button type="button" id="nextBtn" class="page_btn">&gt;</button>
     </div>
 </section>
-</div>
 
 <div id="requiredPopupOverlay" class="popup_overlay">
     <div class="popup_box required_popup_box">

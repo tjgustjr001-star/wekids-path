@@ -2,17 +2,24 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/teacher/teacher-class-manage.css">
 
-<div class="class-content-shell">
-    <div class="class-content-hero">
-        <div class="class-content-hero__icon"><i class="fa-solid fa-gear"></i></div>
-        <div class="class-content-hero__text">
-            <h1 class="class-content-hero__title">클래스 설정</h1>
-            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
+<section class="teacher-class-manage-page">
+    <div class="class-page-hero">
+        <div class="class-page-hero-icon">
+            <span class="menu-icon settings-mini-icon"></span>
+        </div>
+        <div class="class-page-hero-text">
+            <h1 class="class-page-hero-title">클래스 관리</h1>
+            <p class="class-page-hero-subtitle">
+                <c:choose>
+                    <c:when test="${not empty classInfo.className}">${classInfo.className}</c:when>
+                    <c:when test="${not empty className}">${className}</c:when>
+                    <c:otherwise>현재 클래스</c:otherwise>
+                </c:choose>
+            </p>
         </div>
     </div>
-<section class="teacher-class-manage-page">
-    <div class="class-content-panel">
-    <div class="manage-summary-grid">
+
+<div class="manage-summary-grid">
         <div class="summary-card">
             <div class="summary-icon users-summary-icon green"></div>
             <div class="summary-text-box">
@@ -97,9 +104,7 @@
                 </div>
             </form>
         </div>
-    
-    </div>
-</section>
+    </section>
 
     <section class="manage-section">
         <div class="section-title-row">
@@ -187,4 +192,3 @@
         </div>
     </section>
 </section>
-</div>
