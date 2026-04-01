@@ -1,51 +1,42 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>계정정보</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #f7f8fa; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #222; }
-        .account-page { max-width: 860px; margin: 0 auto; padding: 24px 24px 60px; }
-        .top-back { margin-bottom: 14px; }
-        .top-back a { color: #7a7f87; text-decoration: none; font-size: 13px; }
-        .top-back a:hover { color: #1d8f63; }
-        .account-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 4px 18px rgba(0,0,0,.03); overflow: hidden; }
-        .page-header { padding: 26px 30px 8px; }
-        .page-header h2 { margin: 0; font-size: 28px; font-weight: 800; }
-        .page-header p { margin: 10px 0 0; color: #8b93a1; font-size: 14px; }
-        .form-body { padding: 0 30px 30px; }
-        .section-title { display: flex; align-items: center; gap: 8px; margin: 22px 0 12px; font-size: 18px; font-weight: 800; color: #0f172a; }
-        .section-title i { color: #19a974; }
-        .field { margin-bottom: 16px; }
-        .field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #374151; }
-        .field input { width: 100%; height: 46px; border: 1px solid #d6dbe4; border-radius: 10px; padding: 0 14px; font-size: 14px; outline: none; }
-        .field input:focus { border-color: #1aa36f; box-shadow: 0 0 0 4px rgba(26,163,111,.08); }
-        .field-help { margin-top: 8px; font-size: 12px; color: #9aa1ad; }
-        .divider { height: 1px; background: #edf0f4; margin: 18px 0 24px; }
-        .security-box { margin-top: 10px; padding: 18px 18px 14px; background: #eef5ff; border: 1px solid #cfe0ff; border-radius: 12px; }
-        .security-box h4 { margin: 0 0 10px; color: #285ea8; font-size: 14px; }
-        .security-box ul { margin: 0; padding-left: 18px; color: #4168a7; font-size: 12px; line-height: 1.7; }
-        .btn-row { display: flex; gap: 10px; margin-top: 24px; }
-        .save-btn, .cancel-btn, .danger-btn { height: 46px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .save-btn { flex: 1; border: 0; background: #177e53; color: #fff; }
-        .save-btn:hover { background: #136b46; }
-        .cancel-btn { width: 96px; border: 1px solid #d1d5db; background: #fff; color: #374151; }
-        .danger-wrap { margin-top: 28px; padding-top: 24px; border-top: 1px solid #edf0f4; }
-        .danger-title { margin: 0 0 8px; color: #e53935; font-size: 14px; font-weight: 800; }
-        .danger-desc { margin: 0 0 14px; color: #8b93a1; font-size: 12px; }
-        .danger-btn { min-width: 118px; border: 1px solid #f2b6b4; background: #fff; color: #d94242; }
-        .toast { position: fixed; top: 26px; right: 26px; min-width: 240px; max-width: 360px; padding: 14px 16px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.12); font-size: 13px; font-weight: 700; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all .25s ease; z-index: 9999; }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #edfdf4; color: #12724d; border: 1px solid #bdeacb; }
-        .toast.error { background: #fff1f1; color: #c62828; border: 1px solid #f2b8b5; }
-    </style>
-</head>
-<body>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    * { box-sizing: border-box; }
+    .account-page { max-width: 860px; margin: 0 auto; padding: 24px 24px 60px; }
+    .top-back { margin-bottom: 14px; }
+    .top-back a { color: #7a7f87; text-decoration: none; font-size: 13px; }
+    .top-back a:hover { color: #1d8f63; }
+    .account-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 4px 18px rgba(0,0,0,.03); overflow: hidden; }
+    .page-header { padding: 26px 30px 8px; }
+    .page-header h2 { margin: 0; font-size: 28px; font-weight: 800; }
+    .page-header p { margin: 10px 0 0; color: #8b93a1; font-size: 14px; }
+    .form-body { padding: 0 30px 30px; }
+    .section-title { display: flex; align-items: center; gap: 8px; margin: 22px 0 12px; font-size: 18px; font-weight: 800; color: #0f172a; }
+    .section-title i { color: #19a974; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #374151; }
+    .field input { width: 100%; height: 46px; border: 1px solid #d6dbe4; border-radius: 10px; padding: 0 14px; font-size: 14px; outline: none; }
+    .field input:focus { border-color: #1aa36f; box-shadow: 0 0 0 4px rgba(26,163,111,.08); }
+    .field-help { margin-top: 8px; font-size: 12px; color: #9aa1ad; }
+    .divider { height: 1px; background: #edf0f4; margin: 18px 0 24px; }
+    .security-box { margin-top: 10px; padding: 18px 18px 14px; background: #eef5ff; border: 1px solid #cfe0ff; border-radius: 12px; }
+    .security-box h4 { margin: 0 0 10px; color: #285ea8; font-size: 14px; }
+    .security-box ul { margin: 0; padding-left: 18px; color: #4168a7; font-size: 12px; line-height: 1.7; }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .save-btn, .cancel-btn, .danger-btn { height: 46px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .save-btn { flex: 1; border: 0; background: #177e53; color: #fff; }
+    .save-btn:hover { background: #136b46; }
+    .cancel-btn { width: 96px; border: 1px solid #d1d5db; background: #fff; color: #374151; }
+    .danger-wrap { margin-top: 28px; padding-top: 24px; border-top: 1px solid #edf0f4; }
+    .danger-title { margin: 0 0 8px; color: #e53935; font-size: 14px; font-weight: 800; }
+    .danger-desc { margin: 0 0 14px; color: #8b93a1; font-size: 12px; }
+    .danger-btn { min-width: 118px; border: 1px solid #f2b6b4; background: #fff; color: #d94242; }
+    .toast { position: fixed; top: 26px; right: 26px; min-width: 240px; max-width: 360px; padding: 14px 16px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.12); font-size: 13px; font-weight: 700; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all .25s ease; z-index: 9999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #edfdf4; color: #12724d; border: 1px solid #bdeacb; }
+    .toast.error { background: #fff1f1; color: #c62828; border: 1px solid #f2b8b5; }
+</style>
 <div id="toastSuccess" class="toast success"></div>
 <div id="toastError" class="toast error"></div>
 
@@ -217,5 +208,3 @@
     });
 })();
 </script>
-</body>
-</html>

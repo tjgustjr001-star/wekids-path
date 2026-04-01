@@ -2,15 +2,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>보호자 초대 코드</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/childLinkStudent.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<body>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/childLinkStudent.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <div class="link-page">
     <div class="top-back">
@@ -188,7 +181,3 @@ function copyCode() {
         });
 }
 </script>
-
-</body>
-
-</html>

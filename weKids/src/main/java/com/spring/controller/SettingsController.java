@@ -93,8 +93,10 @@ public class SettingsController {
         model.addAttribute("member", profile);
         model.addAttribute("profile", profile);
         model.addAttribute("baseSettingsPath", getBaseSettingsPath(roleCode));
+        model.addAttribute("pageTitle", "내 정보");
+        model.addAttribute("contentPage", "/WEB-INF/views/settings/profile.jsp");
 
-        return "settings/profile";
+        return resolveLayout(roleCode);
     }
 
     @PostMapping(value = "/profile/modify", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -228,7 +230,9 @@ public class SettingsController {
             List<ParentChildVO> parentList = settingsService.getLinkedParents(loginUser.getMember_id());
             model.addAttribute("linkInfo", linkInfo);
             model.addAttribute("parentList", parentList);
-            return "settings/childLinkStudent";
+            model.addAttribute("pageTitle", "보호자 초대 코드");
+            model.addAttribute("contentPage", "/WEB-INF/views/settings/childLinkStudent.jsp");
+            return resolveLayout(roleCode);
         }
 
         if ("PARENT".equalsIgnoreCase(roleCode)) {
@@ -331,8 +335,10 @@ public class SettingsController {
         model.addAttribute("member", account);
         model.addAttribute("role", roleCode);
         model.addAttribute("baseSettingsPath", getBaseSettingsPath(roleCode));
+        model.addAttribute("pageTitle", "계정정보");
+        model.addAttribute("contentPage", "/WEB-INF/views/settings/accountInfo.jsp");
 
-        return "settings/accountInfo";
+        return resolveLayout(roleCode);
     }
 
     @PostMapping(value = "/info/modify", produces = MediaType.APPLICATION_JSON_VALUE)

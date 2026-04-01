@@ -3,48 +3,41 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>내 정보</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        .toast-success,
-        .toast-error {
-            position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            min-width: 260px;
-            max-width: 420px;
-            padding: 14px 18px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
-        }
-        .toast-success {
-            background: #eaf8ee;
-            color: #1f7a3d;
-            border: 1px solid #b7e4c7;
-        }
-        .toast-error {
-            background: #fff1f1;
-            color: #c62828;
-            border: 1px solid #f1b3b3;
-        }
-        .toast-show {
-            opacity: 1;
-        }
-    </style>
-</head>
-<body>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/profile.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    .toast-success,
+    .toast-error {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        min-width: 260px;
+        max-width: 420px;
+        padding: 14px 18px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+    .toast-success {
+        background: #eaf8ee;
+        color: #1f7a3d;
+        border: 1px solid #b7e4c7;
+    }
+    .toast-error {
+        background: #fff1f1;
+        color: #c62828;
+        border: 1px solid #f1b3b3;
+    }
+    .toast-show {
+        opacity: 1;
+    }
+</style>
 
 <div id="toastSuccess" class="toast-success"></div>
 <div id="toastError" class="toast-error"></div>
@@ -359,6 +352,3 @@
     });
 })();
 </script>
-
-</body>
-</html>
