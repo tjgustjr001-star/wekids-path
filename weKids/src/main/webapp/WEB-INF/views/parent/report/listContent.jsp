@@ -3,7 +3,16 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/parent/parent-report.css">
 
+<div class="class-content-shell">
+    <div class="class-content-hero">
+        <div class="class-content-hero__icon"><i class="fa-solid fa-chart-simple"></i></div>
+        <div class="class-content-hero__text">
+            <h1 class="class-content-hero__title">자녀 리포트</h1>
+            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
+        </div>
+    </div>
 <section class="parent-report-page">
+    <div class="class-content-panel">
     <div class="parent-report-header">
         <div>
             <h2>자녀 리포트 확인</h2>
@@ -121,7 +130,10 @@
             </c:choose>
         </div>
     </div>
+
+    </div>
 </section>
+</div>
 
 <!-- 상세 모달 -->
 <div class="report-detail-modal" id="reportDetailModal" style="display:none;">

@@ -61,3 +61,239 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== Shared class content shell ===== */
+.class-content-shell {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.class-content-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 6px 0 24px;
+}
+
+.class-content-hero__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #edf0f3;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-dark, #117554);
+    font-size: 26px;
+    flex: 0 0 60px;
+}
+
+.class-content-hero__text {
+    min-width: 0;
+}
+
+.class-content-hero__title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.03em;
+}
+
+.class-content-hero__subtitle {
+    margin: 6px 0 0;
+    color: #7b8494;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.class-content-panel {
+    background: #ffffff;
+    border: 1px solid #edf0f3;
+    border-radius: 28px;
+    padding: 30px 32px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05);
+}
+
+.class-content-panel + .class-content-panel {
+    margin-top: 18px;
+}
+
+.class-content-panel--flat {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.class-content-panel .learning-topbar,
+.class-content-panel .parent-assignment-topbar,
+.class-content-panel .parent-report-header,
+.class-content-panel .teacher-report-header,
+.class-content-panel .teacher-page-top-row {
+    margin-top: 0;
+}
+
+.class-content-panel .learning-card-list,
+.class-content-panel .parent-assignment-grid,
+.class-content-panel .parent-report-list {
+    margin-bottom: 0;
+}
+
+.class-content-panel .notice_top_box,
+.class-content-panel .notice_list_wrap,
+.class-content-panel .report-filter-section,
+.class-content-panel .report-list-section,
+.class-content-panel .report-section,
+.class-content-panel .parent-assignment-info-box,
+.class-content-panel .parent-assignment-empty-box,
+.class-content-panel .teacher-student-table-card,
+.class-content-panel .teacher-student-summary-card,
+.class-content-panel .teacher-learning-summary,
+.class-content-panel .teacher-learning-list-section,
+.class-content-panel .teacher-learn-table-card,
+.class-content-panel .teacher-assignment-toolbar,
+.class-content-panel .teacher-assignment-table-card,
+.class-content-panel .teacher-assignment-list-section,
+.class-content-panel .manage-summary-grid,
+.class-content-panel .manage-section {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.class-content-panel .notice_top_box,
+.class-content-panel .notice_list_wrap,
+.class-content-panel .report-filter-section,
+.class-content-panel .report-list-section,
+.class-content-panel .report-section,
+.class-content-panel .parent-assignment-info-box,
+.class-content-panel .parent-assignment-empty-box,
+.class-content-panel .teacher-student-table-card,
+.class-content-panel .teacher-student-summary-card,
+.class-content-panel .teacher-learning-summary,
+.class-content-panel .teacher-learning-list-section,
+.class-content-panel .teacher-learn-table-card,
+.class-content-panel .teacher-assignment-toolbar,
+.class-content-panel .teacher-assignment-table-card,
+.class-content-panel .teacher-assignment-list-section,
+.class-content-panel .manage-section {
+    box-shadow: none;
+}
+
+.class-content-panel .notice_top_box,
+.class-content-panel .notice_list_wrap,
+.class-content-panel .report-filter-section,
+.class-content-panel .report-list-section,
+.class-content-panel .report-section,
+.class-content-panel .parent-assignment-info-box,
+.class-content-panel .parent-assignment-empty-box,
+.class-content-panel .teacher-student-table-card,
+.class-content-panel .teacher-student-summary-card,
+.class-content-panel .teacher-learning-summary,
+.class-content-panel .teacher-learning-list-section,
+.class-content-panel .teacher-learn-table-card,
+.class-content-panel .teacher-assignment-toolbar,
+.class-content-panel .teacher-assignment-table-card,
+.class-content-panel .teacher-assignment-list-section,
+.class-content-panel .manage-section {
+    border: 1px solid #edf0f3;
+    border-radius: 24px;
+    background: #ffffff;
+}
+
+.class-content-panel .notice_top_box,
+.class-content-panel .notice_list_wrap,
+.class-content-panel .report-filter-section,
+.class-content-panel .report-list-section,
+.class-content-panel .report-section,
+.class-content-panel .parent-assignment-info-box,
+.class-content-panel .parent-assignment-empty-box,
+.class-content-panel .teacher-student-table-card,
+.class-content-panel .teacher-student-summary-card,
+.class-content-panel .teacher-learning-summary,
+.class-content-panel .teacher-learning-list-section,
+.class-content-panel .teacher-learn-table-card,
+.class-content-panel .teacher-assignment-toolbar,
+.class-content-panel .teacher-assignment-table-card,
+.class-content-panel .teacher-assignment-list-section,
+.class-content-panel .manage-section {
+    padding: 24px 28px;
+}
+
+.class-content-panel .notice_list_wrap,
+.class-content-panel .report-list-section,
+.class-content-panel .teacher-learning-list-section,
+.class-content-panel .teacher-assignment-list-section {
+    margin-top: 16px;
+}
+
+.class-content-panel .manage-summary-grid {
+    margin-bottom: 18px;
+}
+
+.class-content-shell .notice_page,
+.class-content-shell .student-learning-page,
+.class-content-shell .student-assignment-page,
+.class-content-shell .student-report-page,
+.class-content-shell .parent-assignment-page,
+.class-content-shell .parent-report-page,
+.class-content-shell .teacher-learn-manage-page,
+.class-content-shell .teacher-assignment-manage-page,
+.class-content-shell .teacher-report-page,
+.class-content-shell .teacher-student-manage-page,
+.class-content-shell .teacher-class-manage-page {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.class-content-shell .notice_header {
+    display: none;
+}
+
+.class-content-shell .teacher-page-top-row,
+.class-content-shell .learning-topbar,
+.class-content-shell .parent-assignment-topbar,
+.class-content-shell .parent-report-header,
+.class-content-shell .teacher-report-header {
+    margin-bottom: 20px;
+}
+
+.class-content-shell .student-report-page > .student-report-header,
+.class-content-shell .student-assignment-page > .student-assignment-header,
+.class-content-shell .teacher-learn-page > .teacher-learn-header,
+.class-content-shell .teacher-assignment-page > .teacher-assignment-header,
+.class-content-shell .teacher-class-manage-page > .teacher-class-manage-header,
+.class-content-shell .teacher-student-manage-page > .teacher-student-manage-header,
+.class-content-shell .parent-report-page > .parent-report-header-shell,
+.class-content-shell .parent-assignment-page > .parent-assignment-header-shell,
+.class-content-shell .student-learning-page > .student-learning-header-shell,
+.class-content-shell .notice_page > .notice-header-shell {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 1024px) {
+    .class-content-panel {
+        padding: 24px;
+        border-radius: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .class-content-hero {
+        align-items: flex-start;
+    }
+
+    .class-content-hero__title {
+        font-size: 24px;
+    }
+
+    .class-content-panel {
+        padding: 18px;
+        border-radius: 20px;
+    }
+}

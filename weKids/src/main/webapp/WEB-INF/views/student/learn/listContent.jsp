@@ -2,7 +2,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/student/student-learn.css">
 
+<div class="class-content-shell">
+    <div class="class-content-hero">
+        <div class="class-content-hero__icon"><i class="fa-regular fa-bookmark"></i></div>
+        <div class="class-content-hero__text">
+            <h1 class="class-content-hero__title">학습</h1>
+            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
+        </div>
+    </div>
 <section class="student-learning-page">
+    <div class="class-content-panel">
     <div class="learning-topbar">
         <h2 class="learning-page-title">나의 학습 목록</h2>
 
@@ -130,7 +139,10 @@
             </div>
         </c:forEach>
     </div>
+
+    </div>
 </section>
+</div>
 
 <div class="learning-modal-overlay" id="learningModalOverlay">
     <div class="learning-modal">

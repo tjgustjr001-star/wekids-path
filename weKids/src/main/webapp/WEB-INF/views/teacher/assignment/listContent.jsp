@@ -6,10 +6,19 @@
 <meta name="_csrf" content="${_csrf.token}">
 <meta name="_csrf_header" content="${_csrf.headerName}">
 
+<div class="class-content-shell">
+    <div class="class-content-hero">
+        <div class="class-content-hero__icon"><i class="fa-regular fa-clipboard"></i></div>
+        <div class="class-content-hero__text">
+            <h1 class="class-content-hero__title">과제 관리</h1>
+            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
+        </div>
+    </div>
 <section class="teacher-assignment-manage-page"
          id="teacherAssignmentPage"
          data-base-url="${pageContext.request.contextPath}/teacher/classes/${classId}/assignments"
          data-trash-mode="${trashMode ? 'true' : 'false'}">
+    <div class="class-content-panel">
 
     <c:set var="now" value="<%=new java.util.Date()%>" />
 
@@ -168,6 +177,8 @@
                 <div class="teacher-empty-box search-empty" id="assignmentSearchEmptyBox" style="display:none;">검색 결과가 없습니다.</div>
             </div>
         </div>
+    </div>
+
     </div>
 </section>
 
@@ -424,3 +435,4 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/resources/js/teacher/teacher-assignment-manage.js"></script>
+</div>

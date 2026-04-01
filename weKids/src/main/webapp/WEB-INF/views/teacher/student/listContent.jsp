@@ -3,7 +3,16 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/teacher/teacher-student-manage.css">
 
+<div class="class-content-shell">
+    <div class="class-content-hero">
+        <div class="class-content-hero__icon"><i class="fa-regular fa-user"></i></div>
+        <div class="class-content-hero__text">
+            <h1 class="class-content-hero__title">학생 관리</h1>
+            <p class="class-content-hero__subtitle">${not empty className ? className : (not empty classInfo.className ? classInfo.className : '현재 클래스')}</p>
+        </div>
+    </div>
 <section class="teacher-student-manage-page">
+    <div class="class-content-panel">
     <div class="teacher-page-top-row">
         <div class="teacher-page-title-box">
             <h1>학생 관리</h1>
@@ -145,7 +154,10 @@
             </div>
         </div>
     </div>
+
+    </div>
 </section>
+</div>
 
 <div class="teacher-modal-backdrop" id="inviteModal">
     <div class="teacher-modal teacher-invite-modal">

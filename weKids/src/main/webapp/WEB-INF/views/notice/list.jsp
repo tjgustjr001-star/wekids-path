@@ -15,6 +15,14 @@
 </c:if>
 
 
+<div class="class-content-shell">
+    <div class="class-content-hero">
+        <div class="class-content-hero__icon"><i class="fa-regular fa-bell"></i></div>
+        <div class="class-content-hero__text">
+            <h1 class="class-content-hero__title">가정통신문</h1>
+            <p class="class-content-hero__subtitle"><c:choose><c:when test="${not empty classInfo.className}">${classInfo.className}</c:when><c:when test="${not empty className}">${className}</c:when><c:otherwise>현재 클래스</c:otherwise></c:choose></p>
+        </div>
+    </div>
 <section class="notice_page">
     <div class="notice_header">
         <div class="notice_header_left">
@@ -50,7 +58,8 @@
         </c:if>
     </div>
 
-    <div class="notice_top_box">
+    <div class="class-content-panel">
+        <div class="notice_top_box">
         <div class="notice_top_info">
             <h2>전체 가정통신문</h2>
             <p>
@@ -160,11 +169,15 @@
         </c:choose>
     </div>
 
+        </div>
+    </div>
+
     <div class="pagination">
         <button type="button" id="prevBtn" class="page_btn">&lt;</button>
         <button type="button" id="nextBtn" class="page_btn">&gt;</button>
     </div>
 </section>
+</div>
 
 <div id="requiredPopupOverlay" class="popup_overlay">
     <div class="popup_box required_popup_box">
