@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import com.spring.dto.NoticeVO;
 import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.student.StudentAssignmentItemDTO;
+import com.spring.dto.student.StudentLearnItemDTO;
 import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
@@ -67,52 +70,91 @@ public class StudentPageController {
     private ReportService reportService;
     
     @GetMapping("/student")
-    public String studentHome(Model model) {
+    public String studentHome(Model model,
+                              HttpSession session,
+                              @RequestParam(value = "classId", required = false) Integer classId) throws Exception {
         model.addAttribute("pageTitle", "학생 홈");
         model.addAttribute("currentUri", "/student");
         model.addAttribute("contentPage", "/WEB-INF/views/student/homeContent.jsp");
 
         setStudentLayoutBase(model);
 
-        model.addAttribute("termLabel", "2026 1학기");
-        model.addAttribute("greetingTitle", "안녕하세요, 김학생님!");
-        model.addAttribute("greetingMessage", "오늘도 즐거운 학습 시간되세요!");
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        List<ClassVO> classList = classService.getStudentClassList(loginUser.getMember_id());
+
+        ClassVO selectedClass = null;
+        if (!classList.isEmpty()) {
+            selectedClass = classList.get(0);
+
+            if (classId != null) {
+                for (ClassVO classInfo : classList) {
+                    if (classInfo != null && classInfo.getClassId() == classId.intValue()) {
+                        selectedClass = classInfo;
+                        break;
+                    }
+                }
+            }
+        }
+
+        int selectedClassId = selectedClass != null ? selectedClass.getClassId() : 0;
+
+        List<StudentLearnItemDTO> learnList = selectedClassId > 0
+                ? studentLearnService.getStudentLearnList(loginUser.getMember_id(), selectedClassId)
+                : List.of();
+
+        List<StudentAssignmentItemDTO> assignmentList = selectedClassId > 0
+                ? studentAssignmentService.getStudentAssignmentList(loginUser.getMember_id(), selectedClassId)
+                : List.of();
+
+        List<NoticeVO> noticeList = selectedClassId > 0
+                ? noticeService.getNoticeList(selectedClassId, loginUser)
+                : List.of();
+
+        int totalLearn = learnList.size();
+        int inProgressLearn = (int) learnList.stream()
+                .filter(item -> "진행중".equals(item.getStatus()))
+                .count();
+        int completedLearn = (int) learnList.stream()
+                .filter(item -> "완료".equals(item.getStatus()))
+                .count();
+
+        int progressPercent = totalLearn == 0 ? 0
+                : Math.round((float) learnList.stream()
+                        .mapToInt(StudentLearnItemDTO::getProgress)
+                        .sum() / totalLearn);
 
         Map<String, Object> learningStats = new LinkedHashMap<>();
-        learningStats.put("total", 8);
-        learningStats.put("inProgress", 3);
-        learningStats.put("completed", 5);
-        learningStats.put("progressPercent", 63);
-        model.addAttribute("learningStats", learningStats);
-
-        List<Map<String, Object>> weeklyStudyHours = new ArrayList<>();
-        weeklyStudyHours.add(createStudyDay("월", 2.5, 63));
-        weeklyStudyHours.add(createStudyDay("화", 3.2, 80));
-        weeklyStudyHours.add(createStudyDay("수", 1.8, 45));
-        weeklyStudyHours.add(createStudyDay("목", 4.0, 100));
-        weeklyStudyHours.add(createStudyDay("금", 2.1, 53));
-        weeklyStudyHours.add(createStudyDay("토", 1.0, 25));
-        weeklyStudyHours.add(createStudyDay("일", 0.0, 8));
-        model.addAttribute("weeklyStudyHours", weeklyStudyHours);
-
-        List<Map<String, Object>> assignments = new ArrayList<>();
-        assignments.add(createAssignment(1, "수학 3단원 문제풀이", "수학", "오늘 23:59", "미진행"));
-        assignments.add(createAssignment(2, "과학 실험 관찰 보고서", "과학", "내일 18:00", "진행중"));
-        assignments.add(createAssignment(3, "국어 독서록 작성", "국어", "금요일 18:00", "완료"));
-        model.addAttribute("assignments", assignments);
-
-        List<Map<String, Object>> recentNews = new ArrayList<>();
-        recentNews.add(createNews("yellow", "체험학습 동의서 제출 안내",
-                "2026학년도 1학기 현장체험학습 관련 안내문입니다.", "2시간 전"));
-        recentNews.add(createNews("green", "수학 단원평가 결과 확인",
-                "3단원 평가 결과 및 오답노트 과제가 등록되었습니다.", "어제"));
-        model.addAttribute("recentNews", recentNews);
+        learningStats.put("total", totalLearn);
+        learningStats.put("inProgress", inProgressLearn);
+        learningStats.put("completed", completedLearn);
+        learningStats.put("progressPercent", progressPercent);
 
         Map<String, Object> currentClass = new LinkedHashMap<>();
-        currentClass.put("classId", 1);
-        currentClass.put("className", "2026학년도 3학년 2반");
-        currentClass.put("teacherName", "김교사");
+        currentClass.put("classId", selectedClassId);
+        currentClass.put("className", selectedClass != null ? selectedClass.getClassName() : "참여 중인 클래스가 없습니다.");
+        currentClass.put("teacherName", selectedClass != null ? safeString(selectedClass.getTeacherName()) : "");
+
+        model.addAttribute("termLabel", buildTermLabel(selectedClass));
+        model.addAttribute("greetingTitle", "안녕하세요, " + safeDisplayName(loginUser, "학생") + "님!");
+        model.addAttribute("greetingMessage", "오늘도 즐거운 학습 시간되세요!");
+
+        model.addAttribute("studentClassOptions", classList);
+        model.addAttribute("selectedClassId", selectedClassId);
+
+        model.addAttribute("learningStats", learningStats);
+        model.addAttribute("recentLearnList", learnList.stream().limit(3).toList());
+        model.addAttribute("assignmentList", assignmentList.stream().limit(3).toList());
+        model.addAttribute("bulletinList", noticeList.stream().limit(3).toList());
         model.addAttribute("currentClass", currentClass);
+
+        model.addAttribute("learnListUrl", selectedClassId > 0 ? "/student/classes/" + selectedClassId + "/learns" : "/student/classes");
+        model.addAttribute("assignmentListUrl", selectedClassId > 0 ? "/student/classes/" + selectedClassId + "/assignments" : "/student/classes");
+        model.addAttribute("bulletinListUrl", selectedClassId > 0 ? "/student/classes/" + selectedClassId + "/bulletins" : "/student/classes");
+        model.addAttribute("currentClassUrl", selectedClassId > 0 ? "/student/classes/" + selectedClassId : "/student/classes");
 
         return "common/layout/studentLayout";
     }
@@ -572,6 +614,35 @@ public class StudentPageController {
     }
 
 
+
+    private String buildTermLabel(ClassVO classInfo) {
+        if (classInfo == null) {
+            return "2026 1학기";
+        }
+        if (classInfo.getYear() > 0 && classInfo.getSemester() > 0) {
+            return classInfo.getYear() + " " + classInfo.getSemester() + "학기";
+        }
+        return classInfo.getYearLabel() != null && !classInfo.getYearLabel().isBlank() ? classInfo.getYearLabel() : "2026 1학기";
+    }
+
+    private String safeDisplayName(MemberVO loginUser, String fallback) {
+        if (loginUser == null) {
+            return fallback;
+        }
+        String name = loginUser.getName();
+        return (name == null || name.isBlank()) ? fallback : name.trim();
+    }
+
+    private String safeString(String value) {
+        return value == null ? "" : value;
+    }
+
+    private String formatNoticeDate(java.util.Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new SimpleDateFormat("yyyy.MM.dd").format(date);
+    }
 
     private Map<String, Object> createStudyDay(String day, double hours, int heightPercent) {
         Map<String, Object> map = new LinkedHashMap<>();

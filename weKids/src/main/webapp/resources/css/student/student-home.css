@@ -77,6 +77,27 @@
     font-weight: 800;
 }
 
+
+.student-dashboard-head {
+    gap: 16px;
+}
+
+.student-class-select-form {
+    flex-shrink: 0;
+}
+
+.student-class-select-form select {
+    height: 46px;
+    min-width: 220px;
+    border: 1px solid #d7dce5;
+    border-radius: 14px;
+    padding: 0 16px;
+    background: #fff;
+    font-size: 15px;
+    color: #374151;
+    outline: none;
+}
+
 .text-link {
     color: #6b7280;
     font-size: 15px;
@@ -123,7 +144,7 @@
 }
 
 .progress-wrap {
-    margin-bottom: 34px;
+    margin-bottom: 0;
 }
 
 .progress-label-row {
@@ -253,25 +274,7 @@
     align-items: center;
     gap: 16px;
     min-width: 0;
-}
-
-.todo-status-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.todo-status-icon.done {
-    background: rgba(110, 194, 7, 0.18);
-}
-
-.todo-status-icon.progress {
-    background: rgba(0, 211, 122, 0.18);
-}
-
-.todo-status-icon.pending {
-    background: #e5e7eb;
+    flex: 1;
 }
 
 .todo-text-box {
@@ -326,9 +329,51 @@
     color: #111827;
 }
 
+
+.subject-badge.subject-math {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.subject-badge.subject-science {
+    background: #eef7ff;
+    color: #5a7cf0;
+}
+
+.subject-badge.subject-korean {
+    background: #f7fbef;
+    color: #8abc3f;
+}
+
+.subject-badge.subject-default {
+    background: #fff7ed;
+    color: #c77d2b;
+}
+
+.todo-status-badge.done {
+    background: #eef4ff;
+    color: #5577ef;
+}
+
+.todo-status-badge.progress {
+    background: #e9f9ef;
+    color: #27a35f;
+}
+
 .todo-status-badge.pending {
-    background: #e5e7eb;
-    color: #4b5563;
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.todo-status-badge.reject {
+    background: #fff1f1;
+    color: #d05d52;
+}
+
+.mini-list-section.first-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid #edf0f3;
 }
 
 .news-list {
@@ -451,4 +496,75 @@
     .student-home-grid {
         grid-template-columns: 1fr;
     }
+}
+.empty-state-box {
+    margin-top: 8px;
+    border: 1px dashed #dfe6da;
+    border-radius: 20px;
+    background: #fbfdf8;
+    color: #7b8794;
+    font-size: 16px;
+    text-align: center;
+    padding: 28px 18px;
+}
+
+.empty-state-box.small {
+    padding: 20px 16px;
+    font-size: 15px;
+}
+
+.mini-list-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid #edf0f3;
+}
+
+.section-title-row.compact {
+    margin-bottom: 16px;
+}
+
+.mini-list-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mini-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid #edf0f3;
+    border-radius: 18px;
+    padding: 16px 18px;
+    background: #fff;
+}
+
+.mini-list-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mini-list-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.mini-list-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-list-meta {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
 }

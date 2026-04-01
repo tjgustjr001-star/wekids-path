@@ -3,7 +3,7 @@ package com.spring.service;
 import java.util.List;
 
 import com.spring.dto.ClassVO;
-
+import com.spring.dto.parent.ParentChildClassOptionDTO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
 import com.spring.dto.teacher.TeacherStudentManageDTO;
@@ -39,4 +39,6 @@ public interface ClassService {
     ClassVO getParentClassDetail(int parentId, int classId) throws Exception;
     
     List<TeacherStudentManageDTO> getTeacherStudentManageList(int teacherId, int classId) throws Exception;
+    
+    List<ParentChildClassOptionDTO> getParentChildClassOptions(int parentId) throws Exception;
 }

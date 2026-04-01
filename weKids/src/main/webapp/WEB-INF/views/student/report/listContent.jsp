@@ -20,12 +20,12 @@
         </div>
     </div>
 
-<div class="student-report-header">
+<!-- <div class="student-report-header">
         <div>
             <h2>리포트 확인</h2>
             <p>주간/월간 학습 리포트를 확인할 수 있습니다.</p>
         </div>
-    </div>
+    </div> -->
 
     <!-- 필터 -->
     <div class="report-filter-section">

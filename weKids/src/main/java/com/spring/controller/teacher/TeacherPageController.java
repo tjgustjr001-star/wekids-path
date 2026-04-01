@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportGenerateRequestDTO;
 import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.teacher.TeacherAssignmentDetailDTO;
+import com.spring.dto.teacher.TeacherAssignmentManageDTO;
 import com.spring.dto.teacher.TeacherAssignmentSaveDTO;
 import com.spring.dto.teacher.TeacherAssignmentStudentWorkDTO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
@@ -70,22 +73,75 @@ public class TeacherPageController {
     private ReportService reportService;
     
     @GetMapping("/teacher")
-    public String teacherHome(Model model, HttpServletRequest request) {
+    public String teacherHome(Model model,
+                              HttpServletRequest request,
+                              HttpSession session,
+                              @RequestParam(value = "classId", required = false) Integer classId) throws Exception {
         model.addAttribute("pageTitle", "교사 홈");
         model.addAttribute("currentUri", "/teacher");
         model.addAttribute("contentPage", "/WEB-INF/views/teacher/homeContent.jsp");
 
         setTeacherLayoutBase(model, request);
 
-        model.addAttribute("greetingTitle", "안녕하세요, 김교사님!");
-        model.addAttribute("greetingMessage", "오늘 수업과 클래스 현황을 확인해보세요.");
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
 
-        Map<String, Object> classSummary = new LinkedHashMap<>();
-        classSummary.put("managedClassCount", 2);
-        classSummary.put("studentCount", 44);
-        classSummary.put("pendingFeedbackCount", 5);
-        classSummary.put("newBulletinNeedCount", 1);
-        model.addAttribute("classSummary", classSummary);
+        List<ClassVO> teacherClassList = classService.getTeacherClassList(loginUser.getMember_id());
+        ClassVO selectedClass = teacherClassList.isEmpty() ? null : teacherClassList.get(0);
+        if (classId != null) {
+            for (ClassVO classInfo : teacherClassList) {
+                if (classInfo != null && classInfo.getClassId() == classId.intValue()) {
+                    selectedClass = classInfo;
+                    break;
+                }
+            }
+        }
+
+        int selectedClassId = selectedClass != null ? selectedClass.getClassId() : 0;
+        List<TeacherAssignmentManageDTO> assignmentList = selectedClassId > 0
+                ? teacherAssignmentService.getTeacherAssignmentList(loginUser.getMember_id(), selectedClassId, 0)
+                : List.of();
+        List<NoticeVO> noticeList = selectedClassId > 0
+                ? noticeService.getNoticeList(selectedClassId, loginUser)
+                : List.of();
+
+        int unsubmittedCount = assignmentList.stream().mapToInt(item -> Math.max(0, item.getTotalCount() - item.getSubmitCount())).sum();
+        int approachingCount = (int) assignmentList.stream().filter(item -> !"마감".equals(item.getStatus())).limit(3).count();
+        int feedbackNeededCount = assignmentList.stream().mapToInt(TeacherAssignmentManageDTO::getNeedFeedback).sum();
+
+        Map<String, Object> taskSummary = new LinkedHashMap<>();
+        taskSummary.put("unsubmittedCount", unsubmittedCount);
+        taskSummary.put("approachingCount", approachingCount);
+        taskSummary.put("feedbackNeededCount", feedbackNeededCount);
+
+        List<Map<String, Object>> deadlineAssignmentList = new ArrayList<>();
+        for (TeacherAssignmentManageDTO item : assignmentList.stream().limit(3).toList()) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            int pendingCount = Math.max(0, item.getTotalCount() - item.getSubmitCount());
+            map.put("subject", item.getSubject());
+            map.put("title", item.getTitle());
+            map.put("deadlineLabel", item.getDeadline());
+            map.put("unsubmittedCount", pendingCount);
+            map.put("submittedCount", item.getSubmitCount());
+            map.put("totalCount", item.getTotalCount());
+            map.put("progressPercent", item.getProgressPercent());
+            deadlineAssignmentList.add(map);
+        }
+
+        model.addAttribute("currentSemesterLabel", buildTermLabel(selectedClass));
+        model.addAttribute("userName", safeDisplayName(loginUser, "교사"));
+        model.addAttribute("teacherClassOptions", teacherClassList);
+        model.addAttribute("selectedClassId", selectedClassId);
+        model.addAttribute("selectedClassName", selectedClass != null ? selectedClass.getClassName() : "운영 중인 클래스가 없습니다.");
+        model.addAttribute("taskSummary", taskSummary);
+        model.addAttribute("deadlineAssignmentList", deadlineAssignmentList);
+        model.addAttribute("bulletinList", noticeList.stream().limit(3).toList());
+        model.addAttribute("uncheckedParentCount", noticeList.stream().filter(NoticeVO::isRequiredUnread).count());
+        model.addAttribute("teacherAssignmentUrl", selectedClassId > 0 ? "/teacher/classes/" + selectedClassId + "/assignments" : "/teacher/classes");
+        model.addAttribute("teacherBulletinUrl", selectedClassId > 0 ? "/teacher/classes/" + selectedClassId + "/bulletins" : "/teacher/classes");
+        model.addAttribute("teacherClassEnterUrl", selectedClassId > 0 ? "/teacher/classes/" + selectedClassId : "/teacher/classes");
 
         return "common/layout/teacherLayout";
     }
@@ -852,6 +908,23 @@ public class TeacherPageController {
         return reportService.getTeacherReportDetail(teacherId, classId, reportId);
     }
 
+
+    private String buildTermLabel(ClassVO classInfo) {
+        if (classInfo == null) {
+            return "2026 1학기";
+        }
+        if (classInfo.getYear() > 0 && classInfo.getSemester() > 0) {
+            return classInfo.getYear() + " " + classInfo.getSemester() + "학기";
+        }
+        return (classInfo.getYearLabel() != null && !classInfo.getYearLabel().isBlank()) ? classInfo.getYearLabel() : "2026 1학기";
+    }
+
+    private String safeDisplayName(MemberVO loginUser, String fallback) {
+        if (loginUser == null || loginUser.getName() == null || loginUser.getName().isBlank()) {
+            return fallback;
+        }
+        return loginUser.getName().trim();
+    }
 
     private void setTeacherLayoutBase(Model model, HttpServletRequest request) {
         model.addAttribute("roleKey", "teacher");

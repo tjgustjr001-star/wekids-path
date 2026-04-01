@@ -143,6 +143,10 @@
     background: #8fc53b;
 }
 
+.class-list-page .class-card-cover.brand-blue {
+    background: #E7A38F;
+}
+
 .class-list-page .class-year-badge {
     display: inline-block;
     padding: 8px 14px;

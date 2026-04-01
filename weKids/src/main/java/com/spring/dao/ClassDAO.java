@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.dto.ClassVO;
-
+import com.spring.dto.parent.ParentChildClassOptionDTO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
 import com.spring.dto.teacher.TeacherStudentManageDTO;
@@ -101,6 +101,6 @@ public interface ClassDAO {
     List<TeacherStudentManageDTO> selectTeacherStudentManageList(@Param("teacherId") int teacherId,
             @Param("classId") int classId) throws Exception;
     
-
+    List<ParentChildClassOptionDTO> selectParentChildClassOptions(@Param("parentId") int parentId) throws Exception;
     
 }

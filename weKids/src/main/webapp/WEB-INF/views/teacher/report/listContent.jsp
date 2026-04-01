@@ -20,13 +20,13 @@
         </div>
     </div>
 
-<div class="teacher-report-header">
+<!-- <div class="teacher-report-header">
         <div>
             <h2>리포트 관리</h2>
             <p>주간/월간 리포트를 생성하고, 학부모 열람 여부를 확인할 수 있습니다.</p>
         </div>
     </div>
-
+ -->
     <!-- 생성 영역 -->
     <div class="report-section report-generate-section">
         <div class="section-title-row">

@@ -575,4 +575,31 @@
 	      AND CLASS_ID = #{classId}
 	      AND END_DATE IS NOT NULL
 	</update>	
+	
+	<select id="selectParentChildClassOptions"
+	        parameterType="int"
+	        resultType="com.spring.dto.parent.ParentChildClassOptionDTO">
+	    SELECT DISTINCT
+	           S.STUDENT_ID   AS studentId,
+	           S.STUDENT_NAME AS studentName,
+	           C.CLASS_ID     AS classId,
+	           C.CLASS_NAME   AS className,
+	           NVL(C.GRADE, 0)    AS grade,
+	           NVL(C.CLASS_NO, 0) AS classNo
+	      FROM STUDENT_PARENT SP
+	      JOIN STUDENT S
+	        ON S.STUDENT_ID = SP.STUDENT_ID
+	      JOIN STUDENT_CLASS SC
+	        ON SC.STUDENT_ID = S.STUDENT_ID
+	       AND SC.END_DATE IS NULL
+	      JOIN CLASS C
+	        ON C.CLASS_ID = SC.CLASS_ID
+	     WHERE SP.PARENT_ID = #{parentId}
+	       AND SP.LINK_STATUS = 1
+	     ORDER BY S.STUDENT_NAME ASC, C.CLASS_ID DESC
+	</select>
+	
+	
 	</mapper>
+	
+	

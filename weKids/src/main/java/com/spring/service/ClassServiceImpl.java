@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.dao.ClassDAO;
 import com.spring.dto.ClassVO;
+import com.spring.dto.parent.ParentChildClassOptionDTO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
 import com.spring.dto.teacher.TeacherStudentManageDTO;
@@ -33,6 +34,11 @@ public class ClassServiceImpl implements ClassService {
         classDAO.insertTeacherClass(teacherClassId, teacherId, classId);
     }
 
+    @Override
+    public List<ParentChildClassOptionDTO> getParentChildClassOptions(int parentId) throws Exception {
+        return classDAO.selectParentChildClassOptions(parentId);
+    }
+    
     @Override
     public List<ClassVO> getTeacherClassList(int teacherId) throws Exception {
         List<ClassVO> list = classDAO.selectTeacherClassList(teacherId);

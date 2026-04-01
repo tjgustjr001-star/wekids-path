@@ -1,4 +1,3 @@
-
 package com.spring.controller.parent;
 
 import java.io.File;
@@ -6,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,25 +25,26 @@ import com.spring.dto.MemberVO;
 import com.spring.dto.NoticeVO;
 import com.spring.dto.ParentChildVO;
 import com.spring.dto.parent.ParentAssignmentChildDTO;
+import com.spring.dto.parent.ParentChildClassOptionDTO;
 import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.student.StudentAssignmentItemDTO;
-import com.spring.security.CustomUser;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
 import com.spring.service.ParentAssignmentService;
 import com.spring.service.ReportService;
 import com.spring.service.SettingsService;
+import com.spring.service.StudentLearnService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ParentPageController {
-	
+
     @Autowired
     private NoticeService noticeService;
-	
+
     @Autowired
     private ClassService classService;
 
@@ -54,36 +53,92 @@ public class ParentPageController {
 
     @Autowired
     private ParentAssignmentService parentAssignmentService;
-	
+
+    @Autowired
+    private StudentLearnService studentLearnService;
+
     @Autowired
     private ReportService reportService;
 
-    
     @GetMapping("/parent")
-    public String parentHome(Model model) {
+    public String parentHome(Model model,
+                             @RequestParam(value = "selection", required = false) String selection,
+                             HttpSession session) throws Exception {
         model.addAttribute("pageTitle", "학부모 홈");
         model.addAttribute("currentUri", "/parent");
         model.addAttribute("contentPage", "/WEB-INF/views/parent/homeContent.jsp");
 
         setParentLayoutBase(model);
 
-        model.addAttribute("greetingTitle", "안녕하세요, 김학부모님!");
-        model.addAttribute("greetingMessage", "자녀의 학습과 클래스 소식을 확인해보세요.");
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
 
-        Map<String, Object> childSummary = new LinkedHashMap<>();
-        childSummary.put("childName", "김학생");
-        childSummary.put("childGrade", "초등 3학년");
-        childSummary.put("classCount", 2);
-        childSummary.put("pendingAssignments", 1);
-        childSummary.put("newBulletins", 2);
-        model.addAttribute("childSummary", childSummary);
+        List<ParentChildVO> children = settingsService.getLinkedChildren(loginUser.getMember_id());
+        List<ClassVO> parentClassList = classService.getParentClassList(loginUser.getMember_id());
 
-        List<Map<String, Object>> children = createChildrenData();
-        model.addAttribute("childrenData", children);
-        model.addAttribute("selectedChildId", "child1");
-        model.addAttribute("selectedChild", children.get(0));
-        model.addAttribute("progressPercent", 63);
-        model.addAttribute("notices", createNoticeList());
+        List<ParentChildClassOptionDTO> childOptions =
+                classService.getParentChildClassOptions(loginUser.getMember_id());
+
+        ParentChildClassOptionDTO selectedOption =
+                findSelectedParentChildOption(childOptions, selection);
+
+        int selectedChildId = selectedOption != null ? selectedOption.getStudentId() : 0;
+        int selectedClassId = selectedOption != null ? selectedOption.getClassId() : 0;
+        String selectedLabel = selectedOption != null ? selectedOption.getLabel() : "";
+
+        ParentChildVO selectedChild = findParentChild(children, selectedChildId);
+        ClassVO selectedClass = findClassById(parentClassList, selectedClassId);
+
+        List<StudentAssignmentItemDTO> assignmentList = (selectedChildId > 0 && selectedClassId > 0)
+                ? parentAssignmentService.getParentAssignmentList(
+                        loginUser.getMember_id(), selectedClassId, selectedChildId)
+                : List.of();
+
+        List<NoticeVO> noticeList = selectedClassId > 0
+                ? noticeService.getNoticeList(selectedClassId, loginUser)
+                : List.of();
+
+        int assignmentTotal = assignmentList.size();
+        int assignmentSubmitted = (int) assignmentList.stream()
+                .filter(this::isParentSubmittedAssignment)
+                .count();
+        int assignmentPending = Math.max(0, assignmentTotal - assignmentSubmitted);
+        int assignmentRate = assignmentTotal == 0
+                ? 0
+                : Math.round((float) assignmentSubmitted * 100 / assignmentTotal);
+
+        model.addAttribute("termLabel", buildTermLabel(selectedClass));
+        model.addAttribute("parentName", safeDisplayName(loginUser, "학부모"));
+        model.addAttribute("children", children);
+        model.addAttribute("childOptions", childOptions);
+        model.addAttribute("selectedChildId", selectedChildId);
+        model.addAttribute("assignmentTotal", assignmentTotal);
+        model.addAttribute("assignmentSubmitted", assignmentSubmitted);
+        model.addAttribute("assignmentPending", assignmentPending);
+        model.addAttribute("assignmentRate", assignmentRate);
+        model.addAttribute("recentAssignmentList", assignmentList.stream().limit(3).toList());
+        model.addAttribute("parentNotices", noticeList.stream().limit(3).toList());
+        model.addAttribute("selectedClassId", selectedClassId);
+        model.addAttribute("selectedSelection", selectedOption != null ? selectedOption.getValue() : "");
+        model.addAttribute("selectedChildClassLabel", selectedLabel);
+        model.addAttribute("selectedClassName",
+                selectedClass != null ? selectedClass.getClassName() : "참여 중인 클래스가 없습니다.");
+        model.addAttribute("selectedChildDetailUrl",
+                selectedChildId > 0 ? "/parent/children/" + selectedChildId : "/parent/children");
+        model.addAttribute("assignmentListUrl",
+                selectedClassId > 0
+                        ? "/parent/classes/" + selectedClassId + "/assignments?childId=" + selectedChildId
+                        : "/parent/classes");
+        model.addAttribute("bulletinListUrl",
+                selectedClassId > 0 ? "/parent/classes/" + selectedClassId + "/bulletins" : "/parent/classes");
+        model.addAttribute("currentClassUrl",
+                selectedClassId > 0 ? "/parent/classes/" + selectedClassId : "/parent/classes");
+
+        if (selectedChild != null) {
+            model.addAttribute("selectedChild", selectedChild);
+        }
 
         return "common/layout/parentLayout";
     }
@@ -195,7 +250,7 @@ public class ParentPageController {
         long parentCount = noticeList.stream()
                 .filter(notice -> "PARENT".equals(notice.getTarget()))
                 .count();
-        
+
         model.addAttribute("classId", classId);
         model.addAttribute("pageTitle", "가정통신문");
         model.addAttribute("currentUri", "/parent/classes/" + classId + "/bulletins");
@@ -217,6 +272,7 @@ public class ParentPageController {
 
     @GetMapping("/parent/classes/{classId}/assignments")
     public String parentAssignmentList(@PathVariable("classId") int classId,
+                                       @RequestParam(value = "selection", required = false) String selection,
                                        @RequestParam(value = "childId", required = false) Integer childId,
                                        Model model,
                                        HttpSession session) throws Exception {
@@ -232,30 +288,45 @@ public class ParentPageController {
             return "redirect:/auth/login";
         }
 
-        List<ParentAssignmentChildDTO> children = parentAssignmentService.getParentAssignmentChildren(loginUser.getMember_id(), classId);
+        List<ParentAssignmentChildDTO> children =
+                parentAssignmentService.getParentAssignmentChildren(loginUser.getMember_id(), classId);
         model.addAttribute("assignmentChildren", children);
 
         Integer selectedChildId = null;
         ParentAssignmentChildDTO selectedChild = null;
 
-        if (!children.isEmpty()) {
-            selectedChild = children.get(0);
-            selectedChildId = selectedChild.getStudentId();
+        if (childId != null) {
+            for (ParentAssignmentChildDTO child : children) {
+                if (child != null && child.getStudentId() == childId.intValue()) {
+                    selectedChildId = childId;
+                    selectedChild = child;
+                    break;
+                }
+            }
+        }
 
-            if (childId != null) {
+        if (selectedChild == null && selection != null && !selection.isBlank()) {
+            int parsedChildId = parseStudentIdFromSelection(selection);
+            if (parsedChildId > 0) {
                 for (ParentAssignmentChildDTO child : children) {
-                    if (child.getStudentId() == childId.intValue()) {
+                    if (child != null && child.getStudentId() == parsedChildId) {
+                        selectedChildId = parsedChildId;
                         selectedChild = child;
-                        selectedChildId = childId;
                         break;
                     }
                 }
             }
         }
 
+        if (selectedChild == null && !children.isEmpty()) {
+            selectedChild = children.get(0);
+            selectedChildId = selectedChild.getStudentId();
+        }
+
         List<StudentAssignmentItemDTO> assignmentList = List.of();
         if (selectedChildId != null) {
-            assignmentList = parentAssignmentService.getParentAssignmentList(loginUser.getMember_id(), classId, selectedChildId);
+            assignmentList = parentAssignmentService.getParentAssignmentList(
+                    loginUser.getMember_id(), classId, selectedChildId);
         }
 
         model.addAttribute("selectedChildId", selectedChildId);
@@ -280,7 +351,7 @@ public class ParentPageController {
         StudentAssignmentItemDTO detail = parentAssignmentService.getParentAssignmentDetail(
                 loginUser.getMember_id(), classId, childId, assignmentId);
 
-        if (!detail.isCanDownload()) {
+        if (detail == null || !detail.isCanDownload()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -292,7 +363,8 @@ public class ParentPageController {
         }
 
         response.setContentType("application/octet-stream");
-        String encodedName = URLEncoder.encode(detail.getAttachedFile(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        String encodedName = URLEncoder.encode(detail.getAttachedFile(), StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
         response.setContentLengthLong(file.length());
 
@@ -365,6 +437,136 @@ public class ParentPageController {
         int parentId = loginUser.getMember_id();
 
         return reportService.getParentReportDetail(parentId, studentId, classId, reportId);
+    }
+
+    private MemberVO getLoginUser(HttpSession session) {
+        Object loginUser = session.getAttribute("loginUser");
+        if (loginUser instanceof MemberVO) {
+            return (MemberVO) loginUser;
+        }
+
+        Object principal = org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication() != null
+                        ? org.springframework.security.core.context.SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal()
+                        : null;
+
+        if (principal instanceof com.spring.security.CustomUser) {
+            return ((com.spring.security.CustomUser) principal).getMember();
+        }
+
+        return null;
+    }
+
+    private ParentChildVO findParentChild(List<ParentChildVO> children, int studentId) {
+        if (children == null || studentId <= 0) {
+            return null;
+        }
+
+        for (ParentChildVO child : children) {
+            if (child != null && child.getStudentId() == studentId) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    private ClassVO findClassById(List<ClassVO> classList, int classId) {
+        if (classList == null || classId <= 0) {
+            return null;
+        }
+
+        for (ClassVO classInfo : classList) {
+            if (classInfo != null && classInfo.getClassId() == classId) {
+                return classInfo;
+            }
+        }
+        return null;
+    }
+
+    private ParentChildClassOptionDTO findSelectedParentChildOption(
+            List<ParentChildClassOptionDTO> options, String selection) {
+
+        if (options == null || options.isEmpty()) {
+            return null;
+        }
+
+        if (selection != null && !selection.isBlank()) {
+            for (ParentChildClassOptionDTO option : options) {
+                if (option != null && selection.equals(option.getValue())) {
+                    return option;
+                }
+            }
+        }
+
+        return options.get(0);
+    }
+
+    private int parseStudentIdFromSelection(String selection) {
+        if (selection == null || selection.isBlank()) {
+            return 0;
+        }
+
+        String[] tokens = selection.split(":");
+        if (tokens.length == 0) {
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(tokens[0]);
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
+    private int parseInt(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(String.valueOf(value));
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
+    private boolean isParentSubmittedAssignment(StudentAssignmentItemDTO assignment) {
+        if (assignment == null || assignment.getStatus() == null) {
+            return false;
+        }
+        String status = assignment.getStatus().trim();
+        return "제출완료".equals(status)
+                || "확인완료".equals(status)
+                || "늦은제출".equals(status);
+    }
+
+    private String buildTermLabel(ClassVO classInfo) {
+        if (classInfo == null) {
+            return "2026 1학기";
+        }
+        if (classInfo.getYear() > 0 && classInfo.getSemester() > 0) {
+            return classInfo.getYear() + " " + classInfo.getSemester() + "학기";
+        }
+        return classInfo.getYearLabel() != null && !classInfo.getYearLabel().isBlank()
+                ? classInfo.getYearLabel()
+                : "2026 1학기";
+    }
+
+    private String safeDisplayName(MemberVO loginUser, String fallback) {
+        if (loginUser == null || loginUser.getName() == null || loginUser.getName().isBlank()) {
+            return fallback;
+        }
+        return loginUser.getName().trim();
+    }
+
+    private String formatNoticeDate(java.util.Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new SimpleDateFormat("yyyy.MM.dd").format(date);
     }
 
     private void setParentLayoutBase(Model model) {
@@ -567,100 +769,5 @@ public class ParentPageController {
         map.put("content", content);
         map.put("timeText", timeText);
         return map;
-    }
-
-    private Map<String, Object> createParentAssignmentChild(int id, String name, String grade) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", id);
-        map.put("name", name);
-        map.put("grade", grade);
-        return map;
-    }
-
-    private Map<String, Object> createParentAssignmentItem(int id, String title, String subject, String status,
-                                                           String deadline, String type, boolean submitted,
-                                                           String submittedAt, String feedback,
-                                                           String content, String mySubmission) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", id);
-        map.put("title", title);
-        map.put("subject", subject);
-        map.put("status", status);
-        map.put("deadline", deadline);
-        map.put("type", type);
-        map.put("submitted", submitted);
-        map.put("submittedAt", submittedAt);
-        map.put("feedback", feedback);
-        map.put("content", content);
-        map.put("mySubmission", mySubmission);
-        return map;
-    }
-
-    private Map<String, Object> createParentReportData(List<Map<String, Object>> data,
-                                                       int completedLearning,
-                                                       int submittedAssignments,
-                                                       int learningHours,
-                                                       String comment) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("data", data);
-        map.put("completedLearning", completedLearning);
-        map.put("submittedAssignments", submittedAssignments);
-        map.put("learningHours", learningHours);
-        map.put("comment", comment);
-
-        int totalSubmitted = 0;
-        int totalAll = 0;
-        for (Map<String, Object> item : data) {
-            totalSubmitted += (Integer) item.get("submitted");
-            totalAll += (Integer) item.get("total");
-        }
-        int overallRate = totalAll > 0 ? Math.round((float) totalSubmitted * 100 / totalAll) : 0;
-        map.put("overallRate", overallRate);
-
-        return map;
-    }
-
-    private List<Map<String, Object>> createParentReportChart(Map<String, Object>... items) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Map<String, Object> item : items) {
-            list.add(item);
-        }
-        return list;
-    }
-
-    private Map<String, Object> createParentReportSubject(int id, String subject, int submitted, int total, String colorClass) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", id);
-        map.put("subject", subject);
-        map.put("submitted", submitted);
-        map.put("total", total);
-        map.put("colorClass", colorClass);
-        map.put("submittedHeight", total > 0 ? Math.round((float) submitted * 100 / total) : 0);
-        map.put("totalHeight", 100);
-        return map;
-    }
-
-    private MemberVO getLoginUser(HttpSession session) {
-        Object sessionUser = session.getAttribute("loginUser");
-        if (sessionUser instanceof MemberVO) {
-            return (MemberVO) sessionUser;
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            return null;
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof CustomUser) {
-            return ((CustomUser) principal).getMember();
-        }
-
-        if (principal instanceof MemberVO) {
-            return (MemberVO) principal;
-        }
-
-        return null;
     }
 }

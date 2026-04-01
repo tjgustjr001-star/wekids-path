@@ -20,12 +20,12 @@
         </div>
     </div>
 
-<div class="parent-report-header">
+<!-- <div class="parent-report-header">
         <div>
             <h2>자녀 리포트 확인</h2>
             <p>자녀의 주간/월간 리포트를 확인할 수 있습니다.</p>
         </div>
-    </div>
+    </div> -->
 
     <!-- 필터 영역 -->
     <div class="report-filter-section">
