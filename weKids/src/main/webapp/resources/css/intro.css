@@ -241,3 +241,21 @@
         gap: 20px;
     }
 }
+
+.logo-wrap {
+    min-height: 36px;
+}
+
+.logo-icon,
+.btn-icon,
+.card-badge {
+    flex-shrink: 0;
+}
+
+.intro-card {
+    min-height: 220px;
+}
+
+.intro-card:hover {
+    transform: translateY(-3px);
+}

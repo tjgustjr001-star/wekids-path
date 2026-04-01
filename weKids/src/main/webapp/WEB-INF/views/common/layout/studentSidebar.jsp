@@ -36,7 +36,7 @@
             <c:when test="${isClassDetail}">
                 <div class="class-nav-top">
                     <a href="${pageContext.request.contextPath}/student/classes" class="back-to-list-link">
-                        ‹ 클래스 목록으로
+                        클래스 목록으로
                     </a>
 
                     <p class="current-class-label">현재 클래스</p>

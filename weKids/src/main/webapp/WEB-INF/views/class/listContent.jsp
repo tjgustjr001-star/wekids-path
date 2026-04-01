@@ -29,13 +29,13 @@
 
             <c:if test="${showJoinButton}">
                 <a href="${pageContext.request.contextPath}/student/classes/join" class="join-class-btn">
-                    + 클래스 가입
+                    클래스 가입
                 </a>
             </c:if>
 
             <c:if test="${showCreateButton}">
                 <a href="${pageContext.request.contextPath}/teacher/classes/new" class="join-class-btn">
-                    + 클래스 생성
+                    클래스 생성
                 </a>
             </c:if>
         </div>
@@ -82,7 +82,7 @@
 
                         <div class="class-card-footer">
                             <span class="class-member-count">멤버 ${cls.memberCount}명</span>
-                            <span class="class-enter-link">입장하기 →</span>
+                            <span class="class-enter-link">입장하기</span>
                         </div>
                     </div>
                 </div>

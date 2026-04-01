@@ -30,7 +30,7 @@
                         <h3 class="summary-card__label">자녀 학습 현황 (${childName != null ? childName : '김민수'})</h3>
                         <p class="summary-card__value">이번 주 진도율 ${progressPercent != null ? progressPercent : 85}%</p>
                     </div>
-                    <div class="summary-card__icon summary-card__icon--blue">학습</div>
+                    <div class="summary-card__icon summary-card__icon--blue summary-card__icon--book" aria-hidden="true"><span class="sr-only">학습</span></div>
                 </div>
 
                 <div class="progress-bar">
@@ -51,7 +51,7 @@
                             미제출 ${pendingAssignmentCount != null ? pendingAssignmentCount : 1}건
                         </p>
                     </div>
-                    <div class="summary-card__icon summary-card__icon--red">과제</div>
+                    <div class="summary-card__icon summary-card__icon--red summary-card__icon--clipboard" aria-hidden="true"><span class="sr-only">과제</span></div>
                 </div>
 
                 <p class="summary-card__text">
@@ -80,7 +80,7 @@
                             </c:choose>
                         </p>
                     </div>
-                    <div class="summary-card__icon summary-card__icon--purple">리포트</div>
+                    <div class="summary-card__icon summary-card__icon--purple summary-card__icon--chart" aria-hidden="true"><span class="sr-only">리포트</span></div>
                 </div>
 
                 <p class="summary-card__text summary-card__text--purple">

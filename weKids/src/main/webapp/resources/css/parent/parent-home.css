@@ -81,9 +81,23 @@
     justify-content: center;
     width: 28px;
     height: 28px;
-    font-size: 20px;
-    color: #3d8a5f;
     flex-shrink: 0;
+}
+
+.card-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.card-icon-learning svg {
+    stroke: #3d8a5f;
+}
+
+.card-icon-notice svg {
+    stroke: #5a7cf0;
 }
 
 .blue-icon {

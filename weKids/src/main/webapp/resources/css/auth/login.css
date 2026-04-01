@@ -276,3 +276,19 @@
         flex-direction: column;
     }
 }
+
+.login-logo-circle i,
+.alert-icon i,
+.input-icon i,
+.parent-register-icon i {
+    line-height: 1;
+}
+
+.input-icon {
+    width: 18px;
+    text-align: center;
+}
+
+.parent-register-arrow i {
+    margin-left: 4px;
+}

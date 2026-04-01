@@ -79,12 +79,7 @@
     width: 18px;
     height: 18px;
     display: inline-block;
-}
-
-.search-icon::before,
-.search-icon::after {
-    content: "";
-    position: absolute;
+    background: center / 18px 18px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
 }
 
 .search-icon::before {
@@ -108,7 +103,7 @@
 
 .teacher-primary-btn {
     height: 48px;
-    border: 0;
+    border: 1px solid #dbe2ea;
     border-radius: 14px;
     background: #117554;
     color: #fff;
@@ -134,16 +129,8 @@
 .plus-mini-icon {
     width: 14px;
     height: 14px;
-    position: relative;
     display: inline-block;
-}
-
-.plus-mini-icon::before,
-.plus-mini-icon::after {
-    content: "";
-    position: absolute;
-    background: #fff;
-    border-radius: 2px;
+    background: center / 14px 14px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 }
 
 .plus-mini-icon::before {
@@ -272,15 +259,10 @@
 .mini-user-icon {
     width: 12px;
     height: 12px;
-    position: relative;
     display: inline-block;
+    background: center / 12px 12px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5.5 19a6.5 6.5 0 0 1 13 0'/%3E%3C/svg%3E");
 }
 
-.mini-user-icon::before,
-.mini-user-icon::after {
-    content: "";
-    position: absolute;
-}
 
 .mini-user-icon::before {
     left: 2px;
@@ -391,7 +373,7 @@
     width: 32px;
     height: 32px;
     border: 0;
-    background: transparent;
+    background: #ffffff;
     border-radius: 8px;
     cursor: pointer;
     position: relative;
@@ -405,16 +387,20 @@
 .more-mini-icon {
     width: 16px;
     height: 16px;
-    position: relative;
     display: inline-block;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px 16px;
 }
 
-.message-mini-icon::before,
-.message-mini-icon::after,
-.more-mini-icon::before {
-    content: "";
-    position: absolute;
+.message-mini-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234379F2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E");
 }
+
+.more-mini-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Ccircle cx='12' cy='5' r='2'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3C/svg%3E");
+}
+
 
 .message-mini-icon::before {
     left: 1px;

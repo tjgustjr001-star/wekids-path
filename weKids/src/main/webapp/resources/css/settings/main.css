@@ -178,3 +178,29 @@ a {
         font-size: 12px;
     }
 }
+
+.setting-item {
+    gap: 18px;
+}
+
+.item-left {
+    min-width: 0;
+}
+
+.item-text {
+    min-width: 0;
+}
+
+.item-name,
+.item-desc {
+    word-break: keep-all;
+}
+
+.item-icon i,
+.item-arrow i {
+    line-height: 1;
+}
+
+.setting-item:hover .item-arrow {
+    color: #7c8798;
+}

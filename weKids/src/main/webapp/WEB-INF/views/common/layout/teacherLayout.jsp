@@ -31,5 +31,6 @@
         </main>
     </div>
 </div>
+    <script src="${pageContext.request.contextPath}/resources/js/common/teacher-layout.js"></script>
 </body>
 </html>

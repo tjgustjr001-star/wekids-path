@@ -14,24 +14,36 @@
     </div>
 
     <section class="class-home-panel teacher-summary-grid">
-        <div class="summary-card">
-            <div class="summary-title">클래스 인원</div>
-            <div class="summary-value">${studentCount}명</div>
+        <div class="summary-card teacher-summary-card teacher-summary-card--neutral">
+            <div class="teacher-summary-card__top">
+                <span class="teacher-summary-card__icon teacher-summary-card__icon--slate teacher-summary-card__icon--users"></span>
+                <div class="teacher-summary-card__label">클래스 인원</div>
+            </div>
+            <div class="teacher-summary-card__value">${studentCount}명</div>
         </div>
 
-        <div class="summary-card summary-blue">
-            <div class="summary-title">금주 평균 진도율</div>
-            <div class="summary-value">${avgProgressPercent}%</div>
+        <div class="summary-card teacher-summary-card teacher-summary-card--blue">
+            <div class="teacher-summary-card__top">
+                <span class="teacher-summary-card__icon teacher-summary-card__icon--blue teacher-summary-card__icon--chart"></span>
+                <div class="teacher-summary-card__label">금주 평균 진도율</div>
+            </div>
+            <div class="teacher-summary-card__value teacher-summary-card__value--green">${avgProgressPercent}%</div>
         </div>
 
-        <div class="summary-card summary-red">
-            <div class="summary-title">미제출 과제 학생</div>
-            <div class="summary-value">${missingAssignmentStudentCount}명</div>
+        <div class="summary-card teacher-summary-card teacher-summary-card--red">
+            <div class="teacher-summary-card__top">
+                <span class="teacher-summary-card__icon teacher-summary-card__icon--red teacher-summary-card__icon--clipboard"></span>
+                <div class="teacher-summary-card__label">미제출 과제 학생</div>
+            </div>
+            <div class="teacher-summary-card__value teacher-summary-card__value--red">${missingAssignmentStudentCount}명</div>
         </div>
 
-        <div class="summary-card summary-yellow">
-            <div class="summary-title">미평가 과제</div>
-            <div class="summary-value">${ungradedAssignmentCount}건</div>
+        <div class="summary-card teacher-summary-card teacher-summary-card--yellow">
+            <div class="teacher-summary-card__top">
+                <span class="teacher-summary-card__icon teacher-summary-card__icon--yellow teacher-summary-card__icon--check"></span>
+                <div class="teacher-summary-card__label">미평가 과제</div>
+            </div>
+            <div class="teacher-summary-card__value teacher-summary-card__value--dark">${ungradedAssignmentCount}건</div>
         </div>
     </section>
 

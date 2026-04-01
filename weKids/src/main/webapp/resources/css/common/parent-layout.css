@@ -13,3 +13,13 @@
     border-color: #ffd6d6;
     box-shadow: var(--shadow-sm);
 }
+
+.parent-shell .sidebar-menu.active {
+    color: #ff7777;
+    background: #fff5f5;
+    border-color: #ffd6d6;
+}
+
+.parent-shell .sidebar-menu.active .menu-icon {
+    color: #ff7777;
+}

@@ -274,3 +274,28 @@
     flex: 0 0 26px;
 
 }
+
+/* Lucide-style icon alignment refresh */
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+.sidebar-menu {
+    gap: 14px;
+}
+.sidebar-menu.active .menu-icon,
+.sidebar-menu:hover .menu-icon {
+    color: currentColor;
+}
+.sidebar-logout-btn {
+    gap: 6px;
+}
+.sidebar-user-icon .user-symbol,
+.sidebar-user-icon .parent-user-symbol {
+    width: 22px;
+    height: 22px;
+}

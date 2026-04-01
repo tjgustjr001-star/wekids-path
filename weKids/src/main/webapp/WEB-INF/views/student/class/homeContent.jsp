@@ -15,19 +15,19 @@
 
     <section class="class-home-panel">
         <div class="summary-card summary-blue">
-            <div class="summary-icon">📘</div>
+            <div class="summary-icon summary-icon-book" aria-hidden="true"></div>
             <div class="summary-title">이번 주 학습 진행률</div>
             <div class="summary-value">${weeklyProgress}%</div>
         </div>
 
         <div class="summary-card summary-red">
-            <div class="summary-icon">📋</div>
+            <div class="summary-icon summary-icon-clipboard" aria-hidden="true"></div>
             <div class="summary-title">미제출 과제</div>
             <div class="summary-value">${pendingAssignmentCount}건</div>
         </div>
 
         <div class="summary-card summary-purple">
-            <div class="summary-icon">📊</div>
+            <div class="summary-icon summary-icon-chart" aria-hidden="true"></div>
             <div class="summary-title">새 리포트 및 코멘트</div>
             <div class="summary-value">${newReportMessage}</div>
         </div>

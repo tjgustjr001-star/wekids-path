@@ -13,3 +13,13 @@
     border-color: #edf0f3;
     box-shadow: var(--shadow-sm);
 }
+
+.student-shell .sidebar-menu.active {
+    color: #111827;
+    background: #f3fff9;
+    border-color: #c7f1de;
+}
+
+.student-shell .sidebar-menu.active .menu-icon {
+    color: #111827;
+}

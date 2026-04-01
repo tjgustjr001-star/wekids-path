@@ -78,3 +78,127 @@
         grid-template-columns: 1fr;
     }
 }
+
+.teacher-summary-grid {
+    gap: 20px;
+}
+
+.teacher-summary-card {
+    min-height: 170px;
+    gap: 18px;
+    justify-content: flex-start;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.teacher-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+}
+
+.teacher-summary-card--neutral {
+    background: #ffffff;
+}
+
+.teacher-summary-card--blue {
+    background: #f4f8ff;
+    border-color: #cfe0ff;
+}
+
+.teacher-summary-card--red {
+    background: #fff5f5;
+    border-color: #ffd4d4;
+}
+
+.teacher-summary-card--yellow {
+    background: #fffbea;
+    border-color: #f4e19f;
+}
+
+.teacher-summary-card__top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.teacher-summary-card__label {
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 800;
+    color: #374151;
+    letter-spacing: -0.02em;
+}
+
+.teacher-summary-card__value {
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #111827;
+}
+
+.teacher-summary-card__value--green { color: #2f6b4f; }
+.teacher-summary-card__value--red { color: #cf3d33; }
+.teacher-summary-card__value--dark { color: #111827; }
+
+.teacher-summary-card__icon {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: inline-block;
+    flex: 0 0 34px;
+    color: transparent;
+}
+
+.teacher-summary-card__icon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+.teacher-summary-card__icon--slate { color: #6b7280; }
+.teacher-summary-card__icon--blue { color: #5472ea; }
+.teacher-summary-card__icon--red { color: #e05243; }
+.teacher-summary-card__icon--yellow { color: #c49a27; }
+.teacher-summary-card__icon--users::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1'/%3E%3Ccircle cx='9.5' cy='8' r='3'/%3E%3Cpath d='M20 21v-1.2a3.4 3.4 0 0 0-2.2-3.2'/%3E%3Cpath d='M16.5 4.9a3 3 0 1 1 0 6'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1'/%3E%3Ccircle cx='9.5' cy='8' r='3'/%3E%3Cpath d='M20 21v-1.2a3.4 3.4 0 0 0-2.2-3.2'/%3E%3Cpath d='M16.5 4.9a3 3 0 1 1 0 6'/%3E%3C/svg%3E");
+}
+.teacher-summary-card__icon--chart::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V10'/%3E%3Cpath d='M12 20V4'/%3E%3Cpath d='M20 20v-8'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V10'/%3E%3Cpath d='M12 20V4'/%3E%3Cpath d='M20 20v-8'/%3E%3C/svg%3E");
+}
+.teacher-summary-card__icon--clipboard::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='2.8' width='8' height='4.2' rx='1.4'/%3E%3Cpath d='M9 5H6a2 2 0 0 0-2 2v11.5A2.5 2.5 0 0 0 6.5 21h11A2.5 2.5 0 0 0 20 18.5V7a2 2 0 0 0-2-2h-3'/%3E%3Cpath d='M8 11h8'/%3E%3Cpath d='M8 15h6'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='2.8' width='8' height='4.2' rx='1.4'/%3E%3Cpath d='M9 5H6a2 2 0 0 0-2 2v11.5A2.5 2.5 0 0 0 6.5 21h11A2.5 2.5 0 0 0 20 18.5V7a2 2 0 0 0-2-2h-3'/%3E%3Cpath d='M8 11h8'/%3E%3Cpath d='M8 15h6'/%3E%3C/svg%3E");
+}
+.teacher-summary-card__icon--check::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 1400px) {
+    .teacher-summary-card__label {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .teacher-summary-card {
+        min-height: 148px;
+        padding: 22px 24px;
+    }
+
+    .teacher-summary-card__label {
+        font-size: 19px;
+    }
+
+    .teacher-summary-card__value {
+        font-size: 38px;
+    }
+}

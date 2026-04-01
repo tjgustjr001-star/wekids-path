@@ -410,3 +410,22 @@
         width: 24px;
     }
 }
+
+.back-link i,
+.header-logo i,
+.title-icon i,
+.card-title-wrap i,
+.left-icon i,
+.submit-btn i,
+.page-alert i {
+    line-height: 1;
+}
+
+.connection-code-input {
+    letter-spacing: 0.2em;
+}
+
+.header-logo {
+    min-width: 110px;
+    justify-content: center;
+}

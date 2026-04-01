@@ -13,3 +13,13 @@
     border-color: #dbeafe;
     box-shadow: var(--shadow-sm);
 }
+
+.teacher-shell .sidebar-menu.active {
+    color: #008BFF;
+    background: #eef6ff;
+    border-color: #cfe5ff;
+}
+
+.teacher-shell .sidebar-menu.active .menu-icon {
+    color: #008BFF;
+}
