@@ -18,7 +18,7 @@
 
     <div class="page-header">
         <div class="page-header-top">
-            <a href="#" class="back-btn" aria-label="뒤로가기">
+            <a href="javascript:history.back();" class="back-btn" aria-label="뒤로가기">
                 <svg viewBox="0 0 24 24">
                     <polyline points="15 18 9 12 15 6"/>
                 </svg>
@@ -38,10 +38,11 @@
                     문의 유형 <span class="required">*</span>
                 </label>
                 <select class="form-select" id="support" name="category">
-                    <option value="account">계정 / 로그인</option>
-                    <option value="class">클래스 관련</option>
                     <option value="payment">결제 / 환불</option>
-                    <option value="tech">기술적 문제</option>
+                    <option value="class">수업 / 클래스</option>
+                    <option value="account">계정 / 로그인</option>
+                    <option value="tech">오류 / 버그</option>
+                    <option value="report">신고</option>
                     <option value="other">기타</option>
                 </select>
                 <span class="field-error" id="categoryError">문의 유형을 선택해 주세요.</span>
@@ -358,7 +359,7 @@
 </style>
 <script>
     /* 글자 수 카운트 */
-    var bodyEl    = document.getElementById('body');
+    var bodyEl    = document.getElementById('content');
     var charCount = document.getElementById('charCount');
     bodyEl.addEventListener('input', function () {
         charCount.textContent = bodyEl.value.length + '/1000자';

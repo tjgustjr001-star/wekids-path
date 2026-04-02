@@ -1,23 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.spring.dao.admin.AdminSupportDAO">
 
-    <!-- 관리자용 전체 문의 목록 조회 -->
+
+
     <select id="selectAllSupports" resultType="com.spring.dto.SupportVO">
         SELECT
-            support_id   AS supportNo,
-            writer_id    AS writerId,   <!-- 식별을 위해 SELECT에는 유지 -->
+            support_id  AS supportNo,
+            writer_id   AS writerId,
             support_type AS category,
             title,
             content,
             status,
-            created_at   AS createdAt
+            created_at  AS createdAt,
+            updated_at  AS updatedAt
         FROM support
-        WHERE delete_yn = 0             <!-- 특정인 필터링(WHERE writer_id = ?) 조건 제거 -->
         ORDER BY created_at DESC
     </select>
+
+    <select id="selectSupportByNo" parameterType="int" resultType="com.spring.dto.SupportVO">
+        SELECT
+            support_id  AS supportNo,
+            writer_id   AS writerId,
+            support_type AS category,
+            title,
+            content,
+            status,
+            created_at  AS createdAt,
+            updated_at  AS updatedAt
+        FROM support
+        WHERE support_id = #{supportNo}
+    </select>
+
+    <select id="selectAnswerBySupportNo" parameterType="int" resultType="com.spring.dto.SupportAnswerVO">
+        SELECT
+            SUPPORT_A_ID      AS answerId,
+            support_id     AS supportNo,
+            member_id      AS memberId,
+            answer_content AS answerContent,
+            created_at     AS createdAt,
+            updated_at     AS updatedAt
+        FROM support_answer
+        WHERE support_id = #{supportNo}
+    </select>
+
+    <insert id="insertAnswer" parameterType="com.spring.dto.SupportAnswerVO">
+        INSERT INTO support_answer (
+            SUPPORT_A_ID,
+            support_id,
+            member_id,
+            answer_content,
+            created_at,
+            updated_at
+        ) VALUES (
+            support_answer_seq.NEXTVAL,
+            #{supportNo},
+            #{memberId},
+            #{answerContent},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <update id="updateSupportStatus" parameterType="int">
+        UPDATE support
+        SET
+            status     = '답변완료',
+            updated_at = SYSDATE
+        WHERE support_id = #{supportNo}
+    </update>
+    
+     <!-- 2. id가 DAO 메서드명(selectWeeklyStats)과 정확히 일치해야 합니다 -->
+    <select id="selectWeeklyStats" resultType="map">
+    SELECT 
+        TO_CHAR(days.dt, 'MM.DD') AS targetDate,
+        NVL(COUNT(CASE WHEN s.status = '답변완료' THEN 1 END), 0) AS completedCount,
+        NVL(COUNT(CASE WHEN s.status = '대기중' THEN 1 END), 0) AS pendingCount
+    FROM (
+        SELECT TRUNC(SYSDATE) - (LEVEL - 1) AS dt
+        FROM DUAL
+        CONNECT BY LEVEL &lt;= 7
+    ) days
+    LEFT JOIN support s 
+      ON TRUNC(s.created_at) = days.dt 
+      AND s.delete_yn = 0
+    GROUP BY days.dt
+    ORDER BY days.dt ASC
+</select>
+
+<select id="selectFilesBySupportNo" parameterType="int" resultType="com.spring.dto.SupportFileVO">
+    SELECT
+        file_id       AS fileId,
+        support_id    AS supportNo,
+        file_name     AS fileName,
+        file_ori_name AS fileOriName,
+        file_path     AS filePath,
+        file_size     AS fileSize,
+        created_at    AS createdAt
+    FROM support_file
+    WHERE support_id = #{supportNo}
+</select>
+
+
+    
+    
+    
 
 </mapper>

@@ -5,10 +5,10 @@
 
 <mapper namespace="com.spring.dao.SupportDAO">
 
-    <!-- 문의 등록 -->
-    <insert id="insertSupport"
-            parameterType="com.spring.dto.SupportVO">
-
+    <insert id="insertSupport" parameterType="com.spring.dto.SupportVO">
+        <selectKey keyProperty="supportNo" resultType="int" order="BEFORE">
+            SELECT support_seq.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO support (
             support_id,
             writer_id,
@@ -20,7 +20,7 @@
             delete_yn
         )
         VALUES (
-            support_seq.NEXTVAL,
+            #{supportNo},
             #{writerId},
             #{category},
             #{title},
@@ -29,15 +29,9 @@
             SYSDATE,
             0
         )
-
     </insert>
 
-
-    <!-- 내 문의 목록 -->
-    <select id="selectSupportListByWriterId"
-            parameterType="int"
-            resultType="com.spring.dto.SupportVO">
-
+    <select id="selectSupportListByWriterId" parameterType="int" resultType="com.spring.dto.SupportVO">
         SELECT
             support_id   AS supportNo,
             writer_id    AS writerId,
@@ -50,15 +44,9 @@
         WHERE writer_id = #{writerId}
           AND delete_yn = 0
         ORDER BY created_at DESC
-
     </select>
 
-
-    <!-- 상세 조회 -->
-    <select id="selectSupportById"
-            parameterType="int"
-            resultType="com.spring.dto.SupportVO">
-
+    <select id="selectSupportById" parameterType="int" resultType="com.spring.dto.SupportVO">
         SELECT
             support_id   AS supportNo,
             writer_id    AS writerId,
@@ -70,36 +58,21 @@
         FROM support
         WHERE support_id = #{supportId}
           AND delete_yn = 0
-
     </select>
 
-
-    <!-- 상태 변경 -->
-    <update id="updateSupportStatus"
-            parameterType="com.spring.dto.SupportVO">
-
+    <update id="updateSupportStatus" parameterType="com.spring.dto.SupportVO">
         UPDATE support
         SET status = #{status}
         WHERE support_id = #{supportNo}
-
     </update>
 
-
-    <!-- 삭제 -->
-    <update id="deleteSupport"
-            parameterType="int">
-
+    <update id="deleteSupport" parameterType="int">
         UPDATE support
         SET delete_yn = 1
         WHERE support_id = #{supportId}
-
     </update>
 
-    <!-- 답변 조회 -->
-    <select id="selectAnswerBySupportNo"
-            parameterType="int"
-            resultType="com.spring.dto.SupportAnswerVO">
-
+    <select id="selectAnswerBySupportNo" parameterType="int" resultType="com.spring.dto.SupportAnswerVO">
         SELECT
             support_a_id   AS answerId,
             support_id     AS supportNo,
@@ -108,7 +81,40 @@
             created_at     AS createdAt
         FROM support_answer
         WHERE support_id = #{supportNo}
+    </select>
 
+    <insert id="insertSupportFile" parameterType="com.spring.dto.SupportFileVO">
+        INSERT INTO support_file (
+            file_id,
+            support_id,
+            file_name,
+            file_ori_name,
+            file_path,
+            file_size,
+            created_at
+        ) VALUES (
+            support_file_seq.NEXTVAL,
+            #{supportNo},
+            #{fileName},
+            #{fileOriName},
+            #{filePath},
+            #{fileSize},
+            SYSDATE
+        )
+    </insert>
+
+    <select id="selectFilesBySupportNo" parameterType="int" resultType="com.spring.dto.SupportFileVO">
+        SELECT
+            file_id       AS fileId,
+            support_id    AS supportNo,
+            file_name     AS fileName,
+            file_ori_name AS fileOriName,
+            file_path     AS filePath,
+            file_size     AS fileSize,
+            created_at    AS createdAt
+        FROM support_file
+        WHERE support_id = #{supportNo}
+        ORDER BY created_at ASC
     </select>
 
 </mapper>

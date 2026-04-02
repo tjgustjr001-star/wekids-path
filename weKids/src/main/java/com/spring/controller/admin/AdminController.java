@@ -2,6 +2,7 @@ package com.spring.controller.admin;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,12 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.spring.dto.SupportAnswerVO;
+import com.spring.dto.SupportFileVO;
+import com.spring.dto.SupportVO;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
 import com.spring.dto.admin.MonthlyJoinCountDTO;
 import com.spring.service.admin.AdminClassService;
 import com.spring.service.admin.AdminStatsService;
+import com.spring.service.admin.AdminSupportService;
 import com.spring.service.admin.AdminTeacherService;
 import com.spring.service.admin.AdminUserService;
 
@@ -33,6 +38,9 @@ public class AdminController {
 	private AdminUserService adminUserService;
 	@Autowired
 	private AdminStatsService adminStatsService;
+	
+	@Autowired
+	private AdminSupportService adminSupportService;
 	
     @GetMapping({"", "/", "/home"})
     public String home(Model model) throws SQLException {
@@ -135,11 +143,45 @@ public class AdminController {
     }
 
     @GetMapping("/support")
-    public String support(Model model) {
+    public String support(Model model) throws Exception {
+        model.addAttribute("supportList", adminSupportService.getSupportList());
+        List<Map<String, Object>> weeklyStats = adminSupportService.selectWeeklyStats();
+        model.addAttribute("weeklyStats", weeklyStats);
         model.addAttribute("contentPage", "/WEB-INF/views/admin/support.jsp");
         return "admin/layout/adminLayout";
     }
 
+    @GetMapping("/support/detail")
+    public String supportDetail(@RequestParam("supportNo") int supportNo, Model model) {
+        SupportVO support = adminSupportService.getSupportByNo(supportNo);
+        SupportAnswerVO answer = adminSupportService.getAnswerBySupportNo(supportNo);
+        List<SupportFileVO> fileList = adminSupportService.getFileList(supportNo);
+        model.addAttribute("support", support);
+        model.addAttribute("answer", answer);
+        model.addAttribute("fileList", fileList);
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/supportDetail.jsp");
+        return "admin/layout/adminLayout";
+    }
+
+    @GetMapping("/support/answer")
+    public String answerForm(@RequestParam("supportNo") int supportNo, Model model) {
+        SupportVO support = adminSupportService.getSupportByNo(supportNo);
+        List<SupportFileVO> fileList = adminSupportService.getFileList(supportNo);
+        model.addAttribute("support", support);
+        model.addAttribute("fileList", fileList);
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/supportAnswer.jsp");
+        return "admin/layout/adminLayout";
+    }
+
+	/* 여기있는거 일단 주석처리했어요
+	 * @PostMapping("/support/answer") public String
+	 * answerSubmit(@RequestParam("supportNo") int supportNo,
+	 * 
+	 * @RequestParam("answerContent") String answerContent) { int adminId =
+	 * getAdminId(); adminSupportService.registerAnswer(supportNo, adminId,
+	 * answerContent); return "redirect:/admin/support"; }
+	 */
+    
     @GetMapping("/logs")
     public String logs(Model model) {
         model.addAttribute("contentPage", "/WEB-INF/views/admin/logs.jsp");

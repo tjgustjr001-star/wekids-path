@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -37,7 +38,16 @@
 				<span
 					class="status-badge ${support.status eq '답변완료' ? 'done' : 'waiting'}">
 					${support.status eq '답변완료' ? '답변 완료' : '답변 대기'} </span> <span
-					class="category-badge">${support.category}</span>
+					class="category-badge"> <c:choose>
+						<c:when test="${support.category eq 'account'}">계정 / 로그인</c:when>
+						<c:when test="${support.category eq 'class'}">수업 / 클래스</c:when>
+						<c:when test="${support.category eq 'payment'}">결제 / 환불</c:when>
+						<c:when test="${support.category eq 'tech'}">기술적 문제</c:when>
+						<c:when test="${support.category eq 'report'}">신고</c:when>
+						<c:when test="${support.category eq 'other'}">기타</c:when>
+						<c:otherwise>${support.category}</c:otherwise>
+					</c:choose>
+				</span>
 			</div>
 
 			<h2 class="detail-title">${support.title}</h2>
@@ -47,7 +57,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
             </svg>
-				<span>작성자</span> <span class="dot">•</span>
+				<span>${support.writerId}</span> <span class="dot">•</span>
 				<fmt:formatDate value="${support.createdAt}" pattern="yyyy.MM.dd" />
 			</div>
 
@@ -57,38 +67,41 @@
 			<div class="detail-content">${support.content}</div>
 
 			<div class="divider"></div>
+			<div class="support-detail-container">
+				<div class="content-box"></div>
 
-			<!-- 답변 영역 -->
-			<div class="answer-section">
-				<c:choose>
-					<c:when test="${answer != null}">
-						<div class="answer-header">
-							<svg viewBox="0 0 24 24">
-                            <path
-									d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-							<span>답변</span> <span class="answer-date"> <fmt:formatDate
-									value="${answer.createdAt}" pattern="yyyy.MM.dd" />
-							</span>
-						</div>
-						<div class="answer-content">${answer.answerContent}</div>
-					</c:when>
-					<c:otherwise>
-						<div class="answer-waiting">
-							<svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-							<p class="waiting-title">답변을 기다리고 있습니다.</p>
-							<p class="waiting-sub">담당자가 내용을 확인한 후 신속하게 답변해 드리겠습니다.</p>
-						</div>
-					</c:otherwise>
-				</c:choose>
-			</div>
+				<!-- 첨부 영역 -->
+				<div class="attachment-area">
+					<div class="image-previews">
+						<c:forEach var="file" items="${fileList}">
+							<c:set var="fileName" value="${fn:toLowerCase(file.fileOriName)}" />
 
-		</div>
+							<c:if
+								test="${fn:endsWith(fileName, '.jpg') || fn:endsWith(fileName, '.png') || 
+                              fn:endsWith(fileName, '.jpeg') || fn:endsWith(fileName, '.gif')}">
+								<div class="img-item" style="margin-bottom: 20px;">
+									<p style="font-size: 0.8em; color: #666;">[파일명:
+										${file.fileOriName}]</p>
+									<img
+										src="${pageContext.request.contextPath}/support/file/download?fileName=${file.fileName}"
+										style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+								</div>
+							</c:if>
+						</c:forEach>
+				<ul class="file-list">
+					<c:forEach var="file" items="${fileList}">
+						<li><a
+							href="${pageContext.request.contextPath}/support/file/download?fileName=${file.fileName}&fileOriName=${file.fileOriName}">
+								<i class="fa fa-download"></i> ${file.fileOriName}
+								(${file.fileSize} bytes)
+						</a></li>
+					</c:forEach>
+				</ul>
+					</div>
+						
 
-		<!-- 삭제 버튼 (답변 전에만 표시) -->
+				
+				<!-- 삭제 버튼 (답변 전에만 표시) -->
 		<c:if test="${support.status ne '답변완료'}">
 			<div class="btn-row">
 				<a
@@ -97,6 +110,45 @@
 					삭제 </a>
 			</div>
 		</c:if>
+			</div>
+			
+		</div>
+		
+	
+
+	
+		</div>
+		<div class="detail-card">
+		<!-- 답변 영역 -->
+		<div class="answer-section">
+			<c:choose>
+				<c:when test="${answer != null}">
+					<div class="answer-header">
+						<svg viewBox="0 0 24 24">
+                            <path
+								d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+						<span>답변</span> <span class="answer-date"> <fmt:formatDate
+								value="${answer.createdAt}" pattern="yyyy.MM.dd" />
+						</span>
+					</div>
+					<div class="answer-content">${answer.answerContent}</div>
+				</c:when>
+				<c:otherwise>
+					<div class="answer-waiting">
+						<svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+						<p class="waiting-title">답변을 기다리고 있습니다.</p>
+						<p class="waiting-sub">담당자가 내용을 확인한 후 신속하게 답변해 드리겠습니다.</p>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</div>
+	</div>
+
+
 
 	</main>
 
@@ -128,10 +180,11 @@ html {
 	flex: 1;
 	padding: 32px 40px;
 	min-height: calc(100vh - 56px);
-	width: calc(100% - 210px);
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	overflow-y: auto;
 }
 
 /* ===========================
@@ -177,7 +230,8 @@ html {
 	padding: 32px 40px;
 	box-shadow: 0 1px 6px rgba(42, 110, 63, 0.07);
 	margin-bottom: 16px;
-	max-width: 860px; /* ← 추가 */ width : 100%; /* ← 추가 */
+	max-width: 860px; /* ← 추가 */
+	width: 100%; /* ← 추가 */
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
@@ -188,7 +242,7 @@ html {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	margin-bottom: 14px;
+	margin-bottom: 50px;
 }
 
 /* 상태 뱃지 */
