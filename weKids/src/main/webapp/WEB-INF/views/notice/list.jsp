@@ -8,16 +8,14 @@
 <c:set var="requiredUnreadCount" value="0" />
 <c:if test="${isStudentOrParent}">
     <c:forEach var="n" items="${noticeList}">
-        <c:if test="${(n.requiredUnread or n.confirmYn eq 1) and not n.readConfirmed}">
+        <c:if test="${n.confirmYn eq 1 and not n.readConfirmed}">
             <c:set var="requiredUnreadCount" value="${requiredUnreadCount + 1}" />
         </c:if>
     </c:forEach>
 </c:if>
 
-
 <section class="notice_page">
     <div class="class-page-hero">
-    
         <div class="class-page-hero-icon">
             <span class="menu-icon bell-mini-icon"></span>
         </div>
@@ -33,17 +31,17 @@
         </div>
     </div>
 
-	<c:if test="${isTeacher}">
-	    <div class="notice_action_row">
-	        <button type="button"
-	                class="write_btn"
-	                id="openWriteBtn"
-	                data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
-	                data-return-url="${currentUri}">
-	            새 가정통신문 작성
-	        </button>
-	    </div>
-	</c:if>
+    <c:if test="${isTeacher}">
+        <div class="notice_action_row">
+            <button type="button"
+                    class="write_btn"
+                    id="openWriteBtn"
+                    data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
+                    data-return-url="${currentUri}">
+                새 가정통신문 작성
+            </button>
+        </div>
+    </c:if>
 
     <div class="notice_top_box">
         <div class="notice_top_info">
@@ -59,100 +57,101 @@
 
         <div class="filter_row">
             <button type="button" class="filter_btn active" data-filter="all">
-                전체 <span>0</span>
+                전체 <span>${totalCount}</span>
             </button>
             <button type="button" class="filter_btn" data-filter="STUDENT">
-                학생 <span>0</span>
+                학생 <span>${studentCount}</span>
             </button>
             <button type="button" class="filter_btn" data-filter="PARENT">
-                학부모 <span>0</span>
+                학부모 <span>${parentCount}</span>
             </button>
         </div>
-    
 
-    <div class="notice_list_wrap">
-        <c:choose>
-            <c:when test="${empty noticeList}">
-                <div class="empty_box">
-                    <p class="empty_title">등록된 가정통신문이 없습니다.</p>
-                    <p class="empty_desc">
-                        <c:if test="${isTeacher}">
-                            새로운 가정통신문을 작성해주세요.
-                        </c:if>
-                        <c:if test="${isStudentOrParent}">
-                            새로운 가정통신문이 등록되면 여기에서 확인할 수 있습니다.
-                        </c:if>
-                    </p>
-                </div>
-            </c:when>
+        <div class="notice_list_wrap">
+            <c:choose>
+                <c:when test="${empty noticeList}">
+                    <div class="empty_box">
+                        <p class="empty_title">등록된 가정통신문이 없습니다.</p>
+                        <p class="empty_desc">
+                            <c:if test="${isTeacher}">
+                                새로운 가정통신문을 작성해주세요.
+                            </c:if>
+                            <c:if test="${isStudentOrParent}">
+                                새로운 가정통신문이 등록되면 여기에서 확인할 수 있습니다.
+                            </c:if>
+                        </p>
+                    </div>
+                </c:when>
 
-            <c:otherwise>
-                <div class="notice_card_list">
-                    <c:forEach var="notice" items="${noticeList}">
-                        <div class="notice_card"
-						     data-notice-id="${notice.noticeId}"
-						     data-class-id="${classId}"
-						     data-category="${notice.target}">
+                <c:otherwise>
+                    <div class="notice_card_list">
+                        <c:forEach var="notice" items="${noticeList}">
+                            <div class="notice_card ${notice.confirmYn eq 1 ? 'required' : ''} ${notice.requiredUnread ? 'unread' : ''}"
+                                 data-notice-id="${notice.noticeId}"
+                                 data-class-id="${classId}"
+                                 data-category="${empty notice.target ? 'ALL' : notice.target}">
 
-                            <div class="notice_card_top">
-                                <div class="badge_group">
-                                    <c:if test="${isRequired}">
-                                        <span class="badge badge_required">필독</span>
-                                    </c:if>
-                                    <c:if test="${isUnreadRequired}">
-                                        <span class="badge badge_unread_required">미확인</span>
-                                    </c:if>
+                                <div class="notice_card_top">
+                                    <div class="badge_group">
+                                        <c:if test="${notice.confirmYn eq 1}">
+                                            <span class="badge badge_required">필독</span>
+                                        </c:if>
 
-                                    <span class="badge
+                                        <span class="badge
+                                            <c:choose>
+                                                <c:when test='${notice.target eq "STUDENT"}'>badge_student</c:when>
+                                                <c:when test='${notice.target eq "PARENT"}'>badge_parent</c:when>
+                                                <c:otherwise>badge_all</c:otherwise>
+                                            </c:choose>">
+                                            <c:choose>
+                                                <c:when test='${notice.target eq "STUDENT"}'>학생 대상</c:when>
+                                                <c:when test='${notice.target eq "PARENT"}'>학부모 대상</c:when>
+                                                <c:otherwise>전체 대상</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </div>
+
+                                    <div class="notice_card_top_right">
+                                        <span class="notice_date">
+                                            <fmt:formatDate value="${notice.createdAt}" pattern="yyyy.MM.dd"/>
+                                        </span>
+                                        <c:if test="${isStudentOrParent and notice.requiredUnread}">
+                                            <span class="badge badge_unread_required">미확인</span>
+                                        </c:if>
+                                    </div>
+                                </div>
+
+                                <div class="notice_card_body">
+                                    <h3 class="notice_card_title">${notice.title}</h3>
+                                    <p class="notice_card_content">${notice.content}</p>
+                                </div>
+
+                                <div class="notice_card_bottom">
+                                    <div class="notice_meta">
+                                        <span>${notice.writerName} 선생님</span>
+                                        <c:if test="${not empty notice.attachList}">
+                                            <span class="dot">•</span>
+                                            <span>첨부 ${fn:length(notice.attachList)}개</span>
+                                        </c:if>
+                                    </div>
+
+                                    <c:if test="${isStudentOrParent and notice.confirmYn eq 1}">
                                         <c:choose>
-                                            <c:when test='${notice.target eq "STUDENT"}'>badge_student</c:when>
-                                            <c:when test='${notice.target eq "PARENT"}'>badge_parent</c:when>
-                                            <c:otherwise>badge_all</c:otherwise>
-                                        </c:choose>">
-                                        <c:choose>
-                                            <c:when test='${notice.target eq "STUDENT"}'>학생 대상</c:when>
-                                            <c:when test='${notice.target eq "PARENT"}'>학부모 대상</c:when>
-                                            <c:otherwise>전체 대상</c:otherwise>
+                                            <c:when test="${notice.readConfirmed}">
+                                                <span class="read_state done">읽음 확인 완료</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="read_state need">미확인 필독</span>
+                                            </c:otherwise>
                                         </c:choose>
-                                    </span>
-                                </div>
-
-                                <span class="notice_date">
-                                    <fmt:formatDate value="${notice.createdAt}" pattern="yyyy.MM.dd"/>
-                                </span>
-                            </div>
-
-                            <div class="notice_card_body">
-                                <h3 class="notice_card_title">${notice.title}</h3>
-                                <p class="notice_card_content">${notice.content}</p>
-                            </div>
-
-                            <div class="notice_card_bottom">
-                                <div class="notice_meta">
-                                    <span>${notice.writerName} 선생님</span>
-
-                                    <c:if test="${not empty notice.attachList}">
-                                        <span class="dot">•</span>
-                                        <span>첨부 ${fn:length(notice.attachList)}개</span>
                                     </c:if>
                                 </div>
-
-                                <c:if test="${isStudentOrParent and isRequired}">
-                                    <c:choose>
-                                        <c:when test="${notice.readConfirmed}">
-                                            <span class="read_state done">읽음 확인 완료</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="read_state need">미확인 필독</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:if>
                             </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </c:otherwise>
-        </c:choose>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
 
     <div class="pagination">
@@ -160,7 +159,7 @@
         <button type="button" id="nextBtn" class="page_btn">&gt;</button>
     </div>
 </section>
-</div>
+
 <div id="requiredPopupOverlay" class="popup_overlay">
     <div class="popup_box required_popup_box">
         <div class="popup_header required_popup_header">
@@ -177,7 +176,7 @@
         </div>
         <div class="popup_body required_popup_body">
             <c:forEach var="notice" items="${noticeList}">
-                <c:if test="${isStudentOrParent and (notice.requiredUnread or notice.confirmYn eq 1) and not notice.readConfirmed}">
+                <c:if test="${isStudentOrParent and notice.confirmYn eq 1 and not notice.readConfirmed}">
                     <div class="required_item"
                          data-notice-id="${notice.noticeId}"
                          data-class-id="${classId}">
@@ -200,7 +199,7 @@
                 </c:if>
             </c:forEach>
         </div>
-        <div class="popup_footer">
+        <div class="popup_footer required_popup_footer">
             <button type="button" id="goRequiredNoticeBtn" class="primary_btn popup_confirm_btn">확인하러 가기</button>
         </div>
     </div>

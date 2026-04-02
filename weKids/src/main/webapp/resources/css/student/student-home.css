@@ -381,13 +381,17 @@
 .news-list {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 12px;
 }
 
 .news-item {
     display: flex;
     gap: 12px;
     align-items: flex-start;
+    border: 1px solid #edf0f3;
+    border-radius: 18px;
+    padding: 16px 0px;
+    
 }
 
 .news-dot {
