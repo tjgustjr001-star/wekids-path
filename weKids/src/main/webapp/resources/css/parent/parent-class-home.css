@@ -22,11 +22,9 @@
 .parent-class-home-hero__bg {
     position: absolute;
     inset: 0;
-    background-image: url("https://images.unsplash.com/photo-1759834687385-fc3a66687fb1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBjYW1wdXMlMjBidWlsZGluZ3xlbnwxfHx8fDE3NzMwMDc0ODl8MA&ixlib=rb-4.1.0&q=80&w=1080");
-    background-size: cover;
-    background-position: center;
-    opacity: 0.3;
-    mix-blend-mode: overlay;
+    background: radial-gradient(circle at top left, rgba(72, 187, 120, 0.35), transparent 32%),
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.35), transparent 30%),
+                linear-gradient(135deg, rgba(17, 24, 39, 0.06), rgba(17, 24, 39, 0.22));
 }
 
 .parent-class-home-hero__content {

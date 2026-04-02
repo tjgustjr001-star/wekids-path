@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/student/student-class-home.css">
 
 <section class="class-home-page student-class-home">
-    <div class="class-hero-card">
+    <div class="class-hero-card class-hero-card--plain">
         <div class="class-hero-overlay"></div>
         <div class="class-hero-content">
             <h1>${className}</h1>
@@ -13,29 +13,36 @@
         </div>
     </div>
 
-    <section class="class-home-panel">
-        <div class="summary-card summary-blue">
+    <section class="class-home-panel student-summary-grid">
+        <a href="${pageContext.request.contextPath}/student/classes/${classId}/learns" class="summary-card summary-blue summary-card--link">
             <div class="summary-icon summary-icon-book" aria-hidden="true"></div>
             <div class="summary-title">이번 주 학습 진행률</div>
-            <div class="summary-value">${weeklyProgress}%</div>
-        </div>
+            <div class="summary-value summary-value--green">${weeklyProgress}%</div>
+        </a>
 
-        <div class="summary-card summary-red">
+        <a href="${pageContext.request.contextPath}/student/classes/${classId}/assignments" class="summary-card summary-red summary-card--link">
             <div class="summary-icon summary-icon-clipboard" aria-hidden="true"></div>
             <div class="summary-title">미제출 과제</div>
-            <div class="summary-value">${pendingAssignmentCount}건</div>
-        </div>
+            <div class="summary-value summary-value--red">${pendingAssignmentCount}건</div>
+            <c:if test="${not empty latestAssignmentTitle}">
+                <div class="summary-caption">${latestAssignmentTitle}</div>
+            </c:if>
+        </a>
 
-        <div class="summary-card summary-purple">
+        <a href="${pageContext.request.contextPath}/student/classes/${classId}/reports" class="summary-card summary-purple summary-card--link">
             <div class="summary-icon summary-icon-chart" aria-hidden="true"></div>
             <div class="summary-title">새 리포트 및 코멘트</div>
-            <div class="summary-value">${newReportMessage}</div>
-        </div>
+            <div class="summary-value summary-value--purple">${newReportMessage}</div>
+            <c:if test="${hasReport and not empty latestReportTitle}">
+                <div class="summary-caption">${latestReportTitle}</div>
+            </c:if>
+        </a>
     </section>
 
     <section class="class-home-section">
-        <div class="section-header">
+        <div class="section-header section-header-inline">
             <h2>최근 가정통신문</h2>
+            <a class="detail-link" href="${pageContext.request.contextPath}/student/classes/${classId}/bulletins">전체보기</a>
         </div>
 
         <div class="notice-list">

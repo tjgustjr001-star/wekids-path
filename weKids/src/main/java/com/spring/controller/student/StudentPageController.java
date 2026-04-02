@@ -220,20 +220,77 @@ public class StudentPageController {
         }
     }
     
-    @GetMapping("/student/classes/{classId}")
-    public String studentClassHome(@PathVariable("classId") int classId,
-                                   Model model,
-                                   HttpSession session) throws Exception {
-        model.addAttribute("pageTitle", "클래스 홈");
-        model.addAttribute("currentUri", "/student/classes/" + classId);
-        model.addAttribute("contentPage", "/WEB-INF/views/student/class/homeContent.jsp");
+    
+@GetMapping("/student/classes/{classId}")
+public String studentClassHome(@PathVariable("classId") int classId,
+                               Model model,
+                               HttpSession session) throws Exception {
+    model.addAttribute("pageTitle", "클래스 홈");
+    model.addAttribute("currentUri", "/student/classes/" + classId);
+    model.addAttribute("contentPage", "/WEB-INF/views/student/class/homeContent.jsp");
 
-        setStudentLayoutBase(model);
-        setStudentClassDetailBase(model, classId, session);
-        setStudentHomeDummyData(model, classId, session);
+    setStudentLayoutBase(model);
+    setStudentClassDetailBase(model, classId, session);
 
-        return "common/layout/studentLayout";
+    MemberVO loginUser = getLoginUser(session);
+    if (loginUser == null) {
+        return "redirect:/auth/login";
     }
+
+    ClassVO classInfo = classService.getStudentClassDetail(loginUser.getMember_id(), classId);
+    if (classInfo == null) {
+        return "redirect:/student/classes";
+    }
+
+    List<StudentLearnItemDTO> learnList =
+            studentLearnService.getStudentLearnList(loginUser.getMember_id(), classId);
+
+    List<StudentAssignmentItemDTO> assignmentList =
+            studentAssignmentService.getStudentAssignmentList(loginUser.getMember_id(), classId);
+
+    List<NoticeVO> noticeList = noticeService.getNoticeList(classId, loginUser);
+    List<ReportListDTO> reportList = reportService.getStudentReportList(loginUser.getMember_id(), classId, null);
+
+    int progressPercent = learnList.isEmpty()
+            ? 0
+            : Math.round((float) learnList.stream()
+                    .mapToInt(StudentLearnItemDTO::getProgress)
+                    .sum() / learnList.size());
+
+    int pendingAssignmentCount = (int) assignmentList.stream()
+            .filter(item -> !item.isSubmitted())
+            .count();
+
+    ReportListDTO latestReport = reportList.isEmpty() ? null : reportList.get(0);
+
+    List<Map<String, Object>> recentBulletins = new ArrayList<>();
+    for (NoticeVO notice : noticeList.stream().limit(5).toList()) {
+        Map<String, Object> bulletin = new LinkedHashMap<>();
+        bulletin.put("id", notice.getNoticeId());
+        bulletin.put("title", safeString(notice.getTitle()));
+        bulletin.put("date", formatNoticeDate(notice.getCreatedAt()));
+        bulletin.put("important", notice.getConfirmYn() == 1);
+        recentBulletins.add(bulletin);
+    }
+
+    model.addAttribute("className", classInfo.getClassName());
+    model.addAttribute("studentName", safeDisplayName(loginUser, "학생"));
+    model.addAttribute("teacherName", safeString(classInfo.getTeacherName()));
+    model.addAttribute("weeklyProgress", progressPercent);
+    model.addAttribute("pendingAssignmentCount", pendingAssignmentCount);
+    model.addAttribute("latestAssignmentTitle",
+            assignmentList.stream()
+                    .filter(item -> !item.isSubmitted())
+                    .map(StudentAssignmentItemDTO::getTitle)
+                    .findFirst()
+                    .orElse(""));
+    model.addAttribute("newReportMessage", latestReport != null ? "도착했어요!" : "없어요");
+    model.addAttribute("latestReportTitle", latestReport != null ? safeString(latestReport.getTitle()) : "");
+    model.addAttribute("hasReport", latestReport != null);
+    model.addAttribute("recentBulletins", recentBulletins);
+
+    return "common/layout/studentLayout";
+}
 
     @GetMapping("/student/classes/{classId}/bulletins")
     public String studentBulletinList(@PathVariable("classId") int classId,

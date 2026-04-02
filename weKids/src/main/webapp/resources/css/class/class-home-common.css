@@ -18,9 +18,12 @@
 
 .class-hero-card {
     min-height: 240px;
-    background: linear-gradient(120deg, rgba(46, 125, 50, 0.45), rgba(37, 99, 235, 0.65)),
-                url("/resources/images/class/class-cover-default.jpg") center center / cover no-repeat;
+    background: linear-gradient(120deg, #5f7f69 0%, #8aa8b7 50%, #7f98e8 100%);
     color: #fff;
+}
+
+.class-hero-card--plain {
+    background: linear-gradient(120deg, #7e987f 0%, #8aa8b7 48%, #8397e8 100%);
 }
 
 .class-hero-overlay {
@@ -229,3 +232,25 @@
         font-size: 16px;
     }
 }
+
+.summary-card--link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.summary-card--link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.summary-caption {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #6b7280;
+    word-break: keep-all;
+}
+
+.summary-value--green { color: #2f6b4f; }
+.summary-value--red { color: #cf3d33; }
+.summary-value--purple { color: #7c3aed; }

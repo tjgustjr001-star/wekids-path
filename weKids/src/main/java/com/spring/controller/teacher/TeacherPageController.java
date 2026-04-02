@@ -5,11 +5,10 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +37,7 @@ import com.spring.dto.teacher.TeacherAssignmentStudentWorkDTO;
 import com.spring.dto.teacher.TeacherClassCreateDTO;
 import com.spring.dto.teacher.TeacherClassManageDTO;
 import com.spring.dto.teacher.TeacherLearnDifficultyDTO;
+import com.spring.dto.teacher.TeacherLearnManageDTO;
 import com.spring.dto.teacher.TeacherLearnProgressDTO;
 import com.spring.dto.teacher.TeacherLearnSaveDTO;
 import com.spring.dto.teacher.TeacherStudentManageDTO;
@@ -193,19 +193,97 @@ public class TeacherPageController {
         return "redirect:/teacher/classes";
     }
 
-    @GetMapping("/teacher/classes/{classId}")
-    public String teacherClassHome(@PathVariable("classId") int classId,
-                                   Model model,
-                                   HttpServletRequest request,
-                                   HttpSession session) {
-        model.addAttribute("pageTitle", "클래스 홈");
-        model.addAttribute("currentUri", "/teacher/classes/" + classId);
-        model.addAttribute("contentPage", "/WEB-INF/views/teacher/class/homeContent.jsp");
+    
+@GetMapping("/teacher/classes/{classId}")
+public String teacherClassHome(@PathVariable("classId") int classId,
+                               Model model,
+                               HttpServletRequest request,
+                               HttpSession session) throws Exception {
+    model.addAttribute("pageTitle", "클래스 홈");
+    model.addAttribute("currentUri", "/teacher/classes/" + classId);
+    model.addAttribute("contentPage", "/WEB-INF/views/teacher/class/homeContent.jsp");
 
-        setTeacherClassDetailLayout(model, request, classId, getTeacherClassName(classId, session));
-
-        return "common/layout/teacherLayout";
+    MemberVO loginUser = getLoginUser(session);
+    if (loginUser == null) {
+        return "redirect:/auth/login";
     }
+
+    ClassVO classInfo = classService.getTeacherClassDetail(loginUser.getMember_id(), classId);
+    if (classInfo == null) {
+        return "redirect:/teacher/classes";
+    }
+
+    setTeacherClassDetailLayout(model, request, classId, classInfo.getClassName());
+
+    List<TeacherStudentManageDTO> studentList =
+            classService.getTeacherStudentManageList(loginUser.getMember_id(), classId);
+
+    List<TeacherLearnManageDTO> learnList =
+            teacherLearnService.getTeacherLearnList(loginUser.getMember_id(), classId, 0);
+
+    List<TeacherAssignmentManageDTO> assignmentList =
+            teacherAssignmentService.getTeacherAssignmentList(loginUser.getMember_id(), classId, 0);
+
+    List<NoticeVO> noticeList = noticeService.getNoticeList(classId, loginUser);
+    List<ReportListDTO> reportList = reportService.getTeacherReportList(loginUser.getMember_id(), classId);
+
+    int studentCount = studentList.size();
+
+    int avgProgressPercent = learnList.isEmpty()
+            ? 0
+            : Math.round((float) learnList.stream()
+                    .mapToInt(TeacherLearnManageDTO::getCompletionRate)
+                    .sum() / learnList.size());
+
+    int missingAssignmentStudentCount = assignmentList.stream()
+            .mapToInt(item -> Math.max(0, item.getTotalCount() - item.getSubmitCount()))
+            .sum();
+
+    int ungradedAssignmentCount = assignmentList.stream()
+            .mapToInt(TeacherAssignmentManageDTO::getNeedFeedback)
+            .sum();
+
+    List<Map<String, Object>> recentUpdates = new ArrayList<>();
+    for (ReportListDTO report : reportList.stream().limit(3).toList()) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("writerInitial", "선");
+        item.put("writerName", safeDisplayName(loginUser, "교사") + " 선생님 (나)");
+        item.put("timeText", report.getCreatedAt());
+        item.put("content", "[리포트] " + safeString(report.getTitle()));
+        recentUpdates.add(item);
+    }
+    if (recentUpdates.isEmpty()) {
+        for (NoticeVO notice : noticeList.stream().limit(3).toList()) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("writerInitial", "선");
+            item.put("writerName", safeDisplayName(loginUser, "교사") + " 선생님 (나)");
+            item.put("timeText", formatNoticeDateTime(notice.getCreatedAt()));
+            item.put("content", safeString(notice.getContent()));
+            recentUpdates.add(item);
+        }
+    }
+
+    List<Map<String, Object>> classBulletins = new ArrayList<>();
+    for (NoticeVO notice : noticeList.stream().limit(5).toList()) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("id", notice.getNoticeId());
+        item.put("title", safeString(notice.getTitle()));
+        item.put("date", formatNoticeDate(notice.getCreatedAt()));
+        item.put("important", notice.getConfirmYn() == 1);
+        classBulletins.add(item);
+    }
+
+    model.addAttribute("className", classInfo.getClassName());
+    model.addAttribute("teacherName", safeDisplayName(loginUser, "교사"));
+    model.addAttribute("studentCount", studentCount);
+    model.addAttribute("avgProgressPercent", avgProgressPercent);
+    model.addAttribute("missingAssignmentStudentCount", missingAssignmentStudentCount);
+    model.addAttribute("ungradedAssignmentCount", ungradedAssignmentCount);
+    model.addAttribute("recentUpdates", recentUpdates);
+    model.addAttribute("classBulletins", classBulletins);
+
+    return "common/layout/teacherLayout";
+}
 
     @GetMapping("/teacher/classes/{classId}/manage")
     public String teacherClassManage(@PathVariable("classId") int classId,
@@ -952,6 +1030,24 @@ public class TeacherPageController {
         model.addAttribute("learnUrl", "/teacher/classes/" + classId + "/learns");
         model.addAttribute("assignmentUrl", "/teacher/classes/" + classId + "/assignments");
         model.addAttribute("reportUrl", "/teacher/classes/" + classId + "/reports");
+    }
+
+    private String safeString(String value) {
+        return value == null ? "" : value;
+    }
+
+    private String formatNoticeDate(java.util.Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new java.text.SimpleDateFormat("yyyy.MM.dd").format(date);
+    }
+
+    private String formatNoticeDateTime(java.util.Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new java.text.SimpleDateFormat("yyyy.MM.dd HH:mm").format(date);
     }
 
     private String getTeacherClassName(int classId, HttpSession session) {

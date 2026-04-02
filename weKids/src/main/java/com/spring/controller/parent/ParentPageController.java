@@ -29,6 +29,7 @@ import com.spring.dto.parent.ParentChildClassOptionDTO;
 import com.spring.dto.report.ReportDetailDTO;
 import com.spring.dto.report.ReportListDTO;
 import com.spring.dto.student.StudentAssignmentItemDTO;
+import com.spring.dto.student.StudentLearnItemDTO;
 import com.spring.service.ClassService;
 import com.spring.service.NoticeService;
 import com.spring.service.ParentAssignmentService;
@@ -220,19 +221,107 @@ public class ParentPageController {
         return "common/layout/parentLayout";
     }
 
-    @GetMapping("/parent/classes/{classId}")
-    public String parentClassHome(@PathVariable("classId") int classId,
-                                  Model model,
-                                  HttpSession session) throws Exception {
-        model.addAttribute("pageTitle", "클래스 홈");
-        model.addAttribute("currentUri", "/parent/classes/" + classId);
-        model.addAttribute("contentPage", "/WEB-INF/views/parent/class/homeContent.jsp");
+    
+@GetMapping("/parent/classes/{classId}")
+public String parentClassHome(@PathVariable("classId") int classId,
+                              @RequestParam(value = "childId", required = false) Integer childId,
+                              Model model,
+                              HttpSession session) throws Exception {
+    model.addAttribute("pageTitle", "클래스 홈");
+    model.addAttribute("currentUri", "/parent/classes/" + classId);
+    model.addAttribute("contentPage", "/WEB-INF/views/parent/class/homeContent.jsp");
 
-        setParentLayoutBase(model);
-        setParentClassDetailBase(model, classId, session);
+    setParentLayoutBase(model);
+    setParentClassDetailBase(model, classId, session);
 
-        return "common/layout/parentLayout";
+    MemberVO loginUser = getLoginUser(session);
+    if (loginUser == null) {
+        return "redirect:/auth/login";
     }
+
+    ClassVO classInfo = classService.getParentClassDetail(loginUser.getMember_id(), classId);
+    if (classInfo == null) {
+        return "redirect:/parent/classes";
+    }
+
+    List<ParentChildVO> childList = reportService.getParentReportChildren(loginUser.getMember_id(), classId);
+
+    ParentChildVO selectedChild = null;
+    if (childId != null) {
+        for (ParentChildVO child : childList) {
+            if (child != null && child.getStudentId() == childId.intValue()) {
+                selectedChild = child;
+                break;
+            }
+        }
+    }
+    if (selectedChild == null && !childList.isEmpty()) {
+        selectedChild = childList.get(0);
+    }
+
+    Integer selectedChildId = selectedChild != null ? selectedChild.getStudentId() : null;
+
+    List<StudentLearnItemDTO> learnList = selectedChildId != null
+            ? studentLearnService.getStudentLearnList(selectedChildId, classId)
+            : List.of();
+
+    List<StudentAssignmentItemDTO> assignmentList = selectedChildId != null
+            ? parentAssignmentService.getParentAssignmentList(loginUser.getMember_id(), classId, selectedChildId)
+            : List.of();
+
+    List<ReportListDTO> reportList =
+            reportService.getParentReportList(loginUser.getMember_id(), classId, selectedChildId, null);
+
+    List<NoticeVO> noticeList = noticeService.getNoticeList(classId, loginUser);
+
+    int progressPercent = learnList.isEmpty()
+            ? 0
+            : Math.round((float) learnList.stream()
+                    .mapToInt(StudentLearnItemDTO::getProgress)
+                    .sum() / learnList.size());
+
+    int pendingAssignmentCount = (int) assignmentList.stream()
+            .filter(item -> !item.isSubmitted())
+            .count();
+
+    StudentAssignmentItemDTO pendingAssignment = assignmentList.stream()
+            .filter(item -> !item.isSubmitted())
+            .findFirst()
+            .orElse(null);
+
+    ReportListDTO latestReport = reportList.isEmpty() ? null : reportList.get(0);
+    boolean hasUnreadReport = latestReport != null && latestReport.getParentViewCount() != null
+            && latestReport.getParentViewCount().intValue() == 0;
+
+    NoticeVO recentNotice = noticeList.isEmpty() ? null : noticeList.get(0);
+
+    List<Map<String, Object>> notices = new ArrayList<>();
+    for (NoticeVO notice : noticeList.stream().limit(3).toList()) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("title", safeString(notice.getTitle()));
+        item.put("date", formatNoticeDate(notice.getCreatedAt()));
+        item.put("important", notice.getConfirmYn() == 1);
+        notices.add(item);
+    }
+
+    model.addAttribute("className", classInfo.getClassName());
+    model.addAttribute("loginUserName", safeDisplayName(loginUser, "학부모"));
+    model.addAttribute("teacherName", safeString(classInfo.getTeacherName()));
+    model.addAttribute("childName", selectedChild != null ? safeString(selectedChild.getStudentName()) : "");
+    model.addAttribute("selectedChildId", selectedChildId);
+    model.addAttribute("progressPercent", progressPercent);
+    model.addAttribute("remainPercent", Math.max(0, 100 - progressPercent));
+    model.addAttribute("pendingAssignmentCount", pendingAssignmentCount);
+    model.addAttribute("pendingAssignmentTitle", pendingAssignment != null ? safeString(pendingAssignment.getTitle()) : "미제출 과제가 없습니다.");
+    model.addAttribute("pendingAssignmentDeadline", pendingAssignment != null ? safeString(pendingAssignment.getDeadline()) : "");
+    model.addAttribute("hasUnreadReport", hasUnreadReport);
+    model.addAttribute("recentMessageTime", recentNotice != null ? formatNoticeDate(recentNotice.getCreatedAt()) : "");
+    model.addAttribute("recentMessage", recentNotice != null ? safeString(recentNotice.getContent()) : "등록된 최근 메시지가 없습니다.");
+    model.addAttribute("isNoticeRead", recentNotice != null && !recentNotice.isRequiredUnread());
+    model.addAttribute("notices", notices);
+
+    return "common/layout/parentLayout";
+}
 
     @GetMapping("/parent/classes/{classId}/bulletins")
     public String parentBulletinList(@PathVariable("classId") int classId,
@@ -560,6 +649,10 @@ public class ParentPageController {
             return fallback;
         }
         return loginUser.getName().trim();
+    }
+
+    private String safeString(String value) {
+        return value == null ? "" : value;
     }
 
     private String formatNoticeDate(java.util.Date date) {
