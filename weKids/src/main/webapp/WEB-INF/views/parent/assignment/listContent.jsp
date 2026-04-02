@@ -41,13 +41,13 @@
         </c:if>
     </div>
 
-    <div class="parent-assignment-info-box">
+<!--     <div class="parent-assignment-info-box">
         <span class="parent-assignment-alert-icon"></span>
         <div>
             <p class="title">학부모 조회 모드</p>
             <p class="desc">자녀의 과제 현황을 확인할 수 있습니다. 과제 제출은 학생 계정에서만 가능합니다.</p>
         </div>
-    </div>
+    </div> -->
 
     <c:choose>
         <c:when test="${empty assignmentChildren}">
