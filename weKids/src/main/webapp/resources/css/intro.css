@@ -8,7 +8,7 @@
 }
 
 .intro-header {
-    padding: 16px 24px;
+    padding: 24px 32px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e2e8f0;
@@ -18,7 +18,7 @@
 .logo-wrap {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .logo-icon {
@@ -49,8 +49,8 @@
 
 .intro-title {
     margin: 0 0 24px;
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: 4rem;
+    font-weight: 600;
     line-height: 1.1;
     letter-spacing: -0.025em;
     color: #0f172a;
@@ -146,7 +146,7 @@
 }
 
 .card-badge {
-    width: 48px;
+    width: 72px;
     height: 48px;
     margin-bottom: 16px;
     border-radius: 12px;
