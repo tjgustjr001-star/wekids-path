@@ -10,20 +10,6 @@
     gap: 24px;
 }
 
-.parent-report-header h2 {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.parent-report-header p {
-    margin: 0;
-    font-size: 15px;
-    color: #6b7280;
-}
-
-.report-filter-section,
 .report-list-section {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -34,14 +20,24 @@
 
 .report-filter-form {
     display: flex;
-    flex-direction: column;
-    gap: 18px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin: 0;
+}
+
+.report-filter-form--inline {
+    flex-wrap: nowrap;
 }
 
 .filter-top-row {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+}
+
+.filter-top-row--inline {
+    flex: 0 0 auto;
 }
 
 .form-group {
@@ -55,18 +51,30 @@
     max-width: 320px;
 }
 
+.child-select-group--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    min-width: auto;
+    max-width: none;
+}
+
 .form-group label {
     font-size: 14px;
     font-weight: 600;
     color: #374151;
+    white-space: nowrap;
 }
 
 .form-group select {
     width: 100%;
+    min-width: 210px;
+    height: 46px;
     border: 1px solid #d1d5db;
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 14px;
+    padding: 0 14px;
     font-size: 14px;
+    font-weight: 600;
     color: #111827;
     background: #ffffff;
     box-sizing: border-box;
@@ -80,7 +88,7 @@
 
 .filter-chip-group {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
 }
 
@@ -113,6 +121,18 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.section-title-row--with-filter {
+    gap: 16px;
+}
+
+.report-filter-section--inline {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
 }
 
 .section-title-row h3 {
@@ -207,7 +227,7 @@
 
 .report-card-bottom {
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
     gap: 14px;
 }
@@ -537,7 +557,7 @@
 }
 .filter-chip-group {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
 }
 
@@ -568,4 +588,22 @@
 .report-type-badge.is-personal {
     background: #f3e8ff;
     color: #7e22ce;
+}
+
+
+@media (max-width: 1100px) {
+    .section-title-row--with-filter {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .report-filter-form,
+    .report-filter-form--inline {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .filter-chip-group {
+        flex-wrap: wrap;
+    }
 }

@@ -159,9 +159,8 @@
                     </svg>
                 </span>
             </div>
-            <h3>클래스 바로가기</h3>
-            <strong>${empty selectedChildClassLabel ? selectedClassName : selectedChildClassLabel}</strong>
-            <p>선택한 자녀-클래스의 가정통신문과 과제를 바로 확인합니다.</p>
+            <strong>${selectedClassName}</strong>
+            <p>선택한 자녀의 클래스로 바로 이동합니다.</p>
             <a href="${pageContext.request.contextPath}${currentClassUrl}" class="class-shortcut-btn">클래스 바로가기</a>
         </section>
         </div>

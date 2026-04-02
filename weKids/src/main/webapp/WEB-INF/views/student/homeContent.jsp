@@ -169,8 +169,8 @@
                 <div class="current-class-icon">
                     <span class="section-icon book-icon green large icon-mask"></span>
                 </div>
-                <h3>현재 참여중인 클래스</h3>
-                <p>${currentClass.className}<c:if test="${not empty currentClass.teacherName}"> ${currentClass.teacherName} 선생님의 클래스입니다.</c:if></p>
+                <h3>${currentClass.className}</h3>
+                <p><c:if test="${not empty currentClass.teacherName}"> ${currentClass.teacherName} 선생님의 클래스입니다.</c:if></p>
                 <a href="${pageContext.request.contextPath}${currentClassUrl}" class="primary-action-btn full">
                     클래스 입장하기
                 </a>

@@ -20,30 +20,22 @@
         </div>
     </div>
 
-<!-- <div class="student-report-header">
-        <div>
-            <h2>리포트 확인</h2>
-            <p>주간/월간 학습 리포트를 확인할 수 있습니다.</p>
-        </div>
-    </div> -->
-
-    <!-- 필터 -->
-    <div class="report-filter-section">
-        <form action="${pageContext.request.contextPath}/student/classes/${classId}/reports"
-              method="get"
-              class="report-filter-form">
-            <div class="filter-chip-group">
-			    <button type="button" class="filter-chip is-active" data-report-type="ALL">전체</button>
-			    <button type="button" class="filter-chip" data-report-type="PERSONAL">개인</button>
-			    <button type="button" class="filter-chip" data-report-type="CLASS">학급</button>
-			</div>
-        </form>
-    </div>
-
     <!-- 목록 -->
     <div class="report-list-section">
-        <div class="section-title-row">
+        <div class="section-title-row section-title-row--with-filter">
             <h3>리포트 목록</h3>
+
+            <div class="report-filter-section report-filter-section--inline">
+                <form action="${pageContext.request.contextPath}/student/classes/${classId}/reports"
+                      method="get"
+                      class="report-filter-form">
+                    <div class="filter-chip-group">
+                        <button type="button" class="filter-chip is-active" data-report-type="ALL">전체</button>
+                        <button type="button" class="filter-chip" data-report-type="PERSONAL">개인</button>
+                        <button type="button" class="filter-chip" data-report-type="CLASS">학급</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="student-report-list">

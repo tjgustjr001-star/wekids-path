@@ -80,13 +80,15 @@ a {
 .notice_top_box,
 .notice_list_wrap {
     background: #fff;
-    border-radius: 22px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+   /*  border-radius: 22px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); */
 }
 
 .notice_top_box {
     padding: 28px 34px 20px;
     margin-bottom: 0;
+   border-radius: 22px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
 }
 
 .notice_top_info {
@@ -181,13 +183,13 @@ a {
 }
 
 .notice_list_wrap {
-    padding: 24px 34px 34px;
+    padding: 24px 0px 24px;
 }
 
 .notice_card_list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 32px;
 }
 
 .notice_card {

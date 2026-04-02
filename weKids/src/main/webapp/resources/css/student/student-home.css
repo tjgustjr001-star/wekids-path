@@ -250,6 +250,8 @@
 
 .primary-action-btn.full {
     width: 100%;
+    background:#4c8f67;
+    color:#fff;
 }
 
 .todo-list {

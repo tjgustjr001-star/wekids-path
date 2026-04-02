@@ -68,7 +68,7 @@
                 학부모 <span>0</span>
             </button>
         </div>
-    </div>
+    
 
     <div class="notice_list_wrap">
         <c:choose>
@@ -160,7 +160,7 @@
         <button type="button" id="nextBtn" class="page_btn">&gt;</button>
     </div>
 </section>
-
+</div>
 <div id="requiredPopupOverlay" class="popup_overlay">
     <div class="popup_box required_popup_box">
         <div class="popup_header required_popup_header">

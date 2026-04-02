@@ -20,47 +20,38 @@
         </div>
     </div>
 
-<!-- <div class="parent-report-header">
-        <div>
-            <h2>자녀 리포트 확인</h2>
-            <p>자녀의 주간/월간 리포트를 확인할 수 있습니다.</p>
-        </div>
-    </div> -->
-
-    <!-- 필터 영역 -->
-    <div class="report-filter-section">
-        <form action="${pageContext.request.contextPath}/parent/classes/${classId}/reports"
-              method="get"
-              class="report-filter-form"
-              id="parentReportFilterForm">
-
-            <div class="filter-top-row">
-                <div class="form-group child-select-group">
-                    <label for="studentId">자녀 선택</label>
-                    <select name="studentId" id="studentId">
-                        <option value="">전체 자녀</option>
-                        <c:forEach var="child" items="${childList}">
-                            <option value="${child.studentId}"
-                                <c:if test="${selectedStudentId != null and selectedStudentId == child.studentId}">selected</c:if>>
-                                ${child.studentName}
-                            </option>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-
-            <div class="filter-chip-group">
-                <button type="button" class="filter-chip is-active" data-report-type="ALL">전체</button>
-			    <button type="button" class="filter-chip" data-report-type="PERSONAL">개인</button>
-			    <button type="button" class="filter-chip" data-report-type="CLASS">학급</button>
-            </div>
-        </form>
-    </div>
-
     <!-- 목록 -->
     <div class="report-list-section">
-        <div class="section-title-row">
+        <div class="section-title-row section-title-row--with-filter">
             <h3>리포트 목록</h3>
+
+            <div class="report-filter-section report-filter-section--inline">
+                <form action="${pageContext.request.contextPath}/parent/classes/${classId}/reports"
+                      method="get"
+                      class="report-filter-form report-filter-form--inline"
+                      id="parentReportFilterForm">
+                    <div class="filter-top-row filter-top-row--inline">
+                        <div class="form-group child-select-group child-select-group--inline">
+                            <label for="studentId">자녀</label>
+                            <select name="studentId" id="studentId">
+                                <option value="">전체 자녀</option>
+                                <c:forEach var="child" items="${childList}">
+                                    <option value="${child.studentId}"
+                                        <c:if test="${selectedStudentId != null and selectedStudentId == child.studentId}">selected</c:if>>
+                                        ${child.studentName}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-chip-group">
+                        <button type="button" class="filter-chip is-active" data-report-type="ALL">전체</button>
+                        <button type="button" class="filter-chip" data-report-type="PERSONAL">개인</button>
+                        <button type="button" class="filter-chip" data-report-type="CLASS">학급</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="parent-report-list">
@@ -109,8 +100,7 @@
                                 <div class="view-status-wrap">
                                     <c:choose>
                                         <c:when test="${report.parentViewCount != null and report.parentViewCount > 0}">
-                                            <span class="view-status is-read">열람함</span>
-                                            <span class="view-time">${report.parentViewedAt}</span>
+                                            <span class="view-status is-read">열람</span>
                                         </c:when>
                                         <c:otherwise>
                                             <span class="view-status is-unread">미열람</span>
