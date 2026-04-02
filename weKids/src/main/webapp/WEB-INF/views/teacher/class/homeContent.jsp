@@ -8,6 +8,8 @@
     <div class="class-hero-card class-hero-card--plain">
         <div class="class-hero-overlay"></div>
         <div class="class-hero-content">
+        	<h1></h1>
+        	<br>
             <h1>${className}</h1>
             <p>안녕하세요, ${teacherName}님! 우리들의 즐거운 온라인 배움터입니다.</p>
         </div>

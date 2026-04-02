@@ -10,11 +10,7 @@
         <div class="class-page-hero-text">
             <h1 class="class-page-hero-title">클래스 관리</h1>
             <p class="class-page-hero-subtitle">
-                <c:choose>
-                    <c:when test="${not empty classInfo.className}">${classInfo.className}</c:when>
-                    <c:when test="${not empty className}">${className}</c:when>
-                    <c:otherwise>현재 클래스</c:otherwise>
-                </c:choose>
+                ${className}
             </p>
         </div>
     </div>
@@ -183,7 +179,7 @@
         <div class="danger-zone-box">
             <div class="danger-text-box">
                 <h3>클래스 종료</h3>
-                <p>현재 구조에서는 물리 삭제 대신 클래스를 종료(ARCHIVED) 처리합니다.</p>
+                <p>클래스를 종료(ARCHIVED) 처리합니다.</p>
             </div>
 
             <form action="${pageContext.request.contextPath}/teacher/classes/${classId}/delete" method="post">
