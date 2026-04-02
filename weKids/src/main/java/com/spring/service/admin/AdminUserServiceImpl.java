@@ -1,4 +1,4 @@
-package com.spring.service.admin;
+	package com.spring.service.admin;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +28,13 @@ public class AdminUserServiceImpl implements AdminUserService {
 
 	@Override
 	public AdminUserDetailDTO getUserDetailById(int memberId) throws SQLException {
-		return adminUserDAO.selectUserDetailById(memberId);
+		AdminUserDetailDTO dto = adminUserDAO.selectUserDetailById(memberId);
+
+		if (dto != null) {
+		    dto.setDeviceInfo(parseDeviceInfo(dto.getDeviceInfo()));
+		    dto.setAccessLocation(parseAccessLocation(dto.getAccessLocation()));
+		}
+		return dto;
 	}
 
 	@Override
@@ -56,5 +62,44 @@ public class AdminUserServiceImpl implements AdminUserService {
 	@Override
 	public List<WeeklyLoginTrendDTO> getWeeklyLoginTrend() throws SQLException {
 	    return adminUserDAO.selectWeeklyLoginTrend();
+	}
+	
+	@Override
+	public List<WeeklyLoginTrendDTO> getUserWeeklyLoginTrend(int memberId) throws SQLException {
+		return adminUserDAO.selectUserWeeklyLoginTrend(memberId);
+	}
+
+	private String parseDeviceInfo(String userAgent) {
+		if (userAgent == null || userAgent.isBlank()) return "-";
+
+		String os = "기타";
+		String browser = "기타";
+
+		if (userAgent.contains("Windows")) os = "Windows";
+		else if (userAgent.contains("Mac OS")) os = "macOS";
+		else if (userAgent.contains("Android")) os = "Android";
+		else if (userAgent.contains("iPhone")) os = "iPhone";
+
+		if (userAgent.contains("Edg")) browser = "Edge";
+		else if (userAgent.contains("Chrome")) browser = "Chrome";
+		else if (userAgent.contains("Safari")) browser = "Safari";
+		else if (userAgent.contains("Firefox")) browser = "Firefox";
+		
+		
+
+		return os + " / " + browser;
+	}
+	private String parseAccessLocation(String ipAddress) {
+	    if (ipAddress == null || ipAddress.isBlank()) return "-";
+
+	    if ("0:0:0:0:0:0:0:1".equals(ipAddress) || "::1".equals(ipAddress)) {
+	        return "localhost";
+	    }
+
+	    if ("127.0.0.1".equals(ipAddress)) {
+	        return "localhost";
+	    }
+
+	    return ipAddress;
 	}
 }

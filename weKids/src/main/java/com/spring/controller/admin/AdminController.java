@@ -30,18 +30,17 @@ import com.spring.service.admin.AdminUserService;
 @RequestMapping("/admin")
 public class AdminController {
 
-	@Autowired
-	private AdminTeacherService adminTeacherService;
-	@Autowired
-	private AdminClassService adminClassService;
-	@Autowired
-	private AdminUserService adminUserService;
-	@Autowired
-	private AdminStatsService adminStatsService;
-	
-	@Autowired
-	private AdminSupportService adminSupportService;
-	
+    @Autowired
+    private AdminTeacherService adminTeacherService;
+    @Autowired
+    private AdminClassService adminClassService;
+    @Autowired
+    private AdminUserService adminUserService;
+    @Autowired
+    private AdminStatsService adminStatsService;
+    @Autowired
+    private AdminSupportService adminSupportService;
+
     @GetMapping({"", "/", "/home"})
     public String home(Model model) throws SQLException {
         model.addAttribute("totalUserCount", adminUserService.getTotalUserCount());
@@ -53,27 +52,22 @@ public class AdminController {
     }
 
     @GetMapping("/teachers")
-	public String teachers(Model model) throws SQLException {
-		List<AdminTeacherListDTO> teacherList = adminTeacherService.getTeacherList();
-		 List<MonthlyJoinCountDTO> trendList = adminTeacherService.getTeacherJoinTrend();
+    public String teachers(Model model) throws SQLException {
+        List<AdminTeacherListDTO> teacherList = adminTeacherService.getTeacherList();
+        List<MonthlyJoinCountDTO> trendList = adminTeacherService.getTeacherJoinTrend();
 
-		model.addAttribute("teacherList", teacherList);
-		model.addAttribute("contentPage", "/WEB-INF/views/admin/teachers.jsp");
-		model.addAttribute("trendList", trendList);
-		return "admin/layout/adminLayout";
-		
-		
-	}
+        model.addAttribute("teacherList", teacherList);
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/teachers.jsp");
+        model.addAttribute("trendList", trendList);
+        return "admin/layout/adminLayout";
+    }
+
     @PostMapping("/teachers/regist")
     public String registTeacher(AdminTeacherRegistDTO registDTO) throws Exception {
-    	System.out.println("teacherName = " + registDTO.getTeacherName());
-    	System.out.println("loginId = " + registDTO.getLoginId());
-    	System.out.println("email = " + registDTO.getEmail());
-    	System.out.println("initialPassword = " + registDTO.getInitialPassword());
-
-    	adminTeacherService.registTeacher(registDTO);
-    	return "redirect:/admin/teachers";
+        adminTeacherService.registTeacher(registDTO);
+        return "redirect:/admin/teachers";
     }
+
     @PostMapping("/teachers/status")
     public String updateTeacherStatus(
             @RequestParam("teacherId") int teacherId,
@@ -88,20 +82,23 @@ public class AdminController {
 
         return "redirect:/admin/teachers";
     }
+
     @GetMapping("/teachers/{id}")
     public String teacherDetail(@PathVariable("id") int id, Model model) throws SQLException {
-    	model.addAttribute("teacher", adminTeacherService.getTeacherDetailById(id));
-    	model.addAttribute("classList", adminTeacherService.getTeacherClassListById(id));
-    	model.addAttribute("contentPage", "/WEB-INF/views/admin/teacherDetail.jsp");
-    	return "admin/layout/adminLayout";
+        model.addAttribute("teacher", adminTeacherService.getTeacherDetailById(id));
+        model.addAttribute("classList", adminTeacherService.getTeacherClassListById(id));
+        model.addAttribute("teacherActivityChart", adminTeacherService.getTeacherActivityChart(id));
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/teacherDetail.jsp");
+        return "admin/layout/adminLayout";
     }
-    
+
     @GetMapping("/classes")
     public String classes(Model model) throws SQLException {
-    	model.addAttribute("classList", adminClassService.getClassList());
-    	model.addAttribute("contentPage", "/WEB-INF/views/admin/classes.jsp");
-    	return "admin/layout/adminLayout";
+        model.addAttribute("classList", adminClassService.getClassList());
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/classes.jsp");
+        return "admin/layout/adminLayout";
     }
+
     @PostMapping("/classes/status")
     public String updateClassStatus(
             @RequestParam("classId") int classId,
@@ -110,36 +107,40 @@ public class AdminController {
         adminClassService.modifyClassStatus(classId, classStatus);
         return "redirect:/admin/classes";
     }
+
     @GetMapping("/users")
     public String users(Model model) throws Exception {
-    	model.addAttribute("userList", adminUserService.getUserList());
-    	model.addAttribute("contentPage", "/WEB-INF/views/admin/users.jsp");
-    	return "admin/layout/adminLayout";
+        model.addAttribute("userList", adminUserService.getUserList());
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/users.jsp");
+        return "admin/layout/adminLayout";
     }
+
     @PostMapping("/users/students/regist")
     public String registStudent(AdminStudentRegistDTO registDTO) throws Exception {
-    	adminUserService.registStudent(registDTO);
-    	return "redirect:/admin/users";
+        adminUserService.registStudent(registDTO);
+        return "redirect:/admin/users";
     }
+
     @GetMapping("/users/{id}")
     public String userDetail(@PathVariable("id") int id, Model model) throws Exception {
-    	model.addAttribute("user", adminUserService.getUserDetailById(id));
-    	model.addAttribute("contentPage", "/WEB-INF/views/admin/userDetail.jsp");
-    	return "admin/layout/adminLayout";
+        model.addAttribute("user", adminUserService.getUserDetailById(id));
+        model.addAttribute("weeklyLoginTrend", adminUserService.getUserWeeklyLoginTrend(id));
+        model.addAttribute("contentPage", "/WEB-INF/views/admin/userDetail.jsp");
+        return "admin/layout/adminLayout";
     }
 
     @PostMapping("/users/status")
     public String updateUserStatus(
-    		@RequestParam("memberId") int memberId,
-    		@RequestParam("accountStatus") String accountStatus,
-    		@RequestParam(value = "redirectPage", required = false, defaultValue = "list") String redirectPage) throws Exception {
+            @RequestParam("memberId") int memberId,
+            @RequestParam("accountStatus") String accountStatus,
+            @RequestParam(value = "redirectPage", required = false, defaultValue = "list") String redirectPage) throws Exception {
 
-    	adminUserService.modifyUserStatus(memberId, accountStatus);
+        adminUserService.modifyUserStatus(memberId, accountStatus);
 
-    	if ("detail".equals(redirectPage)) {
-    		return "redirect:/admin/users/" + memberId;
-    	}
-    	return "redirect:/admin/users";
+        if ("detail".equals(redirectPage)) {
+            return "redirect:/admin/users/" + memberId;
+        }
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/support")
@@ -173,15 +174,6 @@ public class AdminController {
         return "admin/layout/adminLayout";
     }
 
-	/* 여기있는거 일단 주석처리했어요
-	 * @PostMapping("/support/answer") public String
-	 * answerSubmit(@RequestParam("supportNo") int supportNo,
-	 * 
-	 * @RequestParam("answerContent") String answerContent) { int adminId =
-	 * getAdminId(); adminSupportService.registerAnswer(supportNo, adminId,
-	 * answerContent); return "redirect:/admin/support"; }
-	 */
-    
     @GetMapping("/logs")
     public String logs(Model model) {
         model.addAttribute("contentPage", "/WEB-INF/views/admin/logs.jsp");
@@ -189,7 +181,7 @@ public class AdminController {
     }
 
     @GetMapping("/stats")
-    public String stats(@RequestParam(value = "period", required = false, defaultValue = "week") String period,
+    public String stats(@RequestParam(value = "period", required = false, defaultValue = "daily") String period,
                         Model model) throws Exception {
 
         model.addAllAttributes(adminStatsService.getStatsPageData(period));
@@ -199,7 +191,7 @@ public class AdminController {
 
     @GetMapping("/stats/classes/{classId}")
     public String statsDetail(@PathVariable("classId") int classId,
-                              @RequestParam(value = "period", required = false, defaultValue = "week") String period,
+                              @RequestParam(value = "period", required = false, defaultValue = "daily") String period,
                               Model model) throws Exception {
 
         model.addAllAttributes(adminStatsService.getStatsDetailPageData(classId, period));

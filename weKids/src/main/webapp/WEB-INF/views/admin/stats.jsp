@@ -15,16 +15,15 @@
 
         <div class="admin-stats-actions">
             <form method="get" action="${pageContext.request.contextPath}/admin/stats" class="admin-stats-period-form">
-                <select name="period" class="admin-stats-period-select" onchange="this.form.submit()">
-                    <option value="week" ${period eq 'week' ? 'selected' : ''}>주간</option>
-                    <option value="month" ${period eq 'month' ? 'selected' : ''}>월간</option>
-                    <option value="year" ${period eq 'year' ? 'selected' : ''}>연간</option>
-                </select>
+              <select name="period" class="admin-stats-period-select" onchange="this.form.submit()">
+        <option value="daily" ${period eq 'daily' ? 'selected' : ''}>일간</option>
+        <option value="week" ${period eq 'week' ? 'selected' : ''}>주간</option>
+        <option value="month" ${period eq 'month' ? 'selected' : ''}>월간</option>
+        <option value="year" ${period eq 'year' ? 'selected' : ''}>연간</option>
+    </select>
             </form>
 
-            <button type="button" id="downloadStatsReportBtn" class="admin-stats-download-btn">
-                리포트 다운로드
-            </button>
+          
         </div>
     </div>
 

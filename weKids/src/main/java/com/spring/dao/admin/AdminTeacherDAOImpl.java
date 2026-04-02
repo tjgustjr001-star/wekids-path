@@ -13,6 +13,7 @@ import com.spring.dto.admin.AdminTeacherClassDTO;
 import com.spring.dto.admin.AdminTeacherDetailDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
+import com.spring.dto.admin.AdminTeacherWeeklyStatDTO;
 import com.spring.dto.admin.MonthlyJoinCountDTO;
 
 @Repository
@@ -20,6 +21,10 @@ public class AdminTeacherDAOImpl implements AdminTeacherDAO {
 
 	@Autowired
 	private SqlSession session;
+
+	public void setSession(SqlSession session) {
+		this.session = session;
+	}
 
 	@Override
 	public List<AdminTeacherListDTO> selectTeacherList() throws SQLException {
@@ -35,7 +40,7 @@ public class AdminTeacherDAOImpl implements AdminTeacherDAO {
 	public List<AdminTeacherClassDTO> selectTeacherClassListById(int teacherId) throws SQLException {
 		return session.selectList("AdminTeacher-Mapper.selectTeacherClassListById", teacherId);
 	}
-	
+
 	@Override
 	public void updateTeacherStatus(int teacherId, String accountStatus) throws SQLException {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -44,6 +49,7 @@ public class AdminTeacherDAOImpl implements AdminTeacherDAO {
 
 		session.update("AdminTeacher-Mapper.updateTeacherStatus", paramMap);
 	}
+
 	@Override
 	public int selectNextMemberId() throws SQLException {
 		Integer maxId = session.selectOne("AdminTeacher-Mapper.selectNextMemberId");
@@ -87,10 +93,16 @@ public class AdminTeacherDAOImpl implements AdminTeacherDAO {
 	public List<MonthlyJoinCountDTO> selectTeacherJoinTrend() throws SQLException {
 		return session.selectList("AdminTeacher-Mapper.selectTeacherJoinTrend");
 	}
-	
+
 	@Override
 	public int selectNewTeacherCount() throws SQLException {
-	    Integer count = session.selectOne("AdminTeacher-Mapper.selectNewTeacherCount");
-	    return count == null ? 0 : count;
+		Integer count = session.selectOne("AdminTeacher-Mapper.selectNewTeacherCount");
+		return count == null ? 0 : count;
 	}
+
+	@Override
+	public List<AdminTeacherWeeklyStatDTO> selectTeacherWeeklyAssignmentStats(int teacherId) throws SQLException {
+		return session.selectList("AdminTeacher-Mapper.selectTeacherWeeklyAssignmentStats", teacherId);
+	}
+	
 }

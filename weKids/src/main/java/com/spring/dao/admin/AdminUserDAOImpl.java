@@ -85,4 +85,9 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 	public List<WeeklyLoginTrendDTO> selectWeeklyLoginTrend() throws SQLException {
 	    return session.selectList("AdminUser-Mapper.selectWeeklyLoginTrend");
 	}
+	
+	@Override
+	public List<WeeklyLoginTrendDTO> selectUserWeeklyLoginTrend(int memberId) throws SQLException {
+		return session.selectList("AdminUser-Mapper.selectUserWeeklyLoginTrend", memberId);
+	}
 }

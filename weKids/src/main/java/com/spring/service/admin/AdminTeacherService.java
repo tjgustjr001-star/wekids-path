@@ -3,6 +3,10 @@ package com.spring.service.admin;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.spring.dto.admin.AdminTeacherActivityChartDTO;
 import com.spring.dto.admin.AdminTeacherClassDTO;
 import com.spring.dto.admin.AdminTeacherDetailDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
@@ -24,4 +28,6 @@ public interface AdminTeacherService {
     List<MonthlyJoinCountDTO> getTeacherJoinTrend() throws SQLException;
     
     int getNewTeacherCount() throws SQLException;
+    
+    AdminTeacherActivityChartDTO getTeacherActivityChart(int teacherId) throws SQLException;
 }

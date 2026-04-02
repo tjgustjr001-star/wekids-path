@@ -201,4 +201,74 @@
       AND m.CREATED_AT >= ADD_MONTHS(TRUNC(SYSDATE), -3)
       AND m.ACCOUNT_STATUS != 'DELETED'
 </select>
+<resultMap id="adminTeacherWeeklyStatMap" type="com.spring.dto.admin.AdminTeacherWeeklyStatDTO">
+	<result property="weekLabel" column="week_label"/>
+	<result property="assignmentCount" column="assignment_count"/>
+	<result property="feedbackCount" column="feedback_count"/>
+</resultMap>
+
+<select id="selectTeacherWeeklyAssignmentStats"
+        parameterType="int"
+        resultMap="adminTeacherWeeklyStatMap">
+
+    WITH week_base AS (
+        SELECT 1 AS week_no, '1주' AS week_label FROM dual
+        UNION ALL
+        SELECT 2 AS week_no, '2주' AS week_label FROM dual
+        UNION ALL
+        SELECT 3 AS week_no, '3주' AS week_label FROM dual
+        UNION ALL
+        SELECT 4 AS week_no, '4주' AS week_label FROM dual
+    ),
+    assignment_stat AS (
+        SELECT
+            CASE
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 6 THEN 4
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 13 THEN 3
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 20 THEN 2
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 27 THEN 1
+            END AS week_no,
+            COUNT(*) AS assignment_count
+        FROM ASSIGNMENT a
+        WHERE a.TEACHER_ID = #{teacherId}
+          AND a.DELETE_YN = 0
+          AND a.CREATED_AT >= TRUNC(SYSDATE) - 27
+        GROUP BY
+            CASE
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 6 THEN 4
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 13 THEN 3
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 20 THEN 2
+                WHEN a.CREATED_AT >= TRUNC(SYSDATE) - 27 THEN 1
+            END
+    ),
+    feedback_stat AS (
+        SELECT
+            CASE
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 6 THEN 4
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 13 THEN 3
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 20 THEN 2
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 27 THEN 1
+            END AS week_no,
+            COUNT(*) AS feedback_count
+        FROM ASSIGN_FDB f
+        WHERE f.TEACHER_ID = #{teacherId}
+          AND f.CREATED_AT >= TRUNC(SYSDATE) - 27
+        GROUP BY
+            CASE
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 6 THEN 4
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 13 THEN 3
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 20 THEN 2
+                WHEN f.CREATED_AT >= TRUNC(SYSDATE) - 27 THEN 1
+            END
+    )
+    SELECT
+        wb.week_label,
+        NVL(ast.assignment_count, 0) AS assignment_count,
+        NVL(fst.feedback_count, 0) AS feedback_count
+    FROM week_base wb
+    LEFT JOIN assignment_stat ast ON wb.week_no = ast.week_no
+    LEFT JOIN feedback_stat fst ON wb.week_no = fst.week_no
+    ORDER BY wb.week_no
+
+</select>
 </mapper>

@@ -1,5 +1,8 @@
 package com.spring.dto.admin;
 
+import lombok.Data;
+
+@Data
 public class WeeklyLoginTrendDTO {
 
     private String dayLabel;

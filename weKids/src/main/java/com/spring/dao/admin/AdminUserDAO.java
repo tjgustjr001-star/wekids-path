@@ -35,4 +35,6 @@ public interface AdminUserDAO {
     int selectTotalUserCount() throws SQLException;
     
     List<WeeklyLoginTrendDTO> selectWeeklyLoginTrend() throws SQLException;
+    
+    List<WeeklyLoginTrendDTO> selectUserWeeklyLoginTrend(@Param("memberId") int memberId) throws SQLException;	
 }

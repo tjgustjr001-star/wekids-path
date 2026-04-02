@@ -9,6 +9,7 @@ import com.spring.dto.admin.AdminTeacherClassDTO;
 import com.spring.dto.admin.AdminTeacherDetailDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
+import com.spring.dto.admin.AdminTeacherWeeklyStatDTO;
 import com.spring.dto.admin.MonthlyJoinCountDTO;
 
 public interface AdminTeacherDAO {
@@ -37,4 +38,7 @@ public interface AdminTeacherDAO {
 	List<MonthlyJoinCountDTO> selectTeacherJoinTrend() throws SQLException;
 	
 	int selectNewTeacherCount() throws SQLException;
+	
+	List<AdminTeacherWeeklyStatDTO> selectTeacherWeeklyAssignmentStats(@Param("teacherId") int teacherId) throws SQLException;
+	
 }

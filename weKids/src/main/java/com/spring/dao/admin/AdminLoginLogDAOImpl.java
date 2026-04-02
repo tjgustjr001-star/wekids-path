@@ -12,20 +12,25 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AdminLoginLogDAOImpl implements AdminLoginLogDAO {
 
-    @Autowired
-    private SqlSession session;
+	 @Autowired
+	    private SqlSession session;
 
-    @Override
-    public void updateLastLoginAt(@Param("memberId")int memberId) throws SQLException {
-        session.update("AdminLoginLog-Mapper.updateLastLoginAt", memberId);
-    }
+	    @Override
+	    public void updateLastLoginAt(@Param("memberId") int memberId) throws SQLException {
+	        session.update("AdminLoginLog-Mapper.updateLastLoginAt", memberId);
+	    }
 
-    @Override
-    public void insertSuccessLoginLog(@Param("memberId")int memberId, @Param("loginId")String loginId) throws SQLException {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("memberId", memberId);
-        paramMap.put("loginId", loginId);
+	    @Override
+	    public void insertSuccessLoginLog(@Param("memberId") int memberId,
+	                                      @Param("loginId") String loginId,
+	                                      @Param("ipAddress") String ipAddress,
+	                                      @Param("userAgent") String userAgent) throws SQLException {
+	        Map<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("memberId", memberId);
+	        paramMap.put("loginId", loginId);
+	        paramMap.put("ipAddress", ipAddress);
+	        paramMap.put("userAgent", userAgent);
 
-        session.insert("AdminLoginLog-Mapper.insertSuccessLoginLog", paramMap);
-    }
+	        session.insert("AdminLoginLog-Mapper.insertSuccessLoginLog", paramMap);
+	    }
 }

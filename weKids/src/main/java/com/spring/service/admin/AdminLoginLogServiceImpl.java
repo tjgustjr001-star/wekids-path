@@ -14,9 +14,8 @@ public class AdminLoginLogServiceImpl implements AdminLoginLogService {
 	private AdminLoginLogDAO loginLogDAO;
 
 	@Override
-	public void processLoginSuccess(int memberId, String loginId) throws SQLException {
+	public void processLoginSuccess(int memberId, String loginId, String ipAddress, String userAgent) throws SQLException {
 		loginLogDAO.updateLastLoginAt(memberId);
-		loginLogDAO.insertSuccessLoginLog(memberId, loginId);
+		loginLogDAO.insertSuccessLoginLog(memberId, loginId, ipAddress, userAgent);
 	}
-
 }

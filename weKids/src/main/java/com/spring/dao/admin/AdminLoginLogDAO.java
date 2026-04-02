@@ -9,5 +9,10 @@ import org.springframework.stereotype.Repository;
 public interface AdminLoginLogDAO {
 	void updateLastLoginAt(@Param("memberId") int memberId) throws SQLException;
 
-	void insertSuccessLoginLog(@Param("memberId") int memberId, @Param("loginId") String loginId) throws SQLException;
+	void insertSuccessLoginLog(@Param("memberId") int memberId,
+	                           @Param("loginId") String loginId,
+	                           @Param("ipAddress") String ipAddress,
+	                           @Param("userAgent") String userAgent) throws SQLException;
+	
+	
 }

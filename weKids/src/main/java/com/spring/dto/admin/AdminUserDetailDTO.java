@@ -15,4 +15,7 @@ public class AdminUserDetailDTO {
 	private String createdAt;
 	private String classInfo;
 	private String connectionStatus;
+	
+	private String deviceInfo;
+	private String accessLocation;
 }

@@ -21,4 +21,7 @@ public interface AdminUserService {
 	int getTotalUserCount() throws SQLException;
 	
 	List<WeeklyLoginTrendDTO> getWeeklyLoginTrend() throws SQLException;
+	
+	List<WeeklyLoginTrendDTO> getUserWeeklyLoginTrend(int memberId) throws SQLException;
+	
 }

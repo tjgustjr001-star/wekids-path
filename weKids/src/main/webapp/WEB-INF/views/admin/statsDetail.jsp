@@ -166,4 +166,4 @@
     <script id="adminClassLearnStatusData" type="application/json">${classLearnStatusJson}</script>
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/admin/stat-detail.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/admin/stats-detail.js"></script>

@@ -74,7 +74,9 @@ window.addEventListener('DOMContentLoaded', function () {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+				
                 legend: {
+					position: 'bottom',
                     labels: { color: '#cbd5e1', boxWidth: 12, boxHeight: 12 }
                 },
                 tooltip: {
@@ -112,7 +114,9 @@ window.addEventListener('DOMContentLoaded', function () {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+				
                 legend: {
+					position: 'bottom',
                     labels: { color: '#cbd5e1', boxWidth: 12, boxHeight: 12 }
                 },
                 tooltip: {

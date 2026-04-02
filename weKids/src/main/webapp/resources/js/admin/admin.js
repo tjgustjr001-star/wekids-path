@@ -27,6 +27,66 @@ window.addEventListener('DOMContentLoaded', function() {
         destroyChartIfExists(canvas);
         return new Chart(canvas, config);
     }
+	
+	function renderLoginTrendChart(canvasId, labels, data, options) {
+	    const canvas = getEl(canvasId);
+	    if (!canvas || typeof Chart === 'undefined') return;
+
+	    destroyChartIfExists(canvas);
+
+	    const lineColor = options && options.lineColor ? options.lineColor : '#4379F2';
+	    const fill = options && options.fill === true;
+
+	    let backgroundColor = lineColor;
+
+	    if (fill) {
+	        const ctx = canvas.getContext('2d');
+	        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+	        gradient.addColorStop(0, options.fillStartColor || 'rgba(67, 121, 242, 0.25)');
+	        gradient.addColorStop(1, options.fillEndColor || 'rgba(67, 121, 242, 0)');
+	        backgroundColor = gradient;
+	    }
+
+	    createChart(canvas, {
+	        type: 'line',
+	        data: {
+	            labels: labels,
+	            datasets: [{
+	                label: '로그인 횟수',
+	                data: data,
+	                borderColor: lineColor,
+	                backgroundColor: backgroundColor,
+	                fill: fill,
+	                tension: 0.35,
+	                borderWidth: 3,
+	                pointRadius: 4,
+	                pointHoverRadius: 5
+	            }]
+	        },
+	        options: {
+	            responsive: true,
+	            maintainAspectRatio: false,
+	            plugins: {
+	                legend: { display: false }
+	            },
+	            scales: {
+	                x: {
+	                    ticks: { color: '#9CA3AF' },
+	                    grid: { color: 'rgba(55, 65, 81, 0.15)', drawBorder: false }
+	                },
+	                y: {
+	                    beginAtZero: true,
+	                    ticks: {
+	                        color: '#9CA3AF',
+	                        precision: 0,
+	                        stepSize: 1
+	                    },
+	                    grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false }
+	                }
+	            }
+	        }
+	    });
+	}
 
     function closeAllMenus(selector) {
         document.querySelectorAll(selector).forEach(function(menu) {
@@ -153,59 +213,16 @@ window.addEventListener('DOMContentLoaded', function() {
     /* =========================
        대시보드 차트
     ========================= */
+	
 
-	const weeklyTrendCanvas = document.getElementById('weeklyTrendChart');
-	const weeklyTrendSource = document.getElementById('weeklyTrendSource');
-    if (weeklyTrendCanvas && typeof Chart !== 'undefined') {
-        const existingChart = Chart.getChart(weeklyTrendCanvas);
-        if (existingChart) {
-            existingChart.destroy();
-        }
-
-        const ctx = weeklyTrendCanvas.getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.25)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
-
-        createChart(getEl('weeklyTrendChart'), {
-            type: 'line',
-            data: {
-                labels: weeklyTrendLabels,
-                datasets: [{
-                    label: '로그인 횟수',
-                    data: weeklyTrendData,
-                    borderColor: '#ec4899',
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: '#9CA3AF' },
-                        grid: { color: 'rgba(55, 65, 81, 0.15)', drawBorder: false }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: '#9CA3AF',
-                            precision: 0
-                        },
-                        grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false }
-                    }
-                }
-            }
-        });
-    }
+	if (typeof weeklyTrendLabels !== 'undefined' && typeof weeklyTrendData !== 'undefined') {
+	    renderLoginTrendChart('weeklyTrendChart', weeklyTrendLabels, weeklyTrendData, {
+	        lineColor: '#ec4899',
+	        fill: true,
+	        fillStartColor: 'rgba(236, 72, 153, 0.25)',
+	        fillEndColor: 'rgba(236, 72, 153, 0)',
+	    });
+	}
 
     /* =========================
        클래스 관리
@@ -367,45 +384,57 @@ window.addEventListener('DOMContentLoaded', function() {
     /* =========================
        교사 관리
     ========================= */
-    createChart(getEl('teacherActivityChart'), {
-        type: 'bar',
-        data: {
-            labels: ['1주', '2주', '3주', '4주'],
-            datasets: [
-                {
-                    label: '과제등록',
-                    data: [4, 5, 3, 6],
-                    backgroundColor: '#4379F2',
-                    borderRadius: 4,
-                    barThickness: 20
-                },
-                {
-                    label: '피드백',
-                    data: [12, 15, 8, 20],
-                    backgroundColor: '#00d37a',
-                    borderRadius: 4,
-                    barThickness: 20
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55,65,81,0.15)' }
-                },
-                y: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55,65,81,0.35)' }
-                }
-            }
-        }
-    });
+	const teacherActivityCanvas = getEl('teacherActivityChart');
+
+	if (teacherActivityCanvas) {
+	    const labels = JSON.parse(teacherActivityCanvas.dataset.labels || '[]');
+	    const assignmentCounts = JSON.parse(teacherActivityCanvas.dataset.assignmentCounts || '[]');
+	    const feedbackCounts = JSON.parse(teacherActivityCanvas.dataset.feedbackCounts || '[]');
+
+	    createChart(teacherActivityCanvas, {
+	        type: 'bar',
+	        data: {
+	            labels: labels,
+	            datasets: [
+	                {
+	                    label: '과제등록',
+	                    data: assignmentCounts,
+	                    backgroundColor: '#4379F2',
+	                    borderRadius: 4,
+	                    barThickness: 20
+	                },
+	                {
+	                    label: '피드백',
+	                    data: feedbackCounts,
+	                    backgroundColor: '#00d37a',
+	                    borderRadius: 4,
+	                    barThickness: 20
+	                }
+	            ]
+	        },
+	        options: {
+	            responsive: true,
+	            maintainAspectRatio: false,
+	            plugins: {
+	                legend: { display: false }
+	            },
+	            scales: {
+	                x: {
+	                    ticks: { color: '#9CA3AF' },
+	                    grid: { color: 'rgba(55,65,81,0.15)' }
+	                },
+	                y: {
+	                    beginAtZero: true,
+	                    ticks: {
+	                        color: '#9CA3AF',
+	                        stepSize: 1
+	                    },
+	                    grid: { color: 'rgba(55,65,81,0.35)' }
+	                }
+	            }
+	        }
+	    });
+	}
 
     const teacherTrendCanvas = getEl('teacherTrendChart');
 
@@ -573,39 +602,12 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    createChart(getEl('userWeeklyActivityChart'), {
-        type: 'line',
-        data: {
-            labels: ['월', '화', '수', '목', '금', '토', '일'],
-            datasets: [{
-                label: '활동량',
-                data: [2, 4, 3, 5, 4, 1, 2],
-                borderColor: '#4379F2',
-                backgroundColor: '#4379F2',
-                borderWidth: 3,
-                tension: 0.35,
-                pointRadius: 4,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55, 65, 81, 0.2)' }
-                },
-                y: {
-                    ticks: { color: '#9CA3AF' },
-                    grid: { color: 'rgba(55, 65, 81, 0.35)' }
-                }
-            }
-        }
-    });
+	if (typeof userWeeklyLoginLabels !== 'undefined' && typeof userWeeklyLoginData !== 'undefined') {
+	    renderLoginTrendChart('userWeeklyLoginChart', userWeeklyLoginLabels, userWeeklyLoginData, {
+	        lineColor: '#4379F2',
+	        fill: false
+	    });
+	}
 
     const userRows = document.querySelectorAll('.user-row');
     const userTabButtons = document.querySelectorAll('.user-tab-btn');

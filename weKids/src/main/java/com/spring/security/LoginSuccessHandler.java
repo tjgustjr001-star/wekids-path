@@ -5,11 +5,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -17,131 +12,158 @@ import org.springframework.stereotype.Component;
 
 import com.spring.dto.MemberVO;
 import com.spring.service.SettingsService;
+import com.spring.service.admin.AdminLoginLogService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final SettingsService settingsService;
+	private final SettingsService settingsService;
+	private final AdminLoginLogService loginLogService;
 
-    public LoginSuccessHandler(SettingsService settingsService) {
-        this.settingsService = settingsService;
-    }
+	public LoginSuccessHandler(SettingsService settingsService, AdminLoginLogService loginLogService) {
+		this.settingsService = settingsService;
+		this.loginLogService = loginLogService;
+	}
 
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication)
-            throws IOException, ServletException {
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication) throws IOException, ServletException {
 
-        String targetUrl = request.getContextPath() + "/";
-        String roleCode = null;
+		String targetUrl = request.getContextPath() + "/";
+		String roleCode = null;
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        for (GrantedAuthority authority : authorities) {
-            String role = authority.getAuthority();
+		for (GrantedAuthority authority : authorities) {
+			String role = authority.getAuthority();
 
-            if ("ROLE_ADMIN".equals(role)) {
-                targetUrl = request.getContextPath() + "/admin";
-                roleCode = "ADMIN";
-                break;
-            } else if ("ROLE_TEACHER".equals(role)) {
-                targetUrl = request.getContextPath() + "/teacher";
-                roleCode = "TEACHER";
-                break;
-            } else if ("ROLE_PARENT".equals(role)) {
-                targetUrl = request.getContextPath() + "/parent";
-                roleCode = "PARENT";
-                break;
-            } else if ("ROLE_STUDENT".equals(role)) {
-                targetUrl = request.getContextPath() + "/student";
-                roleCode = "STUDENT";
-                break;
-            }
-        }
+			if ("ROLE_ADMIN".equals(role)) {
+				targetUrl = request.getContextPath() + "/admin";
+				roleCode = "ADMIN";
+				break;
+			} else if ("ROLE_TEACHER".equals(role)) {
+				targetUrl = request.getContextPath() + "/teacher";
+				roleCode = "TEACHER";
+				break;
+			} else if ("ROLE_PARENT".equals(role)) {
+				targetUrl = request.getContextPath() + "/parent";
+				roleCode = "PARENT";
+				break;
+			} else if ("ROLE_STUDENT".equals(role)) {
+				targetUrl = request.getContextPath() + "/student";
+				roleCode = "STUDENT";
+				break;
+			}
+		}
 
-        refreshLoginUserSession(request.getSession(), authentication, roleCode);
-        response.sendRedirect(targetUrl);
-    }
+		if (authentication != null && authentication.getPrincipal() instanceof CustomUser) {
+			CustomUser customUser = (CustomUser) authentication.getPrincipal();
+			MemberVO baseMember = customUser.getMember();
 
-    private void refreshLoginUserSession(HttpSession session, Authentication authentication, String roleCode) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUser)) {
-            return;
-        }
+			if (baseMember != null) {
+				try {
+					String ipAddress = request.getRemoteAddr();
+					String userAgent = request.getHeader("User-Agent");
 
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        MemberVO baseMember = customUser.getMember();
+					loginLogService.processLoginSuccess(
+						baseMember.getMember_id(),
+						baseMember.getLogin_id(),
+						ipAddress,
+						userAgent
+					);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
-        if (baseMember == null) {
-            return;
-        }
+		refreshLoginUserSession(request.getSession(), authentication, roleCode);
 
-        if (roleCode == null || roleCode.isBlank()) {
-            roleCode = normalizeRoleCode(baseMember.getRole_code());
-        }
+		response.sendRedirect(targetUrl);
+	}
 
-        if (roleCode == null || roleCode.isBlank() || "ADMIN".equalsIgnoreCase(roleCode)) {
-            session.setAttribute("loginUser", baseMember);
-            return;
-        }
+	private void refreshLoginUserSession(HttpSession session, Authentication authentication, String roleCode) {
+		if (authentication == null || !(authentication.getPrincipal() instanceof CustomUser)) {
+			return;
+		}
 
-        try {
-            MemberVO profileMember = settingsService.getMyProfile(baseMember.getMember_id(), roleCode);
-            MemberVO mergedMember = mergeMemberForSession(baseMember, profileMember, roleCode);
-            customUser.setMember(mergedMember);
-            session.setAttribute("loginUser", mergedMember);
-        } catch (SQLException e) {
-            session.setAttribute("loginUser", baseMember);
-        }
-    }
+		CustomUser customUser = (CustomUser) authentication.getPrincipal();
+		MemberVO baseMember = customUser.getMember();
 
-    private MemberVO mergeMemberForSession(MemberVO baseUser, MemberVO savedProfile, String roleCode) {
-        MemberVO merged = new MemberVO();
+		if (baseMember == null) {
+			return;
+		}
 
-        if (baseUser != null) {
-            merged.setMember_id(baseUser.getMember_id());
-            merged.setLogin_id(baseUser.getLogin_id());
-            merged.setPwd(baseUser.getPwd());
-            merged.setEmail(baseUser.getEmail());
-            merged.setRole_code(baseUser.getRole_code());
-            merged.setRole_name(baseUser.getRole_name());
-            merged.setAccount_status(baseUser.getAccount_status());
-            merged.setLogin_fail_count(baseUser.getLogin_fail_count());
-            merged.setLast_login_at(baseUser.getLast_login_at());
-            merged.setLocked_at(baseUser.getLocked_at());
-            merged.setPwd_changed_at(baseUser.getPwd_changed_at());
-            merged.setCreated_at(baseUser.getCreated_at());
-            merged.setUpdated_at(baseUser.getUpdated_at());
-            merged.setAuthorities(baseUser.getAuthorities());
-        }
+		if (roleCode == null || roleCode.isBlank()) {
+			roleCode = normalizeRoleCode(baseMember.getRole_code());
+		}
 
-        if (savedProfile != null) {
-            merged.setName(savedProfile.getName());
-            merged.setBirth(savedProfile.getBirth());
-            merged.setGender(savedProfile.getGender());
-            merged.setIntro(savedProfile.getIntro());
-            merged.setProfile_image(savedProfile.getProfile_image());
+		if (roleCode == null || roleCode.isBlank() || "ADMIN".equalsIgnoreCase(roleCode)) {
+			session.setAttribute("loginUser", baseMember);
+			return;
+		}
 
-            if (savedProfile.getRole_code() != null && !savedProfile.getRole_code().isBlank()) {
-                merged.setRole_code(savedProfile.getRole_code());
-            }
-        }
+		try {
+			MemberVO profileMember = settingsService.getMyProfile(baseMember.getMember_id(), roleCode);
+			MemberVO mergedMember = mergeMemberForSession(baseMember, profileMember, roleCode);
+			customUser.setMember(mergedMember);
+			session.setAttribute("loginUser", mergedMember);
+		} catch (SQLException e) {
+			session.setAttribute("loginUser", baseMember);
+		}
+	}
 
-        if (merged.getRole_code() == null || merged.getRole_code().isBlank()) {
-            merged.setRole_code(roleCode);
-        }
+	private MemberVO mergeMemberForSession(MemberVO baseUser, MemberVO savedProfile, String roleCode) {
+		MemberVO merged = new MemberVO();
 
-        return merged;
-    }
+		if (baseUser != null) {
+			merged.setMember_id(baseUser.getMember_id());
+			merged.setLogin_id(baseUser.getLogin_id());
+			merged.setPwd(baseUser.getPwd());
+			merged.setEmail(baseUser.getEmail());
+			merged.setRole_code(baseUser.getRole_code());
+			merged.setRole_name(baseUser.getRole_name());
+			merged.setAccount_status(baseUser.getAccount_status());
+			merged.setLogin_fail_count(baseUser.getLogin_fail_count());
+			merged.setLast_login_at(baseUser.getLast_login_at());
+			merged.setLocked_at(baseUser.getLocked_at());
+			merged.setPwd_changed_at(baseUser.getPwd_changed_at());
+			merged.setCreated_at(baseUser.getCreated_at());
+			merged.setUpdated_at(baseUser.getUpdated_at());
+			merged.setAuthorities(baseUser.getAuthorities());
+		}
 
-    private String normalizeRoleCode(String roleCode) {
-        if (roleCode == null) {
-            return "";
-        }
-        if (roleCode.startsWith("ROLE_")) {
-            return roleCode.substring(5);
-        }
-        return roleCode;
-    }
+		if (savedProfile != null) {
+			merged.setName(savedProfile.getName());
+			merged.setBirth(savedProfile.getBirth());
+			merged.setGender(savedProfile.getGender());
+			merged.setIntro(savedProfile.getIntro());
+			merged.setProfile_image(savedProfile.getProfile_image());
+
+			if (savedProfile.getRole_code() != null && !savedProfile.getRole_code().isBlank()) {
+				merged.setRole_code(savedProfile.getRole_code());
+			}
+		}
+
+		if (merged.getRole_code() == null || merged.getRole_code().isBlank()) {
+			merged.setRole_code(roleCode);
+		}
+
+		return merged;
+	}
+
+	private String normalizeRoleCode(String roleCode) {
+		if (roleCode == null) {
+			return "";
+		}
+		if (roleCode.startsWith("ROLE_")) {
+			return roleCode.substring(5);
+		}
+		return roleCode;
+	}
 }
-
