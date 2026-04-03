@@ -29,7 +29,8 @@
         </div>
     </div>
 
-<div class="teacher-page-top-row">
+<div class="teacher-assignment-panel">
+    <div class="teacher-page-top-row">
         <div class="teacher-page-title-box">
             <h1 id="assignmentPageTitle">${trashMode ? '휴지통 (과제 관리)' : '과제 관리'}</h1>
         </div>
@@ -185,6 +186,7 @@
             </div>
         </div>
     </div>
+</div>
 </section>
 
 <form id="assignmentActionForm" method="post" style="display:none;">

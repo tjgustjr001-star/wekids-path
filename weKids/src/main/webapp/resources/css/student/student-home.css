@@ -27,7 +27,7 @@
 .welcome-title {
     margin: 0 0 12px;
     font-size: 38px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.25;
 }
 
@@ -74,7 +74,7 @@
     align-items: center;
     gap: 10px;
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 
@@ -140,7 +140,7 @@
 
 .stat-value {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .progress-wrap {
@@ -186,7 +186,7 @@
     align-items: center;
     gap: 10px;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .weekly-chart {
@@ -245,7 +245,7 @@
     background: var(--role-student);
     color: #111827;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .primary-action-btn.full {
@@ -303,7 +303,7 @@
 
 .todo-title {
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.4;
 }
 
@@ -317,7 +317,7 @@
     padding: 8px 14px;
     border-radius: 999px;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     flex-shrink: 0;
 }
 
@@ -418,7 +418,7 @@
     display: block;
     margin-bottom: 6px;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.4;
 }
 
@@ -455,7 +455,7 @@
 .current-class-card h3 {
     margin: 0 0 10px;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .current-class-card p {
@@ -573,4 +573,134 @@
     margin: 0;
     color: #6b7280;
     font-size: 14px;
+}
+
+
+.student-home-page {
+    max-width: 1280px;
+}
+
+.teacher-home-like-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+    align-items: start;
+}
+
+.teacher-home-like-hero,
+.welcome-banner {
+    min-height: 208px;
+    padding: 34px 38px;
+    margin-bottom: 0;
+}
+
+.term-badge {
+    min-width: 98px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 32px;
+    margin-bottom: 18px;
+}
+
+.welcome-title {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.welcome-desc {
+    font-size: 16px;
+    color: rgba(17, 24, 39, 0.7);
+}
+
+.student-home-main,
+.student-home-side {
+    gap: 28px;
+}
+
+.card {
+    border-radius: 24px;
+    padding: 30px;
+}
+
+.section-title,
+.mini-section-title,
+.current-class-card h3,
+.news-title,
+.todo-title,
+.mini-list-title {
+    font-weight: 700;
+}
+
+.section-title {
+    font-size: 20px;
+}
+
+.student-class-select-form select {
+    height: 48px;
+    border-radius: 16px;
+    background: #f9fafb;
+}
+
+.stats-row {
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.stat-box {
+    min-height: 80px;
+    border-radius: 20px;
+    padding: 20px 22px;
+}
+
+.stat-label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.progress-label-row,
+.text-link,
+.news-desc,
+.news-time,
+.todo-deadline,
+.mini-list-meta,
+.current-class-card p {
+    font-size: 15px;
+}
+
+.progress-label-row strong {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.news-card,
+.current-class-card {
+    padding: 28px;
+}
+
+.current-class-card {
+    min-height: 286px;
+}
+
+.current-class-icon {
+    width: 74px;
+    height: 74px;
+}
+
+.primary-action-btn.full {
+    min-height: 60px;
+    border-radius: 18px;
+    font-weight: 700;
+}
+
+@media (max-width: 1200px) {
+    .teacher-home-like-grid {
+        grid-template-columns: 1fr;
+    }
 }

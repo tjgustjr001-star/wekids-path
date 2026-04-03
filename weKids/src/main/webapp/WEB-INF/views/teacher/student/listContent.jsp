@@ -20,7 +20,8 @@
         </div>
     </div>
 
-<div class="teacher-page-top-row">
+<div class="teacher-student-panel">
+    <div class="teacher-page-top-row">
         <div class="teacher-page-title-box">
             <h1>학생 관리</h1>
             <div class="teacher-page-subinfo">
@@ -161,6 +162,7 @@
             </div>
         </div>
     </div>
+</div>
 </section>
 
 <div class="teacher-modal-backdrop" id="inviteModal">

@@ -1,8 +1,8 @@
 @charset "UTF-8";
 
 :root {
-    --sidebar-width: 320px;
-    --header-height: 88px;
+    --sidebar-width: 308px;
+    --header-height: 76px;
     --bg-page: #f5f6f8;
     --white: #ffffff;
     --border-color: #e5e7eb;
@@ -21,7 +21,9 @@ html, body {
     overflow: hidden;
     background: var(--bg-page);
     color: var(--text-main);
-    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+    font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
 }
 
 * {
@@ -62,7 +64,7 @@ textarea {
     flex: 1 1 auto;
     min-width: 0;
     min-height: 0;
-    padding: 72px 72px;
+    padding: 32px 44px 40px;
     background: var(--bg-page);
     overflow-y: auto;
     overflow-x: auto;
@@ -70,11 +72,11 @@ textarea {
 
 @media (max-width: 1200px) {
     :root {
-        --sidebar-width: 290px;
+        --sidebar-width: 280px;
     }
 
     .app-content {
-        padding: 28px 24px;
+        padding: 28px 24px 32px;
     }
 }
 

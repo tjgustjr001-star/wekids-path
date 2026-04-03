@@ -623,12 +623,12 @@ public String studentClassHome(@PathVariable("classId") int classId,
 
     private String buildTermLabel(ClassVO classInfo) {
         if (classInfo == null) {
-            return "2026 1학기";
+            return "2026년 1학기";
         }
         if (classInfo.getYear() > 0 && classInfo.getSemester() > 0) {
-            return classInfo.getYear() + " " + classInfo.getSemester() + "학기";
+            return classInfo.getYear() + "년 " + classInfo.getSemester() + "학기";
         }
-        return classInfo.getYearLabel() != null && !classInfo.getYearLabel().isBlank() ? classInfo.getYearLabel() : "2026 1학기";
+        return classInfo.getYearLabel() != null && !classInfo.getYearLabel().isBlank() ? classInfo.getYearLabel() : "2026년 1학기";
     }
 
     private String safeDisplayName(MemberVO loginUser, String fallback) {

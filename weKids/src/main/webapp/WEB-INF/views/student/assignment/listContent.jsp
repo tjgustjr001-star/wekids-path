@@ -22,11 +22,12 @@
         </div>
     </div>
 
-<div class="assignment-topbar">
+    <div class="class-page-panel assignment-content-panel">
+        <div class="assignment-topbar">
         <h2 class="assignment-page-title">내 과제 목록</h2>
     </div>
 
-    <div class="assignment-grid">
+        <div class="assignment-grid">
         <c:forEach var="assignment" items="${assignmentList}">
             <div class="assignment-card"
                  data-id="${assignment.id}"
@@ -130,6 +131,7 @@
                 </div>
             </div>
         </c:forEach>
+        </div>
     </div>
 </section>
 

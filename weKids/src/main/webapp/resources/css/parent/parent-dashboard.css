@@ -36,7 +36,7 @@
 .parent-stat-box.blue { background:rgba(67,121,242,0.08); border-color:rgba(67,121,242,0.18); }
 .parent-stat-box.green { background:rgba(110,194,7,0.10); border-color:rgba(110,194,7,0.20); }
 .parent-stat-box span { color:#6b7280; font-weight:600; }
-.parent-stat-box strong { font-size:24px; font-weight:800; }
+.parent-stat-box strong { font-size:24px; font-weight: 700; }
 
 .parent-progress-wrap { margin-bottom:26px; }
 .parent-progress-head {
@@ -51,7 +51,7 @@
     align-items:center;
     gap:8px;
     font-size:16px;
-    font-weight:800;
+    font-weight: 700;
 }
 .parent-weekly-chart {
     height:180px;
@@ -91,10 +91,10 @@
 .parent-assignment-title-row p,
 .parent-assignment-left p { margin:0; font-size:13px; color:#6b7280; }
 .parent-subject-badge {
-    display:inline-block; padding:4px 8px; border-radius:999px; background:#f3f4f6; color:#6b7280; font-size:11px; font-weight:800;
+    display:inline-block; padding:4px 8px; border-radius:999px; background:#f3f4f6; color:#6b7280; font-size:11px; font-weight: 700;
 }
 .parent-assignment-badge {
-    padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800;
+    padding:8px 12px; border-radius:999px; font-size:12px; font-weight: 700;
 }
 .parent-assignment-badge.done { background:#6EC207; color:#fff; }
 .parent-assignment-badge.progress { background:#4379F2; color:#fff; }
@@ -120,7 +120,7 @@
     width:52px; height:52px; margin:0 auto 12px; border-radius:50%; background:#fff;
     display:flex; align-items:center; justify-content:center;
 }
-.parent-class-entry-card h3 { margin:0 0 10px; font-size:18px; font-weight:800; }
+.parent-class-entry-card h3 { margin:0 0 10px; font-size:18px; font-weight: 700; }
 .parent-class-entry-card p { margin:0 0 18px; color:#6b7280; font-size:14px; line-height:1.6; }
 
 .parent-detail-modal {
@@ -129,14 +129,14 @@
 .parent-detail-modal-header {
     display:flex; justify-content:space-between; align-items:center; padding:22px 24px; border-bottom:1px solid #edf0f3; background:#f9fafb;
 }
-.parent-detail-modal-header h3 { margin:0; font-size:20px; font-weight:800; }
+.parent-detail-modal-header h3 { margin:0; font-size:20px; font-weight: 700; }
 .parent-detail-modal-body { padding:24px; }
 .parent-detail-profile { text-align:center; margin-bottom:20px; }
 .parent-detail-avatar {
     width:76px; height:76px; margin:0 auto 12px; border-radius:50%;
-    background:rgba(67,121,242,0.10); color:#4379F2; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800;
+    background:rgba(67,121,242,0.10); color:#4379F2; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight: 700;
 }
-.parent-detail-profile h4 { margin:0 0 6px; font-size:24px; font-weight:800; }
+.parent-detail-profile h4 { margin:0 0 6px; font-size:24px; font-weight: 700; }
 .parent-detail-profile p { margin:0; color:#4379F2; font-weight:700; }
 .parent-detail-info-box {
     background:#f9fafb; border:1px solid #edf0f3; border-radius:16px; padding:16px; margin-bottom:18px;

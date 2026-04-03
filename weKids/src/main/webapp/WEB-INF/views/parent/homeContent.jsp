@@ -5,14 +5,15 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/parent/parent-home.css">
 
 <section class="parent-home-page">
-    <div class="parent-home-hero">
-        <div class="parent-home-term">${termLabel}</div>
-        <h1>안녕하세요, ${parentName}님!</h1>
-        <p>자녀의 새로운 소식을 확인해보세요.</p>
-    </div>
+    <div class="parent-home-grid teacher-home-like-grid">
+        <div class="parent-home-main">
+            <div class="parent-home-hero teacher-home-like-hero">
+                <div class="parent-home-term">${termLabel}</div>
+                <h1>안녕하세요, ${parentName}님!</h1>
+                <p>자녀의 새로운 소식을 확인해보세요.</p>
+            </div>
 
-    <div class="parent-home-grid">
-        <section class="parent-home-card parent-learning-card">
+            <section class="parent-home-card parent-learning-card">
             <div class="card-header">
                 <div class="card-title-wrap">
                     <span class="card-icon card-icon-learning" aria-hidden="true">
@@ -109,7 +110,8 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-        </section>
+            </section>
+        </div>
 
         <div class="parent-home-side">
         <aside class="parent-home-card parent-notice-card">

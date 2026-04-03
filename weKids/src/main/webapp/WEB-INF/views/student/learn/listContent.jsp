@@ -19,7 +19,8 @@
         </div>
     </div>
 
-<div class="learning-topbar">
+    <div class="class-page-panel learning-content-panel">
+        <div class="learning-topbar">
         <h2 class="learning-page-title">나의 학습 목록</h2>
 
         <div class="learning-tab-group">
@@ -28,7 +29,7 @@
         </div>
     </div>
 
-    <div class="learning-card-list" id="learningCardList">
+        <div class="learning-card-list" id="learningCardList">
         <c:forEach var="learning" items="${learnList}">
             <div class="learning-card"
 		     data-learning-id="${learning.id}"
@@ -145,6 +146,7 @@
                 </div>
             </div>
         </c:forEach>
+        </div>
     </div>
 </section>
 

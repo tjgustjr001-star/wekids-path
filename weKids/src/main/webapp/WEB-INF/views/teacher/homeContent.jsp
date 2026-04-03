@@ -8,7 +8,7 @@
     <div class="teacher-dashboard-grid">
         <div class="teacher-dashboard-main">
             <section class="teacher-hero-card">
-                <div class="teacher-hero-badge">${empty currentSemesterLabel ? '2026 1학기' : currentSemesterLabel}</div>
+                <div class="teacher-hero-badge">${empty currentSemesterLabel ? '2026년 1학기' : currentSemesterLabel}</div>
                 <h1>안녕하세요, ${empty userName ? '김교사' : userName}님!</h1>
                 <p>선생님, 오늘도 화이팅하세요!</p>
             </section>

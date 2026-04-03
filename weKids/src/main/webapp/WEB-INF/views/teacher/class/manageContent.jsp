@@ -15,7 +15,8 @@
         </div>
     </div>
 
-<div class="manage-summary-grid">
+<div class="teacher-class-manage-panel">
+    <div class="manage-summary-grid">
         <div class="summary-card">
             <div class="summary-icon users-summary-icon green"></div>
             <div class="summary-text-box">
@@ -187,4 +188,5 @@
             </form>
         </div>
     </section>
+</div>
 </section>

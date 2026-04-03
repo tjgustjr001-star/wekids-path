@@ -6,6 +6,12 @@
     margin: 0;
 }
 
+.assignment-content-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
 .assignment-topbar {
     display: flex;
     justify-content: space-between;
@@ -15,16 +21,15 @@
 
 .assignment-page-title {
     margin: 0;
-    margin-left: 16px;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .assignment-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
-    padding: 16px;
+    padding: 0;
 }
 
 .assignment-card {
@@ -62,7 +67,7 @@
 .assignment-modal-status {
     display: inline-flex;
     align-items: center;
-    font-weight: 800;
+    font-weight: 700;
     border-radius: 10px;
 }
 
@@ -141,7 +146,7 @@
 .assignment-title {
     margin: 0 0 14px;
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.4;
     color: #111827;
 }
@@ -191,7 +196,7 @@
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -297,7 +302,7 @@
 .assignment-modal-title {
     margin: 0;
     font-size: 28px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.4;
 }
 
@@ -332,7 +337,7 @@
 .assignment-info-title {
     margin: 0 0 14px;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 700;
     color: #374151;
 }
 
@@ -383,7 +388,7 @@
     margin: 0 0 6px;
     color: #991b1b;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .assignment-feedback-box-inner p {
@@ -406,7 +411,7 @@
     display: none;
     align-items: center;
     gap: 14px;
-    padding: 16px;
+    padding: 0;
     border-radius: 16px;
     border: 1px solid #e5e7eb;
     background: #f9fafb;
@@ -437,7 +442,7 @@
 .assignment-file-name {
     margin: 0 0 4px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     color: #111827;
 }
 
@@ -452,14 +457,14 @@
     background: transparent;
     color: #4379F2;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
 }
 
 .assignment-submission-text-box {
     display: none;
     margin-top: 16px;
-    padding: 16px;
+    padding: 0;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
     background: #f9fafb;
@@ -517,7 +522,7 @@
 .assignment-dropzone-title {
     margin: 10px 0 6px;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 700;
     color: #374151;
 }
 
@@ -530,7 +535,7 @@
 .assignment-submission-textarea {
     width: 100%;
     min-height: 140px;
-    padding: 16px;
+    padding: 0;
     border: 1px solid #d1d5db;
     border-radius: 16px;
     resize: none;
@@ -570,7 +575,7 @@
     border-radius: 14px;
     padding: 13px 22px;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -680,7 +685,7 @@
     background: #dc2626;
     color: #fff;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;

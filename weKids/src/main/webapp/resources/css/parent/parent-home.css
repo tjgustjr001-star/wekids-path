@@ -28,7 +28,7 @@
     margin: 0 0 12px;
     font-size: clamp(38px, 4vw, 52px);
     line-height: 1.2;
-    font-weight: 800;
+    font-weight: 700;
     overflow-wrap: anywhere;
 }
 
@@ -88,7 +88,7 @@
     margin: 0;
     font-size: 22px;
     line-height: 1.35;
-    font-weight: 800;
+    font-weight: 700;
     color: #111827;
 }
 
@@ -184,7 +184,7 @@
     font-size: 28px;
     line-height: 1;
     color: #111827;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .learning-stat-box.blue .label,
@@ -213,7 +213,7 @@
 .progress-label-row strong {
     font-size: 18px;
     color: #5a7cf0;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .progress-bar {
@@ -370,7 +370,7 @@
     margin-bottom: 10px;
     font-size: 18px;
     line-height: 1.45;
-    font-weight: 800;
+    font-weight: 700;
     color: #111827;
 }
 
@@ -416,7 +416,7 @@
 .parent-class-shortcut-card h3 {
     margin: 0 0 8px;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
     color: #2f6b4a;
 }
 
@@ -445,7 +445,7 @@
     background: #66cb7a;
     color: #0f172a;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
     text-decoration: none;
 }
 
@@ -479,5 +479,124 @@
         width: 100%;
         min-width: 0;
         max-width: none;
+    }
+}
+
+
+.parent-home-page {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.parent-home-grid.teacher-home-like-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+    align-items: start;
+}
+
+.parent-home-main,
+.parent-home-side {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.parent-home-hero {
+    min-height: 208px;
+    padding: 34px 38px;
+    border-radius: 28px;
+    box-shadow: 0 12px 28px rgba(221, 94, 84, 0.16);
+}
+
+.parent-home-term {
+    min-width: 98px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 32px;
+    margin-bottom: 18px;
+}
+
+.parent-home-hero h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.parent-home-hero p {
+    font-size: 16px;
+    opacity: 0.94;
+}
+
+.parent-home-card {
+    border-radius: 24px;
+}
+
+.parent-learning-card,
+.parent-notice-card,
+.parent-class-shortcut-card {
+    padding: 30px;
+}
+
+.card-title-wrap h2,
+.card-title-wrap h3,
+.notice-content strong,
+.parent-class-shortcut-card strong {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.child-select-form select {
+    height: 48px;
+    border-radius: 16px;
+    background: #f9fafb;
+    font-size: 15px;
+}
+
+.learning-stat-box {
+    min-height: 80px;
+    border-radius: 20px;
+    padding: 20px 22px;
+}
+
+.learning-stat-box .label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.learning-stat-box .value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.progress-label-row,
+.detail-link,
+.more-link,
+.notice-content p,
+.notice-content span,
+.parent-class-shortcut-card p {
+    font-size: 15px;
+}
+
+.progress-label-row strong,
+.recent-learning-title-row strong,
+.recent-learning-status,
+.class-shortcut-btn {
+    font-weight: 700;
+}
+
+.parent-class-shortcut-card {
+    min-height: 286px;
+}
+
+.class-shortcut-btn {
+    min-height: 60px;
+    border-radius: 18px;
+}
+
+@media (max-width: 1200px) {
+    .parent-home-grid.teacher-home-like-grid {
+        grid-template-columns: 1fr;
     }
 }

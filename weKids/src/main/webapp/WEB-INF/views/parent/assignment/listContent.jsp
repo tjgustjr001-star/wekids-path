@@ -24,7 +24,8 @@
         </div>
     </div>
 
-<div class="parent-assignment-topbar">
+<div class="parent-assignment-panel">
+    <div class="parent-assignment-topbar">
         <h2 class="parent-assignment-page-title">과제 조회</h2>
 
         <c:if test="${not empty assignmentChildren}">
@@ -145,6 +146,7 @@
             </div>
         </c:otherwise>
     </c:choose>
+    </div>
 </section>
 
 <div class="parent-assignment-modal-overlay" id="parentAssignmentModalOverlay">

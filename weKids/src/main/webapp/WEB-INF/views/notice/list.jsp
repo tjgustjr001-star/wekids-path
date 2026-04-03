@@ -31,28 +31,30 @@
         </div>
     </div>
 
-    <c:if test="${isTeacher}">
-        <div class="notice_action_row">
-            <button type="button"
-                    class="write_btn"
-                    id="openWriteBtn"
-                    data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
-                    data-return-url="${currentUri}">
-                새 가정통신문 작성
-            </button>
-        </div>
-    </c:if>
-
     <div class="notice_top_box">
-        <div class="notice_top_info">
-            <h2>전체 가정통신문</h2>
-            <p>
-                총 <strong id="totalNoticeCount">${fn:length(noticeList)}</strong>건
-                <c:if test="${isStudentOrParent}">
-                    <span class="notice_count_divider">|</span>
-                    <span class="required_count_text">미확인 필독 <strong id="requiredUnreadCount">${requiredUnreadCount}</strong>건</span>
-                </c:if>
-            </p>
+        <div class="notice_top_row">
+            <div class="notice_top_info">
+                <h2>전체 가정통신문</h2>
+                <p>
+                    총 <strong id="totalNoticeCount">${fn:length(noticeList)}</strong>건
+                    <c:if test="${isStudentOrParent}">
+                        <span class="notice_count_divider">|</span>
+                        <span class="required_count_text">미확인 필독 <strong id="requiredUnreadCount">${requiredUnreadCount}</strong>건</span>
+                    </c:if>
+                </p>
+            </div>
+
+            <c:if test="${isTeacher}">
+                <div class="notice_action_row notice_action_row_inside">
+                    <button type="button"
+                            class="write_btn"
+                            id="openWriteBtn"
+                            data-class-id="<c:out value='${classInfo.classId}' default='${classId}'/>"
+                            data-return-url="${currentUri}">
+                        새 가정통신문 작성
+                    </button>
+                </div>
+            </c:if>
         </div>
 
         <div class="filter_row">

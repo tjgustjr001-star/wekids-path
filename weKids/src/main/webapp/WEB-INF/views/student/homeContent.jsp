@@ -6,14 +6,13 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/student/student-home.css">
 <c:set var="trimmedTermLabel" value="${fn:trim(termLabel)}" />
 <section class="student-home-page">
-    <div class="welcome-banner">
-        <c:if test="${not empty trimmedTermLabel}"><span class="term-badge">${trimmedTermLabel}</span></c:if>
-        <h1 class="welcome-title">${greetingTitle}</h1>
-        <p class="welcome-desc">${greetingMessage}</p>
-    </div>
-
-    <div class="student-home-grid">
+    <div class="student-home-grid teacher-home-like-grid">
         <div class="student-home-main">
+            <div class="welcome-banner teacher-home-like-hero">
+                <c:if test="${not empty trimmedTermLabel}"><span class="term-badge">${trimmedTermLabel}</span></c:if>
+                <h1 class="welcome-title">${greetingTitle}</h1>
+                <p class="welcome-desc">${greetingMessage}</p>
+            </div>
             <section class="card dashboard-card">
                 <div class="section-title-row between student-dashboard-head">
                     <h2 class="section-title">

@@ -28,7 +28,7 @@
     background: #eef2ff;
     color: #4f46e5;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,7 +86,8 @@
 .teacher-summary-card {
     min-height: 170px;
     gap: 18px;
-    justify-content: flex-start;
+    justify-content: center;
+    text-align: center;
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
@@ -116,21 +117,25 @@
 
 .teacher-summary-card__top {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    width: 100%;
 }
 
 .teacher-summary-card__label {
     font-size: 22px;
     line-height: 1.35;
-    font-weight: 800;
+    font-weight: 700;
     color: #374151;
     letter-spacing: -0.02em;
 }
 
 .teacher-summary-card__value {
     font-size: 44px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.05;
     color: #111827;
 }
@@ -205,3 +210,10 @@
 
 
 .teacher-summary-link { text-decoration: none; color: inherit; }
+
+.teacher-summary-card { min-height: 156px; }
+.teacher-summary-card__label { font-size: 18px; font-weight: 600; }
+.teacher-summary-card__value { font-size: 36px; font-weight: 700; }
+.update-avatar { font-weight: 700; }
+.update-meta strong { font-size: 16px; font-weight: 700; }
+.update-body p { font-size: 16px; }

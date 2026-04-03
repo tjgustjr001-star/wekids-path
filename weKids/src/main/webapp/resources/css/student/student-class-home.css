@@ -42,7 +42,12 @@
 
 .student-summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .student-class-home .summary-card--link { text-decoration: none; color: inherit; }
-.student-class-home .summary-caption { font-size: 15px; color: #6b7280; }
+.student-class-home .summary-caption { font-size: 14px; color: #6b7280; }
 .student-class-home .summary-value--green { color: #2f6b4f; }
 .student-class-home .summary-value--red { color: #cf3d33; }
 .student-class-home .summary-value--purple { color: #7c3aed; }
+
+.student-class-home .summary-card { min-height: 168px; }
+.student-class-home .summary-title { font-size: 20px; font-weight: 600; }
+.student-class-home .summary-value { font-size: 26px; font-weight: 700; }
+.student-class-home .summary-icon { width: 30px; height: 30px; margin-bottom: 12px; }

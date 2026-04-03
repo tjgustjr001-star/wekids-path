@@ -20,7 +20,8 @@
         </div>
     </div>
 
-<div class="teacher-page-top-row">
+    <div class="class-page-panel teacher-learn-manage-panel">
+        <div class="teacher-page-top-row">
         <div class="teacher-page-title-box">
             <h1 id="learnPageTitle">
                 <c:choose>
@@ -68,7 +69,7 @@
         </div>
     </div>
 
-    <div class="teacher-learn-table-card">
+        <div class="teacher-learn-table-card">
         <div class="teacher-table-scroll">
             <div class="teacher-learn-table">
                 <div class="teacher-learn-table-head">
@@ -232,6 +233,7 @@
                     </c:choose>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </section>
