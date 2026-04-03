@@ -134,15 +134,15 @@
 }
 
 .student-card:hover {
-    border-color: var(--color-brand-blue);
-}
-
-.teacher-card:hover {
     border-color: var(--color-brand-green);
 }
 
+.teacher-card:hover {
+    border-color: var(--color-brand-blue);
+}
+
 .parent-card:hover {
-    border-color: var(--color-brand-dark);
+    border-color : rgb(240, 89, 32);
 }
 
 .card-badge {
@@ -163,18 +163,18 @@
 }
 
 .badge-student {
-    background-color: rgba(67, 121, 242, 0.1);
-    color: var(--color-brand-blue);
-}
-
-.badge-teacher {
     background-color: rgba(110, 194, 7, 0.2);
     color: #4d8a05;
 }
 
+.badge-teacher {
+    background-color: rgba(67, 121, 242, 0.1);
+    color: var(--color-brand-blue);
+}
+
 .badge-parent {
-    background-color: rgba(17, 117, 84, 0.1);
-    color: var(--color-brand-dark);
+    background-color: rgba(236, 162, 140, 0.2);
+    color: rgb(240, 89, 32);
 }
 
 .card-title {
@@ -186,15 +186,16 @@
 }
 
 .student-card:hover .card-title {
-    color: var(--color-brand-blue);
-}
-
-.teacher-card:hover .card-title {
     color: var(--color-brand-green);
 }
 
+.teacher-card:hover .card-title {
+    
+    color: var(--color-brand-blue);
+}
+
 .parent-card:hover .card-title {
-    color: var(--color-brand-dark);
+    color:  rgb(240, 89, 32);
 }
 
 .card-desc {

@@ -171,7 +171,7 @@
             </div>
 
             <div class="detail-block">
-                <h4>요약 통계</h4>
+                <h4>통계</h4>
                 <div class="summary-grid">
                     <div class="summary-card">
                         <span>학습 완료율</span>
@@ -193,7 +193,7 @@
             </div>
 
             <div class="detail-block">
-                <h4>시각 요약</h4>
+                <h4>그래프</h4>
                 <div class="report-visual-panel">
                     <div class="report-donut-grid">
                         <div class="donut-card">
