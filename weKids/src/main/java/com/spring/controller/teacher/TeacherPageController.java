@@ -49,6 +49,7 @@ import com.spring.service.ReportService;
 import com.spring.service.TeacherAssignmentService;
 import com.spring.service.TeacherLearnService;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -71,6 +72,9 @@ public class TeacherPageController {
     
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private ServletContext servletContext;
     
     @GetMapping("/teacher")
     public String teacherHome(Model model,
@@ -313,22 +317,8 @@ public String teacherClassHome(@PathVariable("classId") int classId,
                 model.addAttribute("allowSubmissionModifyYn", classInfo.getAllowSubmissionModifyYn());
             }
 
-            int teacherId = loginUser.getMember_id();
-            int studentCount = classService.getTeacherClassStudentCount(teacherId, classId);
-
-            List<TeacherLearnManageDTO> learnList =
-                    teacherLearnService.getTeacherLearnList(teacherId, classId, 0);
-            List<TeacherAssignmentManageDTO> assignmentList =
-                    teacherAssignmentService.getTeacherAssignmentList(teacherId, classId, 0);
-
-            int learnCount = learnList.size();
-            int activeAssignmentCount = (int) assignmentList.stream()
-                    .filter(item -> "진행중".equals(item.getStatus()) || "마감임박".equals(item.getStatus()))
-                    .count();
-
-            model.addAttribute("studentCount", studentCount);
-            model.addAttribute("learnCount", learnCount);
-            model.addAttribute("activeAssignmentCount", activeAssignmentCount);
+            model.addAttribute("studentCount",
+                    classService.getTeacherClassStudentCount(loginUser.getMember_id(), classId));
         }
 
         return "common/layout/teacherLayout";
@@ -906,13 +896,13 @@ public String teacherClassHome(@PathVariable("classId") int classId,
         TeacherAssignmentStudentWorkDTO detail =
                 teacherAssignmentService.getTeacherStudentSubmissionDetail(loginUser.getMember_id(), classId, assignmentId, studentId);
 
-        if (detail == null || !detail.isCanDownload()) {
+        if (detail == null || detail.getAttachedFileName() == null || detail.getAttachedFileName().isBlank()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        File file = new File(detail.getUploadPath());
-        if (!file.exists()) {
+        File file = resolveAssignmentFile(detail.getUploadPath(), detail.getAttachedFileName());
+        if (file == null || !file.exists() || !file.isFile()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -1103,6 +1093,31 @@ public String teacherClassHome(@PathVariable("classId") int classId,
             return (MemberVO) principal;
         }
 
+        return null;
+    }
+
+    private File resolveAssignmentFile(String uploadPath, String originalFileName) {
+        if (uploadPath != null && !uploadPath.isBlank()) {
+            File direct = new File(uploadPath);
+            if (direct.exists() && direct.isFile()) {
+                return direct;
+            }
+
+            String normalized = uploadPath.replace("\\", File.separator).replace("/", File.separator);
+            File normalizedFile = new File(normalized);
+            if (normalizedFile.exists() && normalizedFile.isFile()) {
+                return normalizedFile;
+            }
+
+            String baseName = new File(normalized).getName();
+            String uploadDir = servletContext.getRealPath("/resources/upload/assignment");
+            if (uploadDir != null && baseName != null && !baseName.isBlank()) {
+                File candidate = new File(uploadDir, baseName);
+                if (candidate.exists() && candidate.isFile()) {
+                    return candidate;
+                }
+            }
+        }
         return null;
     }
 }

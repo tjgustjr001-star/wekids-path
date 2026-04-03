@@ -81,9 +81,25 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     function extLabel(fileName) {
-        const parts = String(fileName || '').split('.');
-        const ext = (parts.length > 1 ? parts.pop() : 'F').toUpperCase();
-        return ext.substring(0, 3);
+        const normalized = String(fileName || '').trim().toLowerCase();
+        const ext = normalized.indexOf('.') > -1 ? normalized.split('.').pop() : '';
+        const map = {
+            jpeg: 'JPG',
+            jpg: 'JPG',
+            png: 'PNG',
+            webp: 'WEB',
+            pdf: 'PDF',
+            hwp: 'HWP',
+            hwpx: 'HWP',
+            doc: 'DOC',
+            docx: 'DOC',
+            xls: 'XLS',
+            xlsx: 'XLS',
+            ppt: 'PPT',
+            pptx: 'PPT',
+            zip: 'ZIP'
+        };
+        return map[ext] || (ext ? ext.substring(0, 3).toUpperCase() : 'F');
     }
 
     function closeAllMenus() {
@@ -271,6 +287,9 @@ window.addEventListener('DOMContentLoaded', function () {
         const completeBtn = qs('#teacherStudentCompleteBtn');
         const feedbackBtn = qs('#teacherStudentFeedbackBtn');
         const feedbackTextarea = qs('#teacherStudentFeedbackContent');
+        const feedbackView = qs('#teacherStudentFeedbackView');
+        const feedbackTitle = qs('#teacherStudentFeedbackTitle');
+        const feedbackText = qs('#teacherStudentFeedbackText');
 
         fileBox.style.display = submission.attachedFileName ? 'flex' : 'none';
         if (submission.attachedFileName) {
@@ -312,11 +331,28 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (feedbackBtn) {
+            const hasTeacherFeedback = typeof submission.feedbackContent === 'string' && submission.feedbackContent.trim() !== '';
+            const currentStatus = (submission.submitStatus || '').trim();
+
             feedbackBtn.style.display =
-                submission.submitted && (submission.submitStatus || '').trim() !== '확인완료' && (submission.submitStatus || '').trim() !== '반려'
+                submission.submitted && currentStatus !== '반려'
                     ? 'inline-flex'
                     : 'none';
             feedbackBtn.disabled = !submission.submitted;
+            feedbackBtn.textContent = hasTeacherFeedback ? '피드백 수정' : '피드백';
+        }
+
+        if (feedbackView && feedbackTitle && feedbackText) {
+            const isRejected = (submission.submitStatus || '').trim() === '반려';
+            const visibleFeedback = isRejected
+                ? (submission.returnReason || '').trim()
+                : (submission.feedbackContent || '').trim();
+
+            feedbackView.style.display = visibleFeedback ? 'block' : 'none';
+            feedbackView.classList.toggle('is-confirm', !isRejected && !!visibleFeedback);
+            feedbackView.classList.toggle('is-reject', isRejected && !!visibleFeedback);
+            feedbackTitle.textContent = isRejected ? '반려 사유' : '선생님 피드백';
+            feedbackText.textContent = visibleFeedback;
         }
 
         if (feedbackTextarea) {

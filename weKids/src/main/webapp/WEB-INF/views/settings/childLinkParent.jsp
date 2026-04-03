@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/settings/childLinkParent.css">
@@ -44,19 +45,6 @@
                                             <c:out value="${child.studentName}" />
                                         </span>
                                         <span class="child-badge">연결 완료</span>
-                                    </div>
-
-                                    <div class="child-meta">
-                                        <c:choose>
-                                            <c:when test="${child.year > 0}">
-                                                <c:out value="${child.year}" />학년도
-                                                <c:out value="${child.grade}" />학년
-                                                <c:out value="${child.classNo}" />반
-                                            </c:when>
-                                            <c:otherwise>
-                                                학생 ID: <c:out value="${child.studentId}" />
-                                            </c:otherwise>
-                                        </c:choose>
                                     </div>
                                 </div>
                             </div>
@@ -122,12 +110,11 @@
                             </div>
 
                             <div class="last-update">
-                                최근 접속:
                                 <c:choose>
-                                    <c:when test="${not empty child.linkedAt}">
-                                        <c:out value="${child.linkedAt}" />
+                                    <c:when test="${not empty child.lastLoginAt}">
+                                        최근 접속 <fmt:formatDate value="${child.lastLoginAt}" pattern="yyyy.MM.dd HH:mm" />
                                     </c:when>
-                                    <c:otherwise>정보 없음</c:otherwise>
+                                    <c:otherwise>최근 접속 정보 없음</c:otherwise>
                                 </c:choose>
                             </div>
                         </div>

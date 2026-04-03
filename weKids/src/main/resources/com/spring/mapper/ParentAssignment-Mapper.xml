@@ -55,6 +55,15 @@
                 FROM ASSIGN_FDB
                 GROUP BY SUB_ID
             ) MXF ON MXF.MAX_FDB_ID = F.ASSIGN_FBD_ID
+        ),
+        LATEST_ATTACH AS (
+            SELECT A.*
+            FROM ATTACH A
+            JOIN (
+                SELECT PNO, MAX(ANO) AS MAX_ANO
+                FROM ATTACH
+                GROUP BY PNO
+            ) MXA ON MXA.MAX_ANO = A.ANO
         )
     </sql>
 
@@ -67,7 +76,7 @@
         A.CATEGORY AS SUBJECT,
         A.SUBMIT_FORMAT,
         CASE
-            WHEN SUB.SUB_ID IS NOT NULL AND NVL(TRIM(SUB.RETURN_REASON), '') != '' THEN '반려'
+            WHEN SUB.SUB_ID IS NOT NULL AND (NVL(TRIM(SUB.RETURN_REASON), '') != '' OR UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('RETURNED', 'REJECTED') OR SUB.SUBMIT_STATUS = '반려') THEN '반려'
             WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('FEEDBACK_COMPLETED') OR SUB.SUBMIT_STATUS = '확인완료' THEN '확인완료'
             WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('LATE', 'LATE_SUBMIT', 'LATE_SUBMITTED') OR SUB.SUBMIT_STATUS = '늦은제출' THEN '늦은제출'
             WHEN SUB.SUB_ID IS NOT NULL AND SUB.SUBMIT_AT IS NOT NULL AND A.DUE_AT IS NOT NULL AND SUB.SUBMIT_AT &gt; A.DUE_AT THEN '늦은제출'
@@ -83,6 +92,7 @@
         NVL(TO_CHAR(SUB.SUBMIT_AT, 'YYYY.MM.DD HH24:MI'), '') AS SUBMITTED_AT,
         CASE
             WHEN NVL(TRIM(SUB.RETURN_REASON), '') != '' THEN NVL(SUB.RETURN_REASON, '')
+            WHEN UPPER(NVL(SUB.SUBMIT_STATUS, '')) IN ('RETURNED', 'REJECTED') OR SUB.SUBMIT_STATUS = '반려' THEN '반려된 과제입니다. 다시 제출해주세요.'
             ELSE NVL(DBMS_LOB.SUBSTR(FDB.FEEDBACK_CONTENT, 4000, 1), '')
         END AS FEEDBACK,
         NVL(TO_CHAR(FDB.CREATED_AT, 'YYYY.MM.DD HH24:MI'), '') AS FEEDBACK_AT,
@@ -130,7 +140,7 @@
           LEFT JOIN LATEST_SUB SUB
             ON SUB.ASSIGN_ID = A.ASSIGN_ID
            AND SUB.STUDENT_ID = #{studentId}
-          LEFT JOIN ATTACH ATC
+          LEFT JOIN LATEST_ATTACH ATC
             ON ATC.PNO = SUB.SUB_ID
           LEFT JOIN LATEST_FDB FDB
             ON FDB.SUB_ID = SUB.SUB_ID
@@ -154,7 +164,7 @@
           LEFT JOIN LATEST_SUB SUB
             ON SUB.ASSIGN_ID = A.ASSIGN_ID
            AND SUB.STUDENT_ID = #{studentId}
-          LEFT JOIN ATTACH ATC
+          LEFT JOIN LATEST_ATTACH ATC
             ON ATC.PNO = SUB.SUB_ID
           LEFT JOIN LATEST_FDB FDB
             ON FDB.SUB_ID = SUB.SUB_ID

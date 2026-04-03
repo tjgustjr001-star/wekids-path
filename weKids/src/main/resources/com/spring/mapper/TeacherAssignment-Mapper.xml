@@ -92,6 +92,15 @@
                 GROUP BY SUB_ID
             ) MXF ON MXF.MAX_FDB_ID = F.ASSIGN_FBD_ID
         ),
+        LAST_ATTACH AS (
+            SELECT A.*
+            FROM ATTACH A
+            JOIN (
+                SELECT PNO, MAX(ANO) AS MAX_ANO
+                FROM ATTACH
+                GROUP BY PNO
+            ) MXA ON MXA.MAX_ANO = A.ANO
+        ),
         SUB_VIEW AS (
             SELECT A.ASSIGN_ID,
                    SUB.SUB_ID,
@@ -226,6 +235,15 @@
                 FROM ASSIGN_FDB
                 GROUP BY SUB_ID
             ) MXF ON MXF.MAX_FDB_ID = F.ASSIGN_FBD_ID
+        ),
+        LAST_ATTACH AS (
+            SELECT A.*
+            FROM ATTACH A
+            JOIN (
+                SELECT PNO, MAX(ANO) AS MAX_ANO
+                FROM ATTACH
+                GROUP BY PNO
+            ) MXA ON MXA.MAX_ANO = A.ANO
         )
         SELECT
             S.STUDENT_ID,
@@ -421,6 +439,15 @@
                 FROM ASSIGN_FDB
                 GROUP BY SUB_ID
             ) MXF ON MXF.MAX_FDB_ID = F.ASSIGN_FBD_ID
+        ),
+        LAST_ATTACH AS (
+            SELECT A.*
+            FROM ATTACH A
+            JOIN (
+                SELECT PNO, MAX(ANO) AS MAX_ANO
+                FROM ATTACH
+                GROUP BY PNO
+            ) MXA ON MXA.MAX_ANO = A.ANO
         )
         SELECT
             NVL(SUB.SUB_ID, 0) AS SUB_ID,
@@ -458,7 +485,7 @@
                          AND A.TEACHER_ID = #{teacherId}
         LEFT JOIN LAST_SUB SUB ON SUB.ASSIGN_ID = A.ASSIGN_ID
                               AND SUB.STUDENT_ID = SC.STUDENT_ID
-        LEFT JOIN ATTACH ATC ON ATC.PNO = SUB.SUB_ID
+        LEFT JOIN LAST_ATTACH ATC ON ATC.PNO = SUB.SUB_ID
         LEFT JOIN LAST_FDB FDB ON FDB.SUB_ID = SUB.SUB_ID
         WHERE SC.CLASS_ID = #{classId}
           AND SC.STUDENT_ID = #{studentId}

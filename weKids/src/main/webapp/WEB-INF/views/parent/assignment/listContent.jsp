@@ -24,8 +24,7 @@
         </div>
     </div>
 
-<div class="parent-assignment-panel">
-    <div class="parent-assignment-topbar">
+<div class="parent-assignment-topbar">
         <h2 class="parent-assignment-page-title">과제 조회</h2>
 
         <c:if test="${not empty assignmentChildren}">
@@ -71,14 +70,15 @@
                          data-status="${fn:escapeXml(assignment.status)}"
                          data-deadline="${fn:escapeXml(assignment.deadline)}"
                          data-type="${fn:escapeXml(assignment.submitFormatLabel)}"
-                         data-submitted="${assignment.submitted}"
+                         data-submitted="${assignment.submitted ? 'true' : 'false'}"
                          data-submitted-at="${fn:escapeXml(assignment.submittedAt)}"
                          data-feedback="${fn:escapeXml(assignment.feedback)}"
                          data-content="${fn:escapeXml(assignment.content)}"
                          data-my-submission="${fn:escapeXml(assignment.mySubmission)}"
                          data-attached-file="${fn:escapeXml(assignment.attachedFile)}"
                          data-file-size="${assignment.fileSize}"
-                         data-download-url="${pageContext.request.contextPath}/parent/classes/${classId}/assignments/${assignment.id}/download?childId=${selectedChildId}">
+                         data-download-url="${pageContext.request.contextPath}/parent/classes/${classId}/assignments/${assignment.id}/download?childId=${selectedChildId}"
+                         data-detail-url="${pageContext.request.contextPath}/parent/classes/${classId}/assignments/${assignment.id}?childId=${selectedChildId}">
 
                         <div>
                             <div class="parent-assignment-card-badges">
@@ -110,7 +110,7 @@
                             <h3 class="parent-assignment-card-title">${assignment.title}</h3>
 
                             <c:if test="${not empty assignment.feedback}">
-                                <div class="parent-assignment-feedback-preview">
+                                <div class="parent-assignment-feedback-preview <c:if test="${assignment.status ne '반려'}">confirm</c:if>">
                                     <span class="parent-assignment-alert-icon small"></span>
                                     <div>
                                         <p class="feedback-title">선생님 피드백</p>
@@ -122,11 +122,24 @@
 
                         <div class="parent-assignment-card-footer">
                             <c:choose>
+                                <c:when test="${assignment.status eq '반려'}">
+                                    <div class="parent-assignment-submit-state reject">
+                                        <span class="parent-assignment-alert-icon small"></span>
+                                        <span>
+                                            반려
+                                            <c:if test="${not empty assignment.submittedAt}">(${assignment.submittedAt})</c:if>
+                                        </span>
+                                    </div>
+                                </c:when>
                                 <c:when test="${assignment.submitted}">
                                     <div class="parent-assignment-submit-state done">
                                         <span class="parent-assignment-check-icon"></span>
                                         <span>
-                                            제출 완료
+                                            <c:choose>
+                                                <c:when test="${assignment.status eq '확인완료'}">확인 완료</c:when>
+                                                <c:when test="${assignment.status eq '늦은제출'}">늦은 제출 완료</c:when>
+                                                <c:otherwise>제출 완료</c:otherwise>
+                                            </c:choose>
                                             <c:if test="${not empty assignment.submittedAt}">(${assignment.submittedAt})</c:if>
                                         </span>
                                     </div>
@@ -146,7 +159,6 @@
             </div>
         </c:otherwise>
     </c:choose>
-    </div>
 </section>
 
 <div class="parent-assignment-modal-overlay" id="parentAssignmentModalOverlay">
@@ -174,7 +186,7 @@
             </div>
 
             <div class="parent-assignment-modal-section reject-box" id="parentAssignmentRejectBox">
-                <div class="parent-assignment-feedback-preview modal">
+                <div class="parent-assignment-feedback-preview modal" id="parentAssignmentFeedbackPreview">
                     <span class="parent-assignment-alert-icon small"></span>
                     <div>
                         <p class="feedback-title" id="parentAssignmentFeedbackTitle">피드백</p>
@@ -187,7 +199,7 @@
                 <p class="section-title">제출 내용</p>
 
                 <div class="parent-assignment-file-box" id="parentAssignmentSubmittedFileBox">
-                    <div class="parent-assignment-file-icon"></div>
+                    <div class="parent-assignment-file-icon" id="parentAssignmentFileIcon">F</div>
                     <div class="parent-assignment-file-meta">
                         <strong id="parentAssignmentFileName"></strong>
                         <span id="parentAssignmentFileSize"></span>

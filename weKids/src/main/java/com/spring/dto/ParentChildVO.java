@@ -41,6 +41,8 @@ public class ParentChildVO {
     // 미확인 가정통신문 수
     private int unconfirmedNoticeCount;
 
+    private Date lastLoginAt;
+
     public int getLinkId() {
         return linkId;
     }
@@ -184,6 +186,12 @@ public class ParentChildVO {
     }
     public void setUnconfirmedNoticeCount(int unconfirmedNoticeCount) {
         this.unconfirmedNoticeCount = unconfirmedNoticeCount;
+    }
+    public Date getLastLoginAt() {
+        return lastLoginAt;
+    }
+    public void setLastLoginAt(Date lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 
 }

@@ -533,6 +533,7 @@ public String parentClassHome(@PathVariable("classId") int classId,
 
         model.addAttribute("pageTitle", "자녀 리포트 확인");
         model.addAttribute("currentUri", "/parent/classes/" + classId + "/reports");
+        setParentLayoutBase(model);
         setParentClassDetailBase(model, classId, session);
 
         model.addAttribute("classId", classId);

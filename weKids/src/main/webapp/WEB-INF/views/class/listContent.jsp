@@ -34,7 +34,7 @@
             </c:if>
 
             <c:if test="${showCreateButton}">
-                <a href="${pageContext.request.contextPath}/teacher/classes/new" class="join-class-btn">
+                <a href="${pageContext.request.contextPath}/teacher/classes/new" class="create-class-btn">
                     클래스 생성
                 </a>
             </c:if>

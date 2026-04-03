@@ -7,7 +7,7 @@
 }
 
 .parent-home-hero {
-    background: linear-gradient(135deg, #e56a5f, #dd5e54);
+    background: linear-gradient(135deg,#ff8d83, #f8756b);
     border-radius: 28px;
     padding: 42px 44px;
     color: #fff;
@@ -227,7 +227,7 @@
 .progress-fill {
     height: 100%;
     border-radius: 999px;
-    background: #4f9a69;
+    background: #4379f2c4;
 }
 
 .recent-learning-section {

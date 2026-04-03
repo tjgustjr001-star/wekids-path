@@ -521,8 +521,8 @@ public String studentClassHome(@PathVariable("classId") int classId,
             return;
         }
 
-        File file = new File(detail.getUploadPath());
-        if (!file.exists()) {
+        File file = resolveAssignmentFile(detail.getUploadPath(), detail.getAttachedFile());
+        if (file == null || !file.exists() || !file.isFile()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -562,6 +562,7 @@ public String studentClassHome(@PathVariable("classId") int classId,
 
         model.addAttribute("pageTitle", "리포트 확인");
         model.addAttribute("currentUri", "/student/classes/" + classId + "/reports");
+        setStudentLayoutBase(model);
         setStudentClassDetailBase(model, classId, session);
 
         model.addAttribute("classId", classId);
@@ -619,6 +620,32 @@ public String studentClassHome(@PathVariable("classId") int classId,
         model.addAttribute("learnUrl", "/student/classes/" + classId + "/learns");
         model.addAttribute("assignmentUrl", "/student/classes/" + classId + "/assignments");
         model.addAttribute("reportUrl", "/student/classes/" + classId + "/reports");
+    }
+
+
+    private File resolveAssignmentFile(String uploadPath, String originalFileName) {
+        if (uploadPath != null && !uploadPath.isBlank()) {
+            File direct = new File(uploadPath);
+            if (direct.exists() && direct.isFile()) {
+                return direct;
+            }
+
+            String normalized = uploadPath.replace("\\", File.separator).replace("/", File.separator);
+            File normalizedFile = new File(normalized);
+            if (normalizedFile.exists() && normalizedFile.isFile()) {
+                return normalizedFile;
+            }
+
+            String baseName = new File(normalized).getName();
+            String uploadDir = servletContext.getRealPath("/resources/upload/assignment");
+            if (uploadDir != null && baseName != null && !baseName.isBlank()) {
+                File candidate = new File(uploadDir, baseName);
+                if (candidate.exists() && candidate.isFile()) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
     }
 
     private String buildTermLabel(ClassVO classInfo) {

@@ -130,6 +130,7 @@ input {
 .child-info {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 6px;
     min-width: 0;
 }
@@ -139,6 +140,7 @@ input {
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+    min-height: 68px;
 }
 
 .child-name {

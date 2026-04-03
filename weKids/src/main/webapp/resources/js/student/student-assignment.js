@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const submittedBox = document.getElementById('assignmentSubmittedBox');
     const submittedFileBox = document.getElementById('assignmentSubmittedFileBox');
+    const submittedFileIcon = document.getElementById('assignmentSubmittedFileIcon');
     const submittedFileName = document.getElementById('assignmentSubmittedFileName');
     const submittedFileSize = document.getElementById('assignmentSubmittedFileSize');
     const submittedTextBox = document.getElementById('assignmentSubmittedTextBox');
@@ -40,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const fileDropzone = document.getElementById('assignmentFileDropzone');
     const dropzoneDesc = document.getElementById('assignmentDropzoneDesc');
     const selectedFileBox = document.getElementById('assignmentSelectedFileBox');
+    const selectedFileIcon = document.getElementById('assignmentSelectedFileIcon');
     const selectedFileName = document.getElementById('assignmentSelectedFileName');
     const selectedFileSize = document.getElementById('assignmentSelectedFileSize');
     const removeFileBtn = document.getElementById('assignmentRemoveFileBtn');
@@ -80,6 +82,35 @@ window.addEventListener('DOMContentLoaded', function () {
         return (value / 1024).toFixed(1) + ' KB';
     }
 
+    function fileExtLabel(fileName) {
+        const normalized = String(fileName || '').trim().toLowerCase();
+        const ext = normalized.indexOf('.') > -1 ? normalized.split('.').pop() : '';
+        const map = {
+            jpeg: 'JPG',
+            jpg: 'JPG',
+            png: 'PNG',
+            webp: 'WEB',
+            pdf: 'PDF',
+            hwp: 'HWP',
+            hwpx: 'HWP',
+            doc: 'DOC',
+            docx: 'DOC',
+            xls: 'XLS',
+            xlsx: 'XLS',
+            ppt: 'PPT',
+            pptx: 'PPT',
+            zip: 'ZIP'
+        };
+        return map[ext] || (ext ? ext.substring(0, 3).toUpperCase() : 'F');
+    }
+
+    function applyFileIcon(el, fileName) {
+        if (!el) return;
+        const hasFile = !!String(fileName || '').trim();
+        el.classList.toggle('has-ext', hasFile);
+        el.innerHTML = hasFile ? fileExtLabel(fileName) : '<span class="assignment-paperclip-icon"></span>';
+    }
+
     function setStatusClass(el, status) {
         el.className = el.className.split(' ')[0];
         if (status === '진행') el.classList.add('progress');
@@ -103,6 +134,7 @@ window.addEventListener('DOMContentLoaded', function () {
         downloadBtn.style.display = 'none';
 
         modalRejectBox.classList.remove('show');
+        modalRejectBox.classList.remove('confirm');
         submittedBox.classList.remove('show');
         submittedFileBox.classList.remove('show');
         submittedTextBox.classList.remove('show');
@@ -115,6 +147,8 @@ window.addEventListener('DOMContentLoaded', function () {
         submitBtn.disabled = false;
         submitBtnText.textContent = '과제 제출하기';
         goSubmitBtn.style.display = 'inline-flex';
+        applyFileIcon(submittedFileIcon, '');
+        applyFileIcon(selectedFileIcon, '');
     }
 
     function showDetailView() {
@@ -139,11 +173,13 @@ window.addEventListener('DOMContentLoaded', function () {
         if (!file) {
             selectedFileBox.classList.remove('show');
             fileDropzone.style.display = 'block';
+            applyFileIcon(selectedFileIcon, '');
             return;
         }
 
         selectedFileName.textContent = file.name;
         selectedFileSize.textContent = formatSize(file.size);
+        applyFileIcon(selectedFileIcon, file.name);
         selectedFileBox.classList.add('show');
         fileDropzone.style.display = 'none';
     }
@@ -169,10 +205,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (isImage) {
             fileInput.setAttribute('accept', '.jpg,.jpeg,.png,.webp');
-            dropzoneDesc.textContent = '지원 형식: JPG, PNG, WEBP (최대 50MB)';
+            dropzoneDesc.textContent = 'JPG, PNG, WEBP (최대 50MB)';
         } else {
             fileInput.setAttribute('accept', '.hwp,.pdf,.jpg,.jpeg,.png,.webp,.doc,.docx');
-            dropzoneDesc.textContent = '지원 형식: HWP, PDF, JPG, PNG, DOCX (최대 50MB)';
+            dropzoneDesc.textContent = 'HWP, PDF, JPG, PNG, DOCX (최대 50MB)';
         }
 
         if (isFile && attachedFile) {
@@ -228,9 +264,10 @@ window.addEventListener('DOMContentLoaded', function () {
         if (assignment.feedback) {
             if (feedbackPreview) {
                 feedbackPreview.querySelector('span:last-child').textContent = assignment.feedback;
+                feedbackPreview.classList.toggle('confirm', assignment.status !== '반려');
             } else {
                 const preview = document.createElement('div');
-                preview.className = 'assignment-feedback-preview';
+                preview.className = 'assignment-feedback-preview' + (assignment.status === '반려' ? '' : ' confirm');
                 preview.innerHTML = '<span class="assignment-alert-icon"></span><span>' + assignment.feedback + '</span>';
                 card.querySelector('.assignment-card-top').appendChild(preview);
             }
@@ -287,6 +324,11 @@ window.addEventListener('DOMContentLoaded', function () {
         const feedbackTitle = document.getElementById('assignmentFeedbackTitle');
         if (detail.feedback) {
             modalRejectBox.classList.add('show');
+            if (detail.status !== '반려') {
+                modalRejectBox.classList.add('confirm');
+            } else {
+                modalRejectBox.classList.remove('confirm');
+            }
             if (feedbackTitle) feedbackTitle.textContent = detail.status === '반려' ? '반려 사유' : '선생님 피드백';
         }
 
@@ -296,6 +338,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 submittedFileBox.classList.add('show');
                 submittedFileName.textContent = detail.attachedFile;
                 submittedFileSize.textContent = formatSize(detail.fileSize);
+                applyFileIcon(submittedFileIcon, detail.attachedFile);
                 if (detail.canDownload) {
                     downloadBtn.style.display = 'inline-flex';
                 }
@@ -394,6 +437,33 @@ window.addEventListener('DOMContentLoaded', function () {
             selectedFile = fileInput.files[0];
             updateSelectedFileUI(selectedFile);
         }
+    });
+
+    ;['dragenter', 'dragover'].forEach(function (eventName) {
+        fileDropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileDropzone.classList.add('dragover');
+        });
+    });
+
+    ;['dragleave', 'dragend', 'drop'].forEach(function (eventName) {
+        fileDropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileDropzone.classList.remove('dragover');
+        });
+    });
+
+    fileDropzone.addEventListener('drop', function (e) {
+        const files = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files : null;
+        if (!files || files.length === 0) return;
+
+        selectedFile = files[0];
+        const transfer = new DataTransfer();
+        transfer.items.add(selectedFile);
+        fileInput.files = transfer.files;
+        updateSelectedFileUI(selectedFile);
     });
 
     removeFileBtn.addEventListener('click', function () {

@@ -1862,3 +1862,68 @@
 .teacher-assignment-panel .teacher-assignment-table-card {
     box-shadow: none;
 }
+
+
+.teacher-student-feedback-view {
+    display: none;
+}
+
+.teacher-student-feedback-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    border-radius: 18px;
+    padding: 18px 20px;
+}
+
+.teacher-student-feedback-view.is-reject .teacher-student-feedback-inner {
+    border-color: #fecdd3;
+    background: #fff1f2;
+}
+
+.teacher-student-feedback-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.teacher-student-feedback-view.is-reject .teacher-student-feedback-icon {
+    background: #ef4444;
+}
+
+.teacher-student-feedback-copy {
+    min-width: 0;
+}
+
+.teacher-student-feedback-copy h4 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.teacher-student-feedback-view.is-reject .teacher-student-feedback-copy h4 {
+    color: #dc2626;
+}
+
+.teacher-student-feedback-copy p {
+    margin: 0;
+    color: #2563eb;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.teacher-student-feedback-view.is-reject .teacher-student-feedback-copy p {
+    color: #dc2626;
+}

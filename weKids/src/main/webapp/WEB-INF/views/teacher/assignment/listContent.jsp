@@ -363,6 +363,16 @@
                 </div>
             </div>
 
+            <div class="teacher-student-feedback-view" id="teacherStudentFeedbackView" style="display:none;">
+                <div class="teacher-student-feedback-inner">
+                    <span class="teacher-student-feedback-icon">!</span>
+                    <div class="teacher-student-feedback-copy">
+                        <h4 id="teacherStudentFeedbackTitle">선생님 피드백</h4>
+                        <p id="teacherStudentFeedbackText"></p>
+                    </div>
+                </div>
+            </div>
+
             <div class="teacher-student-submit-box">
                 <h4>내 제출 내용</h4>
                 <div class="teacher-student-file-box" id="teacherStudentFileBox">

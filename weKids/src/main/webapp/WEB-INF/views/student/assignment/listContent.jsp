@@ -22,12 +22,11 @@
         </div>
     </div>
 
-    <div class="class-page-panel assignment-content-panel">
-        <div class="assignment-topbar">
+<div class="assignment-topbar">
         <h2 class="assignment-page-title">내 과제 목록</h2>
     </div>
 
-        <div class="assignment-grid">
+    <div class="assignment-grid">
         <c:forEach var="assignment" items="${assignmentList}">
             <div class="assignment-card"
                  data-id="${assignment.id}"
@@ -85,7 +84,7 @@
                     <h3 class="assignment-title">${assignment.title}</h3>
 
                     <c:if test="${not empty assignment.feedback}">
-                        <div class="assignment-feedback-preview">
+                        <div class="assignment-feedback-preview <c:if test="${assignment.status ne '반려'}">confirm</c:if>">
                             <span class="assignment-alert-icon"></span>
                             <span>${assignment.feedback}</span>
                         </div>
@@ -131,7 +130,6 @@
                 </div>
             </div>
         </c:forEach>
-        </div>
     </div>
 </section>
 
@@ -184,7 +182,7 @@
                     <h3 class="assignment-info-title">내 제출 내용</h3>
 
                     <div class="assignment-file-box" id="assignmentSubmittedFileBox">
-                        <div class="assignment-file-icon-wrap">
+                        <div class="assignment-file-icon-wrap assignment-file-ext-icon" id="assignmentSubmittedFileIcon">
                             <span class="assignment-paperclip-icon"></span>
                         </div>
                         <div class="assignment-file-info">
@@ -212,7 +210,7 @@
                     <div class="assignment-submit-inner">
                         <div class="assignment-file-upload-wrap" id="assignmentFileUploadWrap">
                             <div class="assignment-selected-file-box" id="assignmentSelectedFileBox">
-                                <div class="assignment-file-icon-wrap">
+                                <div class="assignment-file-icon-wrap assignment-file-ext-icon" id="assignmentSelectedFileIcon">
                                     <span class="assignment-paperclip-icon"></span>
                                 </div>
                                 <div class="assignment-file-info">
@@ -222,13 +220,15 @@
                                 <button type="button" class="assignment-remove-file-btn" id="assignmentRemoveFileBtn">×</button>
                             </div>
 
-                            <label class="assignment-file-dropzone" id="assignmentFileDropzone">
+                            <label class="assignment-file-dropzone modern" id="assignmentFileDropzone">
                                 <input type="file" id="assignmentFileInput" hidden>
-                                <div class="assignment-upload-icon-wrap">
-                                    <span class="assignment-upload-icon"></span>
+                                <div class="assignment-dropzone-inner">
+                                    <div class="assignment-upload-icon-wrap">
+                                        <span class="assignment-upload-icon"></span>
+                                    </div>
+                                    <p class="assignment-dropzone-title">클릭하여 파일을 선택하거나 이 곳으로 드래그 하세요.</p>
+                                    <p class="assignment-dropzone-desc" id="assignmentDropzoneDesc">JPG, PNG, PDF (최대 10MB)</p>
                                 </div>
-                                <p class="assignment-dropzone-title">클릭하여 파일을 선택하거나 드래그하세요</p>
-                                <p class="assignment-dropzone-desc" id="assignmentDropzoneDesc">지원 형식: HWP, PDF, JPG, PNG (최대 50MB)</p>
                             </label>
                         </div>
 

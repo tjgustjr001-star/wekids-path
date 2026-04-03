@@ -61,6 +61,7 @@
 		<result property="assignmentRate" column="assignment_rate" />
 		<result property="unconfirmedNoticeCount"
 			column="unconfirmed_notice_count" />
+		<result property="lastLoginAt" column="last_login_at" />
 	</resultMap>
 
 	<select id="selectStudentLinkInfoByMemberId" parameterType="int"
@@ -151,11 +152,14 @@
 		student_name,
 		s.PROFILE_IMAGE AS profile_image,
 		s.PARENT_LINK_CODE AS
-		parent_link_code
+		parent_link_code,
+		m.LAST_LOGIN_AT AS last_login_at
 		FROM STUDENT_PARENT sp
 		INNER JOIN STUDENT s
 		ON
 		sp.STUDENT_ID = s.STUDENT_ID
+		LEFT JOIN MEMBER m
+		ON sp.STUDENT_ID = m.MEMBER_ID
 		WHERE sp.PARENT_ID = #{parentMemberId}
 		AND
 		sp.LINK_STATUS = 1
@@ -203,6 +207,7 @@
 		s.STUDENT_NAME AS student_name,
 		s.PROFILE_IMAGE AS profile_image,
 		s.PARENT_LINK_CODE AS parent_link_code,
+		m.LAST_LOGIN_AT AS last_login_at,
 
 		NVL(c.YEAR, 0) AS class_year,
 		NVL(c.GRADE, 0) AS class_grade,
@@ -221,6 +226,8 @@
 		FROM STUDENT_PARENT sp
 		JOIN STUDENT s
 		  ON sp.STUDENT_ID = s.STUDENT_ID
+		LEFT JOIN MEMBER m
+		  ON sp.STUDENT_ID = m.MEMBER_ID
 		LEFT JOIN STUDENT_CLASS sc
 		  ON s.STUDENT_ID = sc.STUDENT_ID
 		 AND sc.END_DATE IS NULL
