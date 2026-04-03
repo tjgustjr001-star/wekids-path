@@ -18,9 +18,9 @@ a {
 
 .settings-page {
     width: 100%;
-    max-width: 860px;
-    margin: 0 auto 40px;
-    padding: 0;
+    max-width: 680px;
+    margin: 0 auto 60px;
+    padding: 0 16px;
 }
 
 
@@ -60,10 +60,10 @@ a {
 .settings-header-card {
     background: #ffffff;
     border: 1px solid #e9ecef;
-    border-radius: 22px;
-    padding: 24px 28px;
+    border-radius: 20px;
+    padding: 26px 28px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
 
 .settings-header-card h1 {
@@ -82,10 +82,10 @@ a {
 .settings-section {
     background: #ffffff;
     border: 1px solid #e9ecef;
-    border-radius: 22px;
+    border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .section-title {

@@ -4,6 +4,8 @@ package com.spring.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.spring.dto.ClassVO;
+
 import com.spring.dto.ChildLinkVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.ParentChildVO;
@@ -22,7 +24,9 @@ public interface SettingsService {
 
     List<ParentChildVO> getLinkedParents(int studentId) throws SQLException;
 
-    ParentChildVO getChildDetail(int parentId, int studentId) throws SQLException;
+    ParentChildVO getChildDetail(int parentId, int studentId, Integer classId) throws SQLException;
+
+    List<ClassVO> getChildClassList(int parentId, int studentId) throws SQLException;
 
     boolean removeChildLink(int parentId, int studentId) throws SQLException;
 

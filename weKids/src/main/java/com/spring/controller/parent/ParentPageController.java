@@ -37,6 +37,7 @@ import com.spring.service.ReportService;
 import com.spring.service.SettingsService;
 import com.spring.service.StudentLearnService;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
@@ -60,6 +61,9 @@ public class ParentPageController {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private ServletContext servletContext;
 
     @GetMapping("/parent")
     public String parentHome(Model model,
@@ -189,6 +193,7 @@ public class ParentPageController {
 
     @GetMapping("/parent/children/{childId}")
     public String parentChildDetail(@PathVariable("childId") int childId,
+                                    @RequestParam(value = "classId", required = false) Integer classId,
                                     Model model,
                                     HttpSession session) throws Exception {
         model.addAttribute("pageTitle", "자녀 상세");
@@ -203,7 +208,14 @@ public class ParentPageController {
         }
 
         List<ParentChildVO> childList = settingsService.getLinkedChildren(loginUser.getMember_id());
-        ParentChildVO child = settingsService.getChildDetail(loginUser.getMember_id(), childId);
+        List<ClassVO> childClassList = settingsService.getChildClassList(loginUser.getMember_id(), childId);
+
+        Integer selectedClassId = classId;
+        if ((selectedClassId == null || selectedClassId.intValue() <= 0) && childClassList != null && !childClassList.isEmpty()) {
+            selectedClassId = childClassList.get(0).getClassId();
+        }
+
+        ParentChildVO child = settingsService.getChildDetail(loginUser.getMember_id(), childId, selectedClassId);
 
         if (child == null) {
             model.addAttribute("childList", childList);
@@ -213,6 +225,8 @@ public class ParentPageController {
         }
 
         model.addAttribute("childList", childList);
+        model.addAttribute("childClassList", childClassList);
+        model.addAttribute("selectedClassId", selectedClassId);
         model.addAttribute("child", child);
 
         int overallProgress = Math.round((child.getLearningProgressRate() + child.getAssignmentRate()) / 2.0f);
@@ -425,6 +439,26 @@ public String parentClassHome(@PathVariable("classId") int classId,
         return "common/layout/parentLayout";
     }
 
+    @GetMapping("/parent/classes/{classId}/assignments/{assignmentId}")
+    @ResponseBody
+    public StudentAssignmentItemDTO parentAssignmentDetail(@PathVariable("classId") int classId,
+                                                            @PathVariable("assignmentId") int assignmentId,
+                                                            @RequestParam("childId") int childId,
+                                                            HttpSession session) throws Exception {
+        MemberVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        StudentAssignmentItemDTO detail = parentAssignmentService.getParentAssignmentDetail(
+                loginUser.getMember_id(), classId, childId, assignmentId);
+
+        if (detail == null) {
+            throw new IllegalArgumentException("과제를 찾을 수 없습니다.");
+        }
+        return detail;
+    }
+
     @GetMapping("/parent/classes/{classId}/assignments/{assignmentId}/download")
     public void downloadParentAssignmentFile(@PathVariable("classId") int classId,
                                              @PathVariable("assignmentId") int assignmentId,
@@ -440,13 +474,13 @@ public String parentClassHome(@PathVariable("classId") int classId,
         StudentAssignmentItemDTO detail = parentAssignmentService.getParentAssignmentDetail(
                 loginUser.getMember_id(), classId, childId, assignmentId);
 
-        if (detail == null || !detail.isCanDownload()) {
+        if (detail == null || detail.getAttachedFile() == null || detail.getAttachedFile().isBlank()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        File file = new File(detail.getUploadPath());
-        if (!file.exists()) {
+        File file = resolveAssignmentFile(detail.getUploadPath(), detail.getAttachedFile());
+        if (file == null || !file.exists() || !file.isFile()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -680,5 +714,30 @@ public String parentClassHome(@PathVariable("classId") int classId,
         model.addAttribute("bulletinUrl", "/parent/classes/" + classId + "/bulletins");
         model.addAttribute("assignmentUrl", "/parent/classes/" + classId + "/assignments");
         model.addAttribute("reportUrl", "/parent/classes/" + classId + "/reports");
+    }
+
+    private File resolveAssignmentFile(String uploadPath, String originalFileName) {
+        if (uploadPath != null && !uploadPath.isBlank()) {
+            File direct = new File(uploadPath);
+            if (direct.exists() && direct.isFile()) {
+                return direct;
+            }
+
+            String normalized = uploadPath.replace("\\", File.separator).replace("/", File.separator);
+            File normalizedFile = new File(normalized);
+            if (normalizedFile.exists() && normalizedFile.isFile()) {
+                return normalizedFile;
+            }
+
+            String baseName = new File(normalized).getName();
+            String uploadDir = servletContext.getRealPath("/resources/upload/assignment");
+            if (uploadDir != null && baseName != null && !baseName.isBlank()) {
+                File candidate = new File(uploadDir, baseName);
+                if (candidate.exists() && candidate.isFile()) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
     }
 }

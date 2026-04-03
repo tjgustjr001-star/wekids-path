@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.dto.ChildLinkVO;
+import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.ParentChildVO;
 
@@ -37,7 +38,11 @@ public interface SettingsDAO {
     List<ParentChildVO> selectLinkedParentsByStudentId(@Param("studentId") int studentId) throws SQLException;
 
     ParentChildVO selectChildDetail(@Param("parentId") int parentId,
-                                    @Param("studentId") int studentId) throws SQLException;
+                                    @Param("studentId") int studentId,
+                                    @Param("classId") Integer classId) throws SQLException;
+
+    List<ClassVO> selectChildClassList(@Param("parentId") int parentId,
+                                       @Param("studentId") int studentId) throws SQLException;
 
     int updateUnlinkChild(@Param("parentId") int parentId,
                           @Param("studentId") int studentId) throws SQLException;

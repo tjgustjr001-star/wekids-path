@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
     * { box-sizing: border-box; }
-    .account-page { max-width: 860px; margin: 0 auto; padding: 24px 24px 60px; }
+    .account-page { max-width: 860px; margin: 0 auto; padding: 0 24px 60px; }
     .top-back { margin-bottom: 14px; }
     .top-back a { color: #7a7f87; text-decoration: none; font-size: 13px; }
     .top-back a:hover { color: #1d8f63; }

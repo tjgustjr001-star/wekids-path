@@ -202,45 +202,63 @@
 
 		s.STUDENT_NAME AS student_name,
 		s.PROFILE_IMAGE AS profile_image,
-		s.PARENT_LINK_CODE AS
-		parent_link_code,
+		s.PARENT_LINK_CODE AS parent_link_code,
 
 		NVL(c.YEAR, 0) AS class_year,
-		NVL(c.GRADE, 0) AS
-		class_grade,
+		NVL(c.GRADE, 0) AS class_grade,
 		NVL(c.CLASS_NO, 0) AS class_no_alias,
-		c.CLASS_NAME AS
-		class_name_alias,
+		c.CLASS_NAME AS class_name_alias,
 
 		'선생님 코멘트 없음' AS teacher_comment,
-		0 AS
-		total_learning_count,
+		0 AS total_learning_count,
 		0 AS completed_learning_count,
-		0 AS
-		learning_progress_rate,
+		0 AS learning_progress_rate,
 		0 AS total_assignment_count,
-		0 AS
-		submitted_assignment_count,
+		0 AS submitted_assignment_count,
 		0 AS assignment_rate,
-		0 AS
-		unconfirmed_notice_count
+		0 AS unconfirmed_notice_count
 
 		FROM STUDENT_PARENT sp
 		JOIN STUDENT s
-		ON
-		sp.STUDENT_ID = s.STUDENT_ID
+		  ON sp.STUDENT_ID = s.STUDENT_ID
 		LEFT JOIN STUDENT_CLASS sc
-		ON s.STUDENT_ID
-		= sc.STUDENT_ID
+		  ON s.STUDENT_ID = sc.STUDENT_ID
+		 AND sc.END_DATE IS NULL
+		 <if test="classId != null">
+		 AND sc.CLASS_ID = #{classId}
+		 </if>
 		LEFT JOIN CLASS c
-		ON sc.CLASS_ID = c.CLASS_ID
+		  ON sc.CLASS_ID = c.CLASS_ID
 
-		WHERE
-		sp.PARENT_ID = #{parentId}
-		AND sp.STUDENT_ID = #{studentId}
-		AND
-		sp.LINK_STATUS = 1
-		AND ROWNUM = 1
+		WHERE sp.PARENT_ID = #{parentId}
+		  AND sp.STUDENT_ID = #{studentId}
+		  AND sp.LINK_STATUS = 1
+		  AND ROWNUM = 1
+	</select>
+
+	<select id="selectChildClassList" parameterType="map" resultType="com.spring.dto.ClassVO">
+		SELECT DISTINCT
+			C.CLASS_ID AS classId,
+			C.YEAR AS year,
+			C.SEMESTER AS semester,
+			C.GRADE AS grade,
+			C.CLASS_NO AS classNo,
+			C.CLASS_NAME AS className,
+			C.CLASS_STATUS AS classStatus,
+			NVL(C.ALLOW_SUBMISSION_MODIFY_YN, 0) AS allowSubmissionModifyYn,
+			C.INVITE_CODE AS inviteCode,
+			C.DEFAULT_DUE_TIME AS defaultDueTime,
+			C.DESCRIPTION AS description
+		FROM STUDENT_PARENT SP
+		JOIN STUDENT_CLASS SC
+		  ON SC.STUDENT_ID = SP.STUDENT_ID
+		 AND SC.END_DATE IS NULL
+		JOIN CLASS C
+		  ON C.CLASS_ID = SC.CLASS_ID
+		WHERE SP.PARENT_ID = #{parentId}
+		  AND SP.STUDENT_ID = #{studentId}
+		  AND SP.LINK_STATUS = 1
+		ORDER BY C.YEAR DESC, C.GRADE DESC, C.CLASS_NO DESC, C.CLASS_ID DESC
 	</select>
 	<update id="reactivateChildLink" parameterType="map">
 		UPDATE

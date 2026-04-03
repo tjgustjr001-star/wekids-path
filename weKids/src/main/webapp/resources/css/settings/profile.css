@@ -13,11 +13,11 @@ body {
 
 .profile-page {
     min-height: 100vh;
-    padding: 28px 20px 60px;
+    padding: 0 20px 60px;
 }
 
 .profile-wrap {
-    max-width: 610px;
+    max-width: 860px;
     margin: 0 auto;
 }
 

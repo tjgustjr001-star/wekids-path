@@ -1,4 +1,3 @@
-
 package com.spring.dao;
 
 import java.sql.SQLException;
@@ -10,6 +9,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.spring.dto.ChildLinkVO;
+import com.spring.dto.ClassVO;
 import com.spring.dto.MemberVO;
 import com.spring.dto.ParentChildVO;
 
@@ -79,8 +79,8 @@ public class SettingsDAOImpl implements SettingsDAO {
     }
 
     @Override
-    public List<ParentChildVO> selectLinkedChildrenByParentMemberId(int memberId) throws SQLException {
-        return sqlSession.selectList("com.spring.dao.SettingsDAO.selectLinkedChildrenByParentMemberId", memberId);
+    public List<ParentChildVO> selectLinkedChildrenByParentMemberId(int parentMemberId) throws SQLException {
+        return sqlSession.selectList("com.spring.dao.SettingsDAO.selectLinkedChildrenByParentMemberId", parentMemberId);
     }
 
     @Override
@@ -89,12 +89,22 @@ public class SettingsDAOImpl implements SettingsDAO {
     }
 
     @Override
-    public ParentChildVO selectChildDetail(int parentId, int studentId) throws SQLException {
+    public ParentChildVO selectChildDetail(int parentId, int studentId, Integer classId) throws SQLException {
+        Map<String, Object> param = new HashMap<>();
+        param.put("parentId", parentId);
+        param.put("studentId", studentId);
+        param.put("classId", classId);
+
+        return sqlSession.selectOne("com.spring.dao.SettingsDAO.selectChildDetail", param);
+    }
+
+    @Override
+    public List<ClassVO> selectChildClassList(int parentId, int studentId) throws SQLException {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", parentId);
         param.put("studentId", studentId);
 
-        return sqlSession.selectOne("com.spring.dao.SettingsDAO.selectChildDetail", param);
+        return sqlSession.selectList("com.spring.dao.SettingsDAO.selectChildClassList", param);
     }
 
     @Override
@@ -184,6 +194,4 @@ public class SettingsDAOImpl implements SettingsDAO {
     public int updateMemberAccountStatusDeleted(int memberId) throws SQLException {
         return sqlSession.update("com.spring.dao.SettingsDAO.updateMemberAccountStatusDeleted", memberId);
     }
-
 }
-

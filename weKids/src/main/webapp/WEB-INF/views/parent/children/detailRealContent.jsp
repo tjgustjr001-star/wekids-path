@@ -8,6 +8,33 @@
 <section class="parent-child-detail-page">
     <div class="parent-child-detail-topbar">
         <a href="${pageContext.request.contextPath}/parent/children" class="parent-back-link">‹ 자녀 목록으로</a>
+
+        <c:if test="${fn:length(childClassList) > 1}">
+            <div class="parent-child-switcher">
+                <button type="button" class="parent-child-switcher-btn" id="childSwitcherBtn">
+                    <span class="avatar">클</span>
+                    <span>
+                        <c:choose>
+                            <c:when test="${not empty child.className}">${child.className}</c:when>
+                            <c:otherwise>${child.year}학년도 ${child.grade}학년 ${child.classNo}반</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <span>▼</span>
+                </button>
+
+                <div class="parent-child-switcher-menu" id="childSwitcherMenu">
+                    <c:forEach var="item" items="${childClassList}">
+                        <a href="${pageContext.request.contextPath}/parent/children/${child.studentId}?classId=${item.classId}" class="parent-child-switcher-item ${item.classId eq selectedClassId ? 'active' : ''}">
+                            <span class="avatar">반</span>
+                            <div>
+                                <strong>${item.className}</strong>
+                                <p>${item.year}학년도 ${item.grade}학년 ${item.classNo}반</p>
+                            </div>
+                        </a>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
     </div>
 
     <div class="parent-child-detail-grid">
@@ -78,3 +105,5 @@
         </div>
     </div>
 </section>
+
+<script src="${pageContext.request.contextPath}/resources/js/parent/parent-children.js"></script>
