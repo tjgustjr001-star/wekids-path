@@ -112,10 +112,10 @@
 }
 
 .admin-stats-kpi-change {
-	padding: 6px 12px;
-	border-radius: 999px;
-	font-size: 14px;
-	font-weight: 700;
+	
+
+	font-size: 12px;
+
 }
 
 .admin-stats-kpi-change.positive {
@@ -124,8 +124,8 @@
 }
 
 .admin-stats-kpi-change.neutral {
-	color: #f8fafc;
-	background: rgba(148, 163, 184, 0.12);
+	color: rgb(192, 192, 192);
+
 }
 
 .admin-stats-kpi-label {

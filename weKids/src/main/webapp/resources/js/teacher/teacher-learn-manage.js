@@ -364,7 +364,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 			if (row.dataset.type === '지문읽기') {
 			    detailTextContentBox.style.display = '';
-			    detailTextContentText.textContent = row.dataset.content || '';
+			    detailTextContentText.textContent = row.dataset.textContent || row.dataset.content || '';
 			} else {
 			    detailTextContentBox.style.display = 'none';
 			    detailTextContentText.textContent = '';

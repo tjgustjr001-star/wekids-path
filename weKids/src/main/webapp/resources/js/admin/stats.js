@@ -211,32 +211,45 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    createChart(getEl('adminUserTypeChart'), {
-        type: 'pie',
-        data: {
-            labels: userTypeData.map(function(item) { return item.name; }),
-            datasets: [{
-                data: userTypeData.map(function(item) { return item.value; }),
-                backgroundColor: userTypeData.map(function(item) { return item.color; }),
-                borderColor: '#1e293b',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
-                    borderWidth: 1,
-                    titleColor: '#94a3b8',
-                    bodyColor: '#e2e8f0'
-                }
-            }
-        }
-    });
+	const roleLabelMap = {
+	    role_student: '학생',
+	    role_teacher: '교사',
+	    role_parent: '학부모',
+	    role_admin: '관리자',
+	    STUDENT: '학생',
+	    TEACHER: '교사',
+	    PARENT: '학부모',
+	    ADMIN: '관리자'
+	};
+
+	createChart(getEl('adminUserTypeChart'), {
+	    type: 'pie',
+	    data: {
+	        labels: userTypeData.map(function(item) {
+	            return roleLabelMap[item.name] || item.name;
+	        }),
+	        datasets: [{
+	            data: userTypeData.map(function(item) { return item.value; }),
+	            backgroundColor: userTypeData.map(function(item) { return item.color; }),
+	            borderColor: '#1e293b',
+	            borderWidth: 2
+	        }]
+	    },
+	    options: {
+	        responsive: true,
+	        maintainAspectRatio: false,
+	        plugins: {
+	            legend: { display: false },
+	            tooltip: {
+	                backgroundColor: '#0f172a',
+	                borderColor: '#334155',
+	                borderWidth: 1,
+	                titleColor: '#94a3b8',
+	                bodyColor: '#e2e8f0'
+	            }
+	        }
+	    }
+	});
 
 	createChart(getEl('adminAssignmentRateChart'), {
 	    type: 'bar',

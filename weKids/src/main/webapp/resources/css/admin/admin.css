@@ -150,17 +150,21 @@ button {
 }
 
 .stats-grid {
+	margin-top: 24px;
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 24px;
-	margin-bottom: 32px;
+	margin-bottom: 24px;
 }
 
 .stat-card {
+	display: block;
 	background: #1e293b;
 	border: 1px solid #334155;
 	border-radius: 24px;
 	padding: 28px;
+	
+	position: relative;
 }
 
 .stat-top {
@@ -200,6 +204,12 @@ button {
 	background: rgba(157, 178, 191, 0.15);
 }
 
+
+.icon-box.yellow {
+	background: rgba(255, 235, 0, 0.15);
+}
+
+
 .trend {
 	padding: 6px 12px;
 	border-radius: 999px;
@@ -226,12 +236,23 @@ button {
 	color: #94a3b8;
 	font-size: 16px;
 	margin-bottom: 10px;
+	position: relative;
 }
 
 .stat-value {
-	font-size: 52px;
+	position: absolute;
+	
+	font-size: 60px;
 	font-weight: 800;
+	line-height: 1;
+    text-align: right;
+    
+    right: 50px;
+	top: 50%;
+	transform: translateY(-50%);
+	
 }
+
 
 .dashboard-bottom {
 	display: grid;
@@ -314,14 +335,14 @@ button {
 .admin-classes-page {
 	display: flex;
 	flex-direction: column;
-	gap: 32px;
+	gap: 24px;
 }
 
 .page-header-row {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-end;
-	gap: 16px;
+	gap: 24px;
 }
 
 .page-header-actions {
@@ -357,7 +378,7 @@ button {
 }
 
 .panel-card {
-	min-height: 100%;
+	min-height: 100px;
 	background: #1e293b;
 	border: 1px solid #334155;
 	border-radius: 24px;
@@ -1156,7 +1177,7 @@ p.c {
 .admin-teachers-page {
 	display: flex;
 	flex-direction: column;
-	gap: 32px;
+	gap: 24px;
 }
 
 .primary-btn {
@@ -1611,6 +1632,7 @@ p.c {
 }
 
 .users-top-grid {
+	
 	display: grid;
 	grid-template-columns: 2fr 1fr;
 	gap: 24px;
@@ -1888,12 +1910,7 @@ p.c {
 	color: #9DB2BF;
 }
 
-.users-board-footer {
-	padding: 16px;
-	border-top: 1px solid #334155;
-	color: #94a3b8;
-	font-size: 14px;
-}
+
 
 .admin-user-detail-page {
 	display: flex;

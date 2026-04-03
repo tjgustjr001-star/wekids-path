@@ -245,6 +245,57 @@
             </div>
 
             <div class="detail-block">
+                <h4>시각 요약</h4>
+                <div class="report-visual-panel">
+                    <div class="report-donut-grid">
+                        <div class="donut-card">
+                            <div class="donut-card-header">
+                                <span>학습 완료율</span>
+                                <strong id="learningDonutText">0 / 0 완료</strong>
+                            </div>
+                            <div class="report-donut report-donut--learning" id="learningDonut">
+                                <span id="learningDonutLabel">0%</span>
+                            </div>
+                            <div class="donut-caption" id="learningDonutCaption">학습 진행 현황</div>
+                        </div>
+
+                        <div class="donut-card">
+                            <div class="donut-card-header">
+                                <span>과제 제출률</span>
+                                <strong id="assignmentDonutText">0 / 0 제출</strong>
+                            </div>
+                            <div class="report-donut report-donut--assignment" id="assignmentDonut">
+                                <span id="assignmentDonutLabel">0%</span>
+                            </div>
+                            <div class="donut-caption" id="assignmentDonutCaption">과제 제출 현황</div>
+                        </div>
+                    </div>
+
+                    <div class="report-progress-list">
+                        <div class="progress-card">
+                            <div class="progress-card-top">
+                                <strong>학습 진행</strong>
+                                <span id="learningProgressText">0 / 0</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill progress-fill--learning" id="learningProgressBar"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-card">
+                            <div class="progress-card-top">
+                                <strong>과제 제출</strong>
+                                <span id="assignmentProgressText">0 / 0</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill progress-fill--assignment" id="assignmentProgressBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-block">
                 <h4>미제출 과제</h4>
                 <div id="missingAssignmentList" class="detail-list-box">
                     <div class="empty-inline-text">없음</div>

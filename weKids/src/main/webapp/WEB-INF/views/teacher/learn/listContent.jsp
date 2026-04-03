@@ -415,7 +415,7 @@
 
 	<div class="detail-content-box" id="detailTextContentBox" style="display:none;">
 	    <span>지문 내용</span>
-	    <p id="detailTextContentText"></p>
+	    <div id="detailTextContentText"></div>
 	</div>
 
     <div class="detail-link-box" id="detailLinkBox">

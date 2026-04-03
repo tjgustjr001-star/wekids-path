@@ -313,8 +313,22 @@ public String teacherClassHome(@PathVariable("classId") int classId,
                 model.addAttribute("allowSubmissionModifyYn", classInfo.getAllowSubmissionModifyYn());
             }
 
-            model.addAttribute("studentCount",
-                    classService.getTeacherClassStudentCount(loginUser.getMember_id(), classId));
+            int teacherId = loginUser.getMember_id();
+            int studentCount = classService.getTeacherClassStudentCount(teacherId, classId);
+
+            List<TeacherLearnManageDTO> learnList =
+                    teacherLearnService.getTeacherLearnList(teacherId, classId, 0);
+            List<TeacherAssignmentManageDTO> assignmentList =
+                    teacherAssignmentService.getTeacherAssignmentList(teacherId, classId, 0);
+
+            int learnCount = learnList.size();
+            int activeAssignmentCount = (int) assignmentList.stream()
+                    .filter(item -> "진행중".equals(item.getStatus()) || "마감임박".equals(item.getStatus()))
+                    .count();
+
+            model.addAttribute("studentCount", studentCount);
+            model.addAttribute("learnCount", learnCount);
+            model.addAttribute("activeAssignmentCount", activeAssignmentCount);
         }
 
         return "common/layout/teacherLayout";

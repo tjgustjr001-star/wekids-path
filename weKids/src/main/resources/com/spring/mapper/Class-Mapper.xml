@@ -402,65 +402,146 @@
 	</select>
 	
 	<select id="selectTeacherStudentManageList"
-	        parameterType="map"
-	        resultType="com.spring.dto.teacher.TeacherStudentManageDTO">
-	    SELECT
-	        SC.STUDENT_CLASS_ID AS studentClassId,
-	        S.STUDENT_ID AS studentId,
-	        ROW_NUMBER() OVER (ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC) AS studentNo,
-	        S.STUDENT_NAME AS studentName,
-	        SUBSTR(S.STUDENT_NAME, 1, 1) AS nameFirst,
-	        S.PHONE AS phone,
-	        S.PROFILE_IMAGE AS profileImage,
-	        S.INTRO AS intro,
-	        S.PARENT_LINK_CODE AS parentLinkCode,
-	        NVL(SC.OBSERVATION_MEMO, '') AS observationMemo,
-	        NVL((
-	            SELECT LISTAGG(SCT.TAG_NAME, ',') WITHIN GROUP (ORDER BY SCT.TAG_NAME)
-	            FROM STUDENT_CLASS_TAG SCT
-	            WHERE SCT.STUDENT_CLASS_ID = SC.STUDENT_CLASS_ID
-	        ), '') AS tagsCsv,
-	        CASE
-	            WHEN EXISTS (
-	                SELECT 1
-	                FROM STUDENT_PARENT SP
-	                WHERE SP.STUDENT_ID = S.STUDENT_ID
-	                  AND SP.LINK_STATUS = 1
-	                  AND SP.UNLINKED_AT IS NULL
-	            ) THEN 1
-	            ELSE 0
-	        END AS parentLinked,
-	        (
-	            SELECT MAX(SP.RELATION_TYPE)
-	            FROM STUDENT_PARENT SP
-	            WHERE SP.STUDENT_ID = S.STUDENT_ID
-	              AND SP.LINK_STATUS = 1
-	              AND SP.UNLINKED_AT IS NULL
-	        ) AS parentRelationType,
-	        NVL(TO_CHAR(M.LAST_LOGIN_AT, 'YYYY-MM-DD HH24:MI'), '접속 기록 없음') AS lastLoginAtText,
-	        0 AS learningProgressRate,
-	        0 AS totalLearningCount,
-	        0 AS completedLearningCount,
-	        0 AS totalAssignmentCount,
-	        0 AS submittedAssignmentCount,
-	        0 AS assignmentSubmitRate
-	    FROM STUDENT_CLASS SC
-	    JOIN STUDENT S
-	      ON S.STUDENT_ID = SC.STUDENT_ID
-	    JOIN MEMBER M
-	      ON M.MEMBER_ID = S.STUDENT_ID
-	    WHERE SC.CLASS_ID = #{classId}
-	      AND SC.END_DATE IS NULL
-	      AND EXISTS (
-	            SELECT 1
-	            FROM TEACHER_CLASS TC
-	            WHERE TC.CLASS_ID = SC.CLASS_ID
-	              AND TC.TEACHER_ID = #{teacherId}
-	              AND TC.STATUS = 'ACTIVE'
-	              AND TC.END_DATE IS NULL
-	      )
-	    ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC
-	</select>
+        parameterType="map"
+        resultType="com.spring.dto.teacher.TeacherStudentManageDTO">
+    WITH ACTIVE_LEARN AS (
+        SELECT LL.CLASS_ID,
+               LC.LEARN_ID
+        FROM LEARN_LIST LL
+        JOIN LEARN_CONT LC
+          ON LC.LEARN_LIST_ID = LL.LEARN_LIST_ID
+        WHERE NVL(LC.DELETE_YN, 0) = 0
+    ),
+    LEARN_PROGRESS AS (
+        SELECT LP.STUDENT_ID,
+               AL.CLASS_ID,
+               LP.LEARN_ID,
+               MAX(NVL(LP.PROGRESS_RATE, 0)) AS PROGRESS_RATE,
+               MAX(CASE WHEN LP.STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED_YN
+        FROM LEARN_PRO LP
+        JOIN ACTIVE_LEARN AL
+          ON AL.LEARN_ID = LP.LEARN_ID
+        GROUP BY LP.STUDENT_ID, AL.CLASS_ID, LP.LEARN_ID
+    ),
+    LEARN_SUMMARY AS (
+        SELECT SC.STUDENT_CLASS_ID,
+               COUNT(DISTINCT AL.LEARN_ID) AS TOTAL_LEARNING_COUNT,
+               NVL(SUM(NVL(LP.PROGRESS_RATE, 0)), 0) AS LEARNING_PROGRESS_SUM,
+               NVL(SUM(CASE WHEN NVL(LP.COMPLETED_YN, 0) = 1 THEN 1 ELSE 0 END), 0) AS COMPLETED_LEARNING_COUNT
+        FROM STUDENT_CLASS SC
+        LEFT JOIN ACTIVE_LEARN AL
+          ON AL.CLASS_ID = SC.CLASS_ID
+        LEFT JOIN LEARN_PROGRESS LP
+          ON LP.CLASS_ID = SC.CLASS_ID
+         AND LP.STUDENT_ID = SC.STUDENT_ID
+         AND LP.LEARN_ID = AL.LEARN_ID
+        WHERE SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+        GROUP BY SC.STUDENT_CLASS_ID
+    ),
+    LAST_ASSIGN_SUB AS (
+        SELECT SUB.ASSIGN_ID,
+               SUB.STUDENT_ID,
+               SUB.SUB_ID,
+               SUB.SUBMIT_STATUS,
+               SUB.SUBMIT_AT,
+               SUB.RETURN_REASON
+        FROM ASSIGN_SUB SUB
+        JOIN (
+            SELECT ASSIGN_ID, STUDENT_ID, MAX(SUB_ID) AS MAX_SUB_ID
+            FROM ASSIGN_SUB
+            GROUP BY ASSIGN_ID, STUDENT_ID
+        ) MX
+          ON MX.MAX_SUB_ID = SUB.SUB_ID
+    ),
+    ASSIGNMENT_SUMMARY AS (
+        SELECT SC.STUDENT_CLASS_ID,
+               COUNT(A.ASSIGN_ID) AS TOTAL_ASSIGNMENT_COUNT,
+               NVL(SUM(
+                   CASE
+                       WHEN LAS.SUB_ID IS NULL THEN 0
+                       WHEN UPPER(NVL(LAS.SUBMIT_STATUS, '')) IN ('NOT_SUBMITTED') OR LAS.SUBMIT_STATUS = '미제출' THEN 0
+                       ELSE 1
+                   END
+               ), 0) AS SUBMITTED_ASSIGNMENT_COUNT
+        FROM STUDENT_CLASS SC
+        LEFT JOIN ASSIGNMENT A
+          ON A.CLASS_ID = SC.CLASS_ID
+         AND NVL(A.DELETE_YN, 0) = 0
+        LEFT JOIN LAST_ASSIGN_SUB LAS
+          ON LAS.ASSIGN_ID = A.ASSIGN_ID
+         AND LAS.STUDENT_ID = SC.STUDENT_ID
+        WHERE SC.CLASS_ID = #{classId}
+          AND SC.END_DATE IS NULL
+        GROUP BY SC.STUDENT_CLASS_ID
+    )
+    SELECT
+        SC.STUDENT_CLASS_ID AS studentClassId,
+        S.STUDENT_ID AS studentId,
+        ROW_NUMBER() OVER (ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC) AS studentNo,
+        S.STUDENT_NAME AS studentName,
+        SUBSTR(S.STUDENT_NAME, 1, 1) AS nameFirst,
+        S.PHONE AS phone,
+        S.PROFILE_IMAGE AS profileImage,
+        S.INTRO AS intro,
+        S.PARENT_LINK_CODE AS parentLinkCode,
+        NVL(SC.OBSERVATION_MEMO, '') AS observationMemo,
+        NVL((
+            SELECT LISTAGG(SCT.TAG_NAME, ',') WITHIN GROUP (ORDER BY SCT.TAG_NAME)
+            FROM STUDENT_CLASS_TAG SCT
+            WHERE SCT.STUDENT_CLASS_ID = SC.STUDENT_CLASS_ID
+        ), '') AS tagsCsv,
+        CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM STUDENT_PARENT SP
+                WHERE SP.STUDENT_ID = S.STUDENT_ID
+                  AND SP.LINK_STATUS = 1
+                  AND SP.UNLINKED_AT IS NULL
+            ) THEN 1
+            ELSE 0
+        END AS parentLinked,
+        (
+            SELECT MAX(SP.RELATION_TYPE)
+            FROM STUDENT_PARENT SP
+            WHERE SP.STUDENT_ID = S.STUDENT_ID
+              AND SP.LINK_STATUS = 1
+              AND SP.UNLINKED_AT IS NULL
+        ) AS parentRelationType,
+        NVL(TO_CHAR(M.LAST_LOGIN_AT, 'YYYY-MM-DD HH24:MI'), '접속 기록 없음') AS lastLoginAtText,
+        CASE
+            WHEN NVL(LS.TOTAL_LEARNING_COUNT, 0) = 0 THEN 0
+            ELSE FLOOR(NVL(LS.LEARNING_PROGRESS_SUM, 0) / LS.TOTAL_LEARNING_COUNT)
+        END AS learningProgressRate,
+        NVL(LS.TOTAL_LEARNING_COUNT, 0) AS totalLearningCount,
+        NVL(LS.COMPLETED_LEARNING_COUNT, 0) AS completedLearningCount,
+        NVL(ASG.TOTAL_ASSIGNMENT_COUNT, 0) AS totalAssignmentCount,
+        NVL(ASG.SUBMITTED_ASSIGNMENT_COUNT, 0) AS submittedAssignmentCount,
+        CASE
+            WHEN NVL(ASG.TOTAL_ASSIGNMENT_COUNT, 0) = 0 THEN 0
+            ELSE FLOOR(NVL(ASG.SUBMITTED_ASSIGNMENT_COUNT, 0) * 100 / ASG.TOTAL_ASSIGNMENT_COUNT)
+        END AS assignmentSubmitRate
+    FROM STUDENT_CLASS SC
+    JOIN STUDENT S
+      ON S.STUDENT_ID = SC.STUDENT_ID
+    JOIN MEMBER M
+      ON M.MEMBER_ID = S.STUDENT_ID
+    LEFT JOIN LEARN_SUMMARY LS
+      ON LS.STUDENT_CLASS_ID = SC.STUDENT_CLASS_ID
+    LEFT JOIN ASSIGNMENT_SUMMARY ASG
+      ON ASG.STUDENT_CLASS_ID = SC.STUDENT_CLASS_ID
+    WHERE SC.CLASS_ID = #{classId}
+      AND SC.END_DATE IS NULL
+      AND EXISTS (
+            SELECT 1
+            FROM TEACHER_CLASS TC
+            WHERE TC.CLASS_ID = SC.CLASS_ID
+              AND TC.TEACHER_ID = #{teacherId}
+              AND TC.STATUS = 'ACTIVE'
+              AND TC.END_DATE IS NULL
+      )
+    ORDER BY S.STUDENT_NAME ASC, S.STUDENT_ID ASC
+</select>
 	
 	<select id="selectNextStudentClassTagId" resultType="int">
 	    SELECT NVL(MAX(STUDENT_CLASS_TAG_ID), 0) + 1

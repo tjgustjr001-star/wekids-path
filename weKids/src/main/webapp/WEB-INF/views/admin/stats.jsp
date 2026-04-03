@@ -8,9 +8,11 @@
 
 <section class="admin-stats-page">
     <div class="admin-stats-header">
+    <div class="page-header-row">
         <div>
-            <h1 class="admin-stats-title">통계 대시보드</h1>
-            <p class="admin-stats-subtitle">시스템 사용 현황 및 분석</p>
+            <h1 class="page-title">통계 대시보드</h1>
+            <p class="apage-desc">시스템 사용 현황 및 분석</p>
+        </div>
         </div>
 
         <div class="admin-stats-actions">
@@ -27,66 +29,61 @@
         </div>
     </div>
 
-    <div class="admin-stats-kpi-grid">
-        <article class="admin-stats-kpi-card">
-            <div class="admin-stats-kpi-top">
-                <div class="admin-stats-kpi-icon blue">
+    <div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box blue">
                     <span><i class="fa-solid fa-user-astronaut"></i></span>
                 </div>
-                <span class="admin-stats-kpi-change positive">
-                    ${dashboardStat.userChangeText}
-                </span>
+              
             </div>
-            <div class="admin-stats-kpi-label">전체 사용자</div>
-            <div class="admin-stats-kpi-value">
-                <fmt:formatNumber value="${dashboardStat.totalUsers}" pattern="#,##0"/>
+            <div class="stat-label">전체 사용자</div>
+            <div class="stat-value">
+               <span id="userCountText">${dashboardStat.totalUsers}</span>
             </div>
-        </article>
+       	</div>
 
-        <article class="admin-stats-kpi-card">
-            <div class="admin-stats-kpi-top">
-                <div class="admin-stats-kpi-icon green">
+      	<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box green">
                     <span><i class="fa-solid fa-book-open"></i></span>
                 </div>
-                <span class="admin-stats-kpi-change positive">
-                    ${dashboardStat.activeClassChangeText}
-                </span>
+         
             </div>
-            <div class="admin-stats-kpi-label">활성 클래스</div>
-            <div class="admin-stats-kpi-value">
-                <fmt:formatNumber value="${dashboardStat.activeClassCount}" pattern="#,##0"/>
+            <div class="stat-label">활성 클래스</div>
+            <div class="stat-value">
+                <span id="userCountText">${dashboardStat.activeClassCount}</span>
             </div>
-        </article>
+        </div>
 
-        <article class="admin-stats-kpi-card">
-            <div class="admin-stats-kpi-top">
+      
+		<div class="stat-card">
+			<div class="stat-top">
                 <div class="admin-stats-kpi-icon purple">
                     <span><i class="fa-solid fa-clipboard-list"></i></span>
                 </div>
-                <span class="admin-stats-kpi-change positive">
-                    ${dashboardStat.assignmentSubmitChangeText}
-                </span>
             </div>
-            <div class="admin-stats-kpi-label">제출된 과제</div>
-            <div class="admin-stats-kpi-value">
-                <fmt:formatNumber value="${dashboardStat.submittedAssignmentCount}" pattern="#,##0"/>
+            <div class="stat-label">제출된 과제</div>
+            <div class="stat-value">
+                <span id="newTeacherCountText">${dashboardStat.submittedAssignmentCount}</span>
             </div>
-        </article>
+        </div>
 
-        <article class="admin-stats-kpi-card">
-            <div class="admin-stats-kpi-top">
+<div class="stat-card">
+			<div class="stat-top">
                 <div class="admin-stats-kpi-icon amber">
                     <span><i class="fa-solid fa-chart-line"></i></span>
                 </div>
-                <span class="admin-stats-kpi-change neutral">
+                	 <span class="admin-stats-kpi-change neutral">
                     ${dashboardStat.learnCompleteRateText}
                 </span>
             </div>
-            <div class="admin-stats-kpi-label">학습 완료율</div>
-            <div class="admin-stats-kpi-value">
-                <fmt:formatNumber value="${dashboardStat.learnCompleteRate}" pattern="#,##0"/>%
+            <div class="stat-label">학습 완료율</div>
+            <div class="stat-value">
+            
+                <span id="newTeacherCountText">${dashboardStat.learnCompleteRate}%</span>
             </div>
-        </article>
+        </div>
     </div>
 
     <div class="admin-stats-chart-grid admin-stats-chart-grid-top">

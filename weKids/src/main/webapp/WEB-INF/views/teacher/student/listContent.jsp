@@ -73,6 +73,11 @@
 								     data-last-login="${student.lastLoginAtText}"
 								     data-learning-progress="${student.learningProgressRate}"
 								     data-recent-assignments="${student.submittedAssignmentCount}/${student.totalAssignmentCount} 제출"
+							     data-assignment-submit-rate="${student.assignmentSubmitRate}"
+							     data-total-learning-count="${student.totalLearningCount}"
+							     data-completed-learning-count="${student.completedLearningCount}"
+							     data-total-assignment-count="${student.totalAssignmentCount}"
+							     data-submitted-assignment-count="${student.submittedAssignmentCount}"
 								     data-feedback-sum="${empty student.intro ? '등록된 학생 소개가 없습니다.' : student.intro}"
 								     data-tags="${student.tagsCsv}"
 								     data-memo="${student.observationMemo}">
@@ -252,7 +257,7 @@
                         </div>
 
                         <div class="detail-summary-card">
-                            <span>과제 제출</span>
+                            <span>과제 제출 현황</span>
                             <strong class="blue-text" id="detailAssignments">3/3 제출</strong>
                         </div>
 

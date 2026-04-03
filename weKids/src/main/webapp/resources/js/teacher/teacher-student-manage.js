@@ -125,6 +125,11 @@ window.addEventListener('DOMContentLoaded', function () {
         const lastLogin = row.dataset.lastLogin || '-';
         const progress = row.dataset.learningProgress || '0';
         const assignments = row.dataset.recentAssignments || '-';
+        const assignmentSubmitRate = Number(row.dataset.assignmentSubmitRate || '0');
+        const totalLearningCount = Number(row.dataset.totalLearningCount || '0');
+        const completedLearningCount = Number(row.dataset.completedLearningCount || '0');
+        const totalAssignmentCount = Number(row.dataset.totalAssignmentCount || '0');
+        const submittedAssignmentCount = Number(row.dataset.submittedAssignmentCount || '0');
         const feedbackSummary = row.dataset.feedbackSum || '-';
         const memo = row.dataset.memo || '';
         const tags = row.dataset.tags || '';
@@ -136,30 +141,78 @@ window.addEventListener('DOMContentLoaded', function () {
         detailProgress.textContent = progress + '%';
         detailAssignments.textContent = assignments;
         detailLastLogin.textContent = lastLogin;
-        detailFeedbackSummary.textContent = feedbackSummary;
+        detailFeedbackSummary.textContent = buildFeedbackSummary(
+            totalLearningCount,
+            completedLearningCount,
+            totalAssignmentCount,
+            submittedAssignmentCount,
+            Number(progress),
+            feedbackSummary
+        );
         detailMemoText.value = memo;
         detailAvatar.textContent = name.charAt(0);
 
-        if (Number(progress) < 60) {
+        updateWarningBox(Number(progress), totalAssignmentCount, submittedAssignmentCount, assignmentSubmitRate);
+
+        applySelectedTags(tags);
+        openModal(studentDetailModal);
+    }
+
+
+    function buildFeedbackSummary(totalLearningCount, completedLearningCount, totalAssignmentCount, submittedAssignmentCount, progressRate, fallbackText) {
+        const summaryParts = [];
+
+        if (totalLearningCount > 0) {
+            summaryParts.push('학습 ' + completedLearningCount + '/' + totalLearningCount + '개 완료');
+        }
+
+        if (totalAssignmentCount > 0) {
+            summaryParts.push('과제 ' + submittedAssignmentCount + '/' + totalAssignmentCount + '건 제출');
+        }
+
+        if (progressRate > 0) {
+            summaryParts.push('전체 학습 진행률 ' + progressRate + '%');
+        }
+
+        if (summaryParts.length > 0) {
+            return summaryParts.join(' · ');
+        }
+
+        return fallbackText || '아직 연동된 학습/과제 데이터가 없습니다.';
+    }
+
+    function updateWarningBox(progressRate, totalAssignmentCount, submittedAssignmentCount, assignmentSubmitRate) {
+        const missingAssignmentCount = Math.max(totalAssignmentCount - submittedAssignmentCount, 0);
+
+        if (missingAssignmentCount > 0) {
             detailWarningBox.classList.remove('safe');
             detailWarningBox.innerHTML =
                 '<div class="warning-icon"></div>' +
                 '<div>' +
-                '<strong>수행 관리가 필요한 상태</strong>' +
-                '<p>최근 접속이 뜸하거나 미제출 과제가 있어 학부모 안내가 필요할 수 있습니다.</p>' +
+                '<strong>미제출 과제가 ' + missingAssignmentCount + '건 있습니다.</strong>' +
+                '<p>과제 제출 현황은 ' + submittedAssignmentCount + '/' + totalAssignmentCount + '건 (' + assignmentSubmitRate + '%)입니다.</p>' +
                 '</div>';
-        } else {
-            detailWarningBox.classList.add('safe');
+            return;
+        }
+
+        if (progressRate < 60) {
+            detailWarningBox.classList.remove('safe');
             detailWarningBox.innerHTML =
                 '<div class="warning-icon"></div>' +
                 '<div>' +
-                '<strong>현재 안정적인 학습 상태</strong>' +
-                '<p>현재 밀린 과제나 주의가 필요한 항목이 없습니다.</p>' +
+                '<strong>학습 진행률이 낮은 상태입니다.</strong>' +
+                '<p>현재 전체 학습 진행률은 ' + progressRate + '%입니다. 학습 자료 참여 여부를 확인해 주세요.</p>' +
                 '</div>';
+            return;
         }
 
-        applySelectedTags(tags);
-        openModal(studentDetailModal);
+        detailWarningBox.classList.add('safe');
+        detailWarningBox.innerHTML =
+            '<div class="warning-icon"></div>' +
+            '<div>' +
+            '<strong>현재 안정적인 학습 상태</strong>' +
+            '<p>현재 미제출 과제가 없고 학습 진행도도 안정적입니다.</p>' +
+            '</div>';
     }
 
     studentRows.forEach(function (row) {

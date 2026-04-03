@@ -22,6 +22,19 @@
     const summaryLearningCount = document.getElementById('summaryLearningCount');
     const summaryAssignmentCount = document.getElementById('summaryAssignmentCount');
 
+    const learningDonut = document.getElementById('learningDonut');
+    const learningDonutLabel = document.getElementById('learningDonutLabel');
+    const learningDonutText = document.getElementById('learningDonutText');
+    const learningDonutCaption = document.getElementById('learningDonutCaption');
+    const assignmentDonut = document.getElementById('assignmentDonut');
+    const assignmentDonutLabel = document.getElementById('assignmentDonutLabel');
+    const assignmentDonutText = document.getElementById('assignmentDonutText');
+    const assignmentDonutCaption = document.getElementById('assignmentDonutCaption');
+    const learningProgressBar = document.getElementById('learningProgressBar');
+    const learningProgressText = document.getElementById('learningProgressText');
+    const assignmentProgressBar = document.getElementById('assignmentProgressBar');
+    const assignmentProgressText = document.getElementById('assignmentProgressText');
+
     const missingAssignmentList = document.getElementById('missingAssignmentList');
     const learningFeedbackList = document.getElementById('learningFeedbackList');
     const assignmentFeedbackList = document.getElementById('assignmentFeedbackList');
@@ -107,6 +120,62 @@
         container.innerHTML = '<div class="empty-inline-text">' + escapeHtml(message || '없음') + '</div>';
     }
 
+    function normalizeRate(value) {
+        const rate = parseInt(value, 10);
+        if (isNaN(rate)) return 0;
+        if (rate < 0) return 0;
+        if (rate > 100) return 100;
+        return rate;
+    }
+
+    function setDonut(chartEl, labelEl, rate) {
+        if (!chartEl) return;
+        const safeRate = normalizeRate(rate);
+        chartEl.style.setProperty('--rate', safeRate);
+        if (labelEl) {
+            labelEl.textContent = safeRate + '%';
+        }
+    }
+
+    function setProgressBar(barEl, textEl, currentCount, totalCount, rate) {
+        const safeRate = normalizeRate(rate);
+        if (barEl) {
+            barEl.style.width = safeRate + '%';
+            barEl.setAttribute('aria-valuenow', String(safeRate));
+        }
+        if (textEl) {
+            textEl.textContent = (currentCount || 0) + ' / ' + (totalCount || 0);
+        }
+    }
+
+    function renderVisualSummary(summary) {
+        const s = summary || {};
+        const learningRate = normalizeRate(s.learningCompletionRate || 0);
+        const assignmentRate = normalizeRate(s.assignmentSubmissionRate || 0);
+        const completedLearningCount = s.completedLearningCount || 0;
+        const totalLearningCount = s.totalLearningCount || 0;
+        const submittedAssignmentCount = s.submittedAssignmentCount || 0;
+        const totalAssignmentCount = s.totalAssignmentCount || 0;
+
+        setDonut(learningDonut, learningDonutLabel, learningRate);
+        setDonut(assignmentDonut, assignmentDonutLabel, assignmentRate);
+        setProgressBar(learningProgressBar, learningProgressText, completedLearningCount, totalLearningCount, learningRate);
+        setProgressBar(assignmentProgressBar, assignmentProgressText, submittedAssignmentCount, totalAssignmentCount, assignmentRate);
+
+        if (learningDonutText) {
+            learningDonutText.textContent = completedLearningCount + ' / ' + totalLearningCount + ' 완료';
+        }
+        if (assignmentDonutText) {
+            assignmentDonutText.textContent = submittedAssignmentCount + ' / ' + totalAssignmentCount + ' 제출';
+        }
+        if (learningDonutCaption) {
+            learningDonutCaption.textContent = learningRate >= 80 ? '학습 진행이 안정적입니다.' : (learningRate >= 50 ? '학습 진행을 조금 더 끌어올릴 수 있습니다.' : '미완료 학습을 우선 확인해 주세요.');
+        }
+        if (assignmentDonutCaption) {
+            assignmentDonutCaption.textContent = assignmentRate >= 80 ? '과제 제출 흐름이 좋습니다.' : (assignmentRate >= 50 ? '남은 과제를 확인해 주세요.' : '미제출 과제 확인이 필요합니다.');
+        }
+    }
+
     function renderMissingAssignments(items) {
         if (!missingAssignmentList) return;
 
@@ -184,6 +253,9 @@
         if (summaryAssignmentCount) {
             summaryAssignmentCount.textContent = (s.submittedAssignmentCount || 0) + ' / ' + (s.totalAssignmentCount || 0);
         }
+ 
+
+        renderVisualSummary(s);
     }
 
     function fillDetail(detail) {
