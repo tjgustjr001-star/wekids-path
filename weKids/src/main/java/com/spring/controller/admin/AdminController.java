@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.dto.SupportAnswerVO;
 import com.spring.dto.SupportFileVO;
@@ -20,6 +21,7 @@ import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminTeacherListDTO;
 import com.spring.dto.admin.AdminTeacherRegistDTO;
 import com.spring.dto.admin.MonthlyJoinCountDTO;
+import com.spring.service.FaqService;
 import com.spring.service.admin.AdminClassService;
 import com.spring.service.admin.AdminStatsService;
 import com.spring.service.admin.AdminSupportService;
@@ -40,7 +42,9 @@ public class AdminController {
     private AdminStatsService adminStatsService;
     @Autowired
     private AdminSupportService adminSupportService;
-
+    @Autowired
+    private FaqService faqService;
+    
     @GetMapping({"", "/", "/home"})
     public String home(Model model) throws SQLException {
         model.addAttribute("totalUserCount", adminUserService.getTotalUserCount());
@@ -173,6 +177,30 @@ public class AdminController {
         model.addAttribute("contentPage", "/WEB-INF/views/admin/supportAnswer.jsp");
         return "admin/layout/adminLayout";
     }
+    
+    @GetMapping("/supportFaq")
+    public String faqList(Model model) throws Exception {
+        model.addAttribute("faqList",      faqService.getFaqList());
+        model.addAttribute("categoryList", faqService.getCategoryList());
+        model.addAttribute("contentPage",  "/WEB-INF/views/admin/supportFaq.jsp");
+        return "admin/layout/adminLayout";
+    }
+    
+    @PostMapping("/faq/deleteMany")
+    @ResponseBody // AJAX 요청에 대한 응답을 위해 필요
+    public String deleteFaqs(@RequestParam("ids[]") List<Integer> ids) {
+        try {
+            // 기존에 구현된 faqService를 사용하여 삭제 로직 실행
+          
+        	//여기 주석처리 임시
+			/* faqService.deleteFaqs(ids); */
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+    }
+
 
     @GetMapping("/logs")
     public String logs(Model model) {

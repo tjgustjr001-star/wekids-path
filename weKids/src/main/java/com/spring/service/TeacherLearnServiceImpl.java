@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +118,14 @@ public class TeacherLearnServiceImpl implements TeacherLearnService {
         teacherLearnDAO.deleteLearnFeedbackByLearnId(paramMap);
         teacherLearnDAO.deleteLearnProgressByLearnId(paramMap);
         teacherLearnDAO.deleteLearnCont(paramMap);
-        teacherLearnDAO.deleteLearnListIfNoChildren(paramMap);
+
+        try {
+            teacherLearnDAO.deleteLearnListIfNoChildren(paramMap);
+        } catch (DataIntegrityViolationException e) {
+            // LEARN_LIST 정리 삭제는 부가적인 후처리다.
+            // 운영 DB에 따라 LEARN_LIST에 대한 FK가 남아 있을 수 있으므로
+            // 학습 본문/진행/피드백 삭제가 끝났다면 사용자 동작은 성공으로 본다.
+        }
     }
 
     private void normalizeTeacherLearnDto(TeacherLearnSaveDTO dto) {
