@@ -17,6 +17,7 @@
         <result property="startDate" column="START_DATE"/>
         <result property="endDate" column="END_DATE"/>
         <result property="createdAt" column="CREATED_AT"/>
+        <result property="coment" column="COMENT"/>
         <result property="parentViewCount" column="PARENT_VIEW_COUNT"/>
         <result property="parentViewedAt" column="PARENT_VIEWED_AT"/>
     </resultMap>
@@ -133,6 +134,7 @@
 	        TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
 	        TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
 	        TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            R.COMENT AS COMENT,
 	        CASE
 	            WHEN R.REPORT_TYPE = 'CLASS' THEN (
 	                SELECT COUNT(DISTINCT RV.VIEWER_ID)
@@ -207,6 +209,7 @@
             TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
             TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
             TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            R.COMENT AS COMENT,
             0 AS PARENT_VIEW_COUNT,
             NULL AS PARENT_VIEWED_AT
         FROM REPORT R
@@ -239,6 +242,7 @@
             TO_CHAR(R.START_DATE, 'YYYY-MM-DD') AS START_DATE,
             TO_CHAR(R.END_DATE, 'YYYY-MM-DD') AS END_DATE,
             TO_CHAR(R.CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT,
+            R.COMENT AS COMENT,
             (
                 SELECT COUNT(*)
                 FROM REPORT_VIEW RV

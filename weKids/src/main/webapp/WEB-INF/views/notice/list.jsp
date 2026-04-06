@@ -217,5 +217,6 @@
     window.noticeClassId = '${classId}';
     window.requiredUnreadCount = Number('${requiredUnreadCount}');
     window.isStudentOrParent = ${isStudentOrParent ? 'true' : 'false'};
+    window.noticeOpenNoticeId = '${param.openNoticeId}';
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/notice/notice.js"></script>

@@ -197,3 +197,12 @@
         align-items: stretch;
     }
 }
+.parent-empty-ok-box.is-link {
+    display:block;
+    text-decoration:none;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+}
+.parent-empty-ok-box.is-link:hover {
+    transform:translateY(-1px);
+    box-shadow:0 10px 20px rgba(5,150,105,0.08);
+}

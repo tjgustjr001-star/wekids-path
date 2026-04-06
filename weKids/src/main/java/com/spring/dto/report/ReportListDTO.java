@@ -16,6 +16,7 @@ public class ReportListDTO {
     private String startDate;
     private String endDate;
     private String createdAt;
+    private String coment;
 
     private Integer parentViewCount;
     private String parentViewedAt;
@@ -106,6 +107,14 @@ public class ReportListDTO {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getComent() {
+        return coment;
+    }
+
+    public void setComent(String coment) {
+        this.coment = coment;
     }
 
     public Integer getParentViewCount() {

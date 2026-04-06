@@ -224,6 +224,44 @@ public class ParentPageController {
             return "common/layout/parentLayout";
         }
 
+        if (selectedClassId != null && selectedClassId.intValue() > 0) {
+            List<ReportListDTO> childReportList =
+                    reportService.getParentReportList(loginUser.getMember_id(), selectedClassId.intValue(), childId, null);
+
+            for (ReportListDTO report : childReportList) {
+                if (report == null) {
+                    continue;
+                }
+                if (!"PERSONAL".equalsIgnoreCase(report.getReportType())) {
+                    continue;
+                }
+                if (report.getStudentId() == null || report.getStudentId().intValue() != childId) {
+                    continue;
+                }
+                if (report.getComent() != null && !report.getComent().trim().isEmpty()) {
+                    child.setTeacherComment(report.getComent().trim());
+                    break;
+                }
+            }
+
+            List<NoticeVO> unreadRequiredNoticeList =
+                    noticeService.getUnreadRequiredNoticeList(selectedClassId.intValue(), loginUser);
+            child.setUnconfirmedNoticeCount(unreadRequiredNoticeList != null ? unreadRequiredNoticeList.size() : 0);
+
+            model.addAttribute("unreadRequiredNoticeList", unreadRequiredNoticeList);
+            model.addAttribute("firstUnreadRequiredNoticeId",
+                    unreadRequiredNoticeList != null && !unreadRequiredNoticeList.isEmpty()
+                            ? unreadRequiredNoticeList.get(0).getNoticeId()
+                            : null);
+        } else {
+            model.addAttribute("unreadRequiredNoticeList", List.of());
+            model.addAttribute("firstUnreadRequiredNoticeId", null);
+        }
+
+        if (child.getTeacherComment() == null || child.getTeacherComment().trim().isEmpty()) {
+            child.setTeacherComment("선생님 코멘트 없음");
+        }
+
         model.addAttribute("childList", childList);
         model.addAttribute("childClassList", childClassList);
         model.addAttribute("selectedClassId", selectedClassId);

@@ -57,7 +57,7 @@
 
             <div class="parent-card">
                 <h3 class="parent-section-title">선생님 한마디</h3>
-                <div class="parent-teacher-comment-box">${child.teacherComment}</div>
+                <div class="parent-teacher-comment-box"><c:out value="${child.teacherComment}" default="선생님 코멘트 없음"/></div>
             </div>
         </div>
 
@@ -98,9 +98,19 @@
 
             <div class="parent-card">
                 <h3 class="parent-section-title">확인이 필요한 항목</h3>
-                <div class="parent-empty-ok-box">
-                    미확인 가정통신문 ${child.unconfirmedNoticeCount}건
-                </div>
+                <c:choose>
+                    <c:when test="${child.unconfirmedNoticeCount > 0 and not empty firstUnreadRequiredNoticeId and selectedClassId > 0}">
+                        <a class="parent-empty-ok-box is-link"
+                           href="${pageContext.request.contextPath}/parent/classes/${selectedClassId}/bulletins?openNoticeId=${firstUnreadRequiredNoticeId}">
+                            미확인 가정통신문 ${child.unconfirmedNoticeCount}건
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="parent-empty-ok-box">
+                            미확인 가정통신문 ${child.unconfirmedNoticeCount}건
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>

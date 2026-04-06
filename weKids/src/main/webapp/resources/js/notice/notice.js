@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', function () {
     initWriteButton();
     updateFilterCounts();
     updateUI();
+    autoOpenTargetNotice();
     autoOpenRequiredPopup();
 });
 
@@ -116,10 +117,31 @@ function initWriteButton() {
     });
 }
 
+
+function autoOpenTargetNotice() {
+    const noticeId = String(window.noticeOpenNoticeId || '').trim();
+    if (!noticeId) {
+        return;
+    }
+
+    const targetCard = document.querySelector('.notice_card[data-notice-id="' + noticeId + '"]');
+    if (targetCard) {
+        targetCard.classList.remove('hide');
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    openDetailModal(noticeId, window.noticeClassId || '');
+}
 function autoOpenRequiredPopup() {
     const popupOverlay = document.getElementById('requiredPopupOverlay');
     const unreadRequiredCount = Number(window.requiredUnreadCount || 0);
     const isStudentOrParent = String(window.isStudentOrParent) === 'true';
+
+    const forcedNoticeId = String(window.noticeOpenNoticeId || '').trim();
+
+    if (forcedNoticeId) {
+        return;
+    }
 
     if (popupOverlay && isStudentOrParent && unreadRequiredCount > 0) {
         popupOverlay.classList.add('show');
