@@ -51,6 +51,7 @@ public class AdminController {
         model.addAttribute("activeClassCount", adminClassService.getActiveClassCount());
         model.addAttribute("newTeacherCount", adminTeacherService.getNewTeacherCount());
         model.addAttribute("weeklyLoginTrend", adminUserService.getWeeklyLoginTrend());
+        model.addAttribute("pendingSupportCount", adminSupportService.getPendingSupportCount());
         model.addAttribute("contentPage", "/WEB-INF/views/admin/home.jsp");
         return "admin/layout/adminLayout";
     }
@@ -115,6 +116,7 @@ public class AdminController {
     @GetMapping("/users")
     public String users(Model model) throws Exception {
         model.addAttribute("userList", adminUserService.getUserList());
+        model.addAttribute("userRoleLoginTrend", adminUserService.getUserRoleLoginTrend());
         model.addAttribute("contentPage", "/WEB-INF/views/admin/users.jsp");
         return "admin/layout/adminLayout";
     }

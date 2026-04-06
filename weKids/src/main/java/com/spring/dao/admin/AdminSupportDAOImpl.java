@@ -59,4 +59,10 @@ public class AdminSupportDAOImpl implements AdminSupportDAO {
     public void deleteFaq(int faqId) throws SQLException {
         sqlSession.delete(NAMESPACE + ".deleteFaq", faqId);
     }
+    
+    @Override
+	public int selectPendingSupportCount() {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne(NAMESPACE + ".selectPendingSupportCount");
+	}
 }

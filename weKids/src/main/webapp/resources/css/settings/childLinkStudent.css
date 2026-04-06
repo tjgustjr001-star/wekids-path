@@ -46,7 +46,7 @@ a {
 .page-header h2 {
     margin: 0 0 8px;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -61,7 +61,7 @@ a {
 .guide-title {
     margin: 22px 0 12px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -90,7 +90,7 @@ a {
 
 .status-name {
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
     margin-bottom: 4px;
 }
@@ -142,7 +142,7 @@ a {
 
 .invite-title {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
     margin-bottom: 6px;
 }
 
@@ -164,7 +164,7 @@ a {
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     margin-bottom: 10px;
 }
@@ -192,7 +192,7 @@ a {
 .code-value {
     min-height: 24px;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 600;
     color: #374151;
     letter-spacing: 1px;
     display: flex;
@@ -215,7 +215,7 @@ a {
     padding: 0 24px;
     border-radius: 8px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -270,7 +270,7 @@ a {
     background: #bfe4d5;
     color: #ffffff;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .disabled-row {
@@ -325,7 +325,7 @@ a {
 
 .privacy-title {
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     color: #2563eb;
     margin-bottom: 8px;
 }

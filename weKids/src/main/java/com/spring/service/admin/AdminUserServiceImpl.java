@@ -11,6 +11,7 @@ import com.spring.dao.admin.AdminUserDAO;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.UserRoleLoginTrendDTO;
 import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 @Service
@@ -101,5 +102,10 @@ public class AdminUserServiceImpl implements AdminUserService {
 	    }
 
 	    return ipAddress;
+	}
+	
+	@Override
+	public List<UserRoleLoginTrendDTO> getUserRoleLoginTrend() throws SQLException {
+	    return adminUserDAO.selectUserRoleLoginTrend();
 	}
 }

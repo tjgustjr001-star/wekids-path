@@ -6,6 +6,7 @@ import java.util.List;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.UserRoleLoginTrendDTO;
 import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 public interface AdminUserService {
@@ -23,5 +24,7 @@ public interface AdminUserService {
 	List<WeeklyLoginTrendDTO> getWeeklyLoginTrend() throws SQLException;
 	
 	List<WeeklyLoginTrendDTO> getUserWeeklyLoginTrend(int memberId) throws SQLException;
+	
+	List<UserRoleLoginTrendDTO> getUserRoleLoginTrend() throws SQLException;
 	
 }

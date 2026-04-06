@@ -26,7 +26,7 @@
 
 .sidebar-logo a {
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1;
     color: var(--brand-dark, #117554);
     letter-spacing: -0.02em;
@@ -105,7 +105,7 @@
     display: block;
     margin: 0;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.15;
     color: #111827;
     letter-spacing: -0.03em;
@@ -208,7 +208,7 @@
     padding: 0 12px;
     color: #9ca3af;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .class-nav-top {
@@ -229,14 +229,14 @@
     margin: 0 0 6px;
     color: var(--brand-dark, #117554);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .current-class-name {
     display: block;
     font-size: 15px;
     line-height: 1.35;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     word-break: keep-all;
 }

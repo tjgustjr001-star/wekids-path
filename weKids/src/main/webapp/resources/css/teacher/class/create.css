@@ -55,7 +55,7 @@
 .class-create-hero h1 {
     margin: 0 0 10px;
     font-size: 48px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -1px;
 }
 
@@ -88,7 +88,7 @@
 
 .form-group label {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1f2937;
 }
 
@@ -135,7 +135,7 @@
     margin: 0 0 14px;
     color: #3156c9;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .guide-box ul {
@@ -156,7 +156,7 @@
     height: 72px;
     border-radius: 24px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;

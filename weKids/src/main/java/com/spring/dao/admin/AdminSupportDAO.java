@@ -31,4 +31,6 @@ public interface AdminSupportDAO {
     
     void deleteFaq(int faqId)throws SQLException;
     
+    int selectPendingSupportCount();
+    
 }

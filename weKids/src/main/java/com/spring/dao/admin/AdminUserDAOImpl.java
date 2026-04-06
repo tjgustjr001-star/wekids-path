@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.spring.dto.admin.AdminStudentRegistDTO;
 import com.spring.dto.admin.AdminUserDetailDTO;
 import com.spring.dto.admin.AdminUserListDTO;
+import com.spring.dto.admin.UserRoleLoginTrendDTO;
 import com.spring.dto.admin.WeeklyLoginTrendDTO;
 
 @Repository
@@ -89,5 +90,10 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 	@Override
 	public List<WeeklyLoginTrendDTO> selectUserWeeklyLoginTrend(int memberId) throws SQLException {
 		return session.selectList("AdminUser-Mapper.selectUserWeeklyLoginTrend", memberId);
+	}
+	
+	@Override
+	public List<UserRoleLoginTrendDTO> selectUserRoleLoginTrend() throws SQLException {
+	    return session.selectList("\"AdminUser-Mapper.selectUserRoleLoginTrend");
 	}
 }

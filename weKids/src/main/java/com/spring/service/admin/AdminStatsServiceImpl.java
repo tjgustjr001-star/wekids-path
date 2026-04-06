@@ -391,7 +391,7 @@ public class AdminStatsServiceImpl implements AdminStatsService {
 		if ("STUDENT".equals(roleCode))
 			return "#84cc16";
 		if ("PARENT".equals(roleCode))
-			return "#a855f7";
+			return "#ff7878";
 		if ("TEACHER".equals(roleCode))
 			return "#5b86ff";
 		if ("ADMIN".equals(roleCode))

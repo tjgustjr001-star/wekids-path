@@ -61,4 +61,9 @@ public class AdminSupportServiceImpl implements AdminSupportService {
         return adminSupportDAO.selectFilesBySupportNo(supportNo);
     }
     
+    @Override
+    public int getPendingSupportCount() {
+        return adminSupportDAO.selectPendingSupportCount();
+
+	}
 }

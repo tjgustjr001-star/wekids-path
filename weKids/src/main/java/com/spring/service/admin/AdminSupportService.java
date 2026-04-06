@@ -26,4 +26,5 @@ public interface AdminSupportService {
     
     List<SupportFileVO> getFileList(int supportNo);
 
+    int getPendingSupportCount();
 }

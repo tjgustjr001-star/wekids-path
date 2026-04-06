@@ -17,7 +17,7 @@
     margin: 0;
     margin-left: 16px;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .assignment-grid {
@@ -62,7 +62,7 @@
 .assignment-modal-status {
     display: inline-flex;
     align-items: center;
-    font-weight: 800;
+    font-weight: 600;
     border-radius: 10px;
 }
 
@@ -141,7 +141,7 @@
 .assignment-title {
     margin: 0 0 14px;
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.4;
     color: #111827;
 }
@@ -181,7 +181,7 @@
     gap: 8px;
     color: #6b7280;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .assignment-submit-state.done {
@@ -197,7 +197,7 @@
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -303,7 +303,7 @@
 .assignment-modal-title {
     margin: 0;
     font-size: 28px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.4;
 }
 
@@ -338,7 +338,7 @@
 .assignment-info-title {
     margin: 0 0 14px;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 600;
     color: #374151;
 }
 
@@ -394,7 +394,7 @@
     margin: 0 0 6px;
     color: #991b1b;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .assignment-feedback-box.confirm .assignment-feedback-box-inner h4 {
@@ -463,7 +463,7 @@
 .assignment-file-name {
     margin: 0 0 4px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -478,7 +478,7 @@
     background: transparent;
     color: #4379F2;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -509,7 +509,7 @@
     margin-top: 16px;
     color: #4379F2;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .assignment-submit-view {
@@ -563,7 +563,7 @@
 .assignment-dropzone-title {
     margin: 10px 0 6px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     color: #374151;
 }
 
@@ -616,7 +616,7 @@
     border-radius: 14px;
     padding: 13px 22px;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -653,7 +653,7 @@
     border-radius: 14px;
     color: #fff;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     box-shadow: 0 12px 30px rgba(17, 24, 39, 0.18);
     opacity: 0;
     transform: translateY(10px);
@@ -726,7 +726,7 @@
     background: #dc2626;
     color: #fff;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -881,7 +881,7 @@
 .assignment-file-ext-icon {
     color: #4f46e5;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1;
 }
 

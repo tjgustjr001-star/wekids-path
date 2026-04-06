@@ -17,7 +17,7 @@
     margin: 0;
     font-size: 24px;
     line-height: 1.3;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -93,7 +93,7 @@
     border-radius: 14px;
     padding: 0 18px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -231,7 +231,7 @@
     border-bottom: 1px solid #e5e7eb;
     color: #6b7280;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
 }
 
@@ -271,7 +271,7 @@
     align-items: center;
     justify-content: center;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     border: 1px solid transparent;
 }
 
@@ -303,7 +303,7 @@
 .assignment-title {
     font-size: 18px;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -371,7 +371,7 @@
 .progress-text-row strong {
     font-size: 13px;
     color: #117554;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .progress-bar {
@@ -399,7 +399,7 @@
     background: #eef4ff;
     color: #4379F2;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .message-square-mini-icon {
@@ -516,7 +516,7 @@
     padding: 0 12px;
     border-radius: 10px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     border: 0;
 }
@@ -531,7 +531,7 @@
     padding: 0 12px;
     border-radius: 10px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     border: 0;
     background: #fdecec;
@@ -611,7 +611,7 @@
 .teacher-modal-header h3 {
     margin: 0;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -665,7 +665,7 @@
     background: #fff;
     border-radius: 12px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #374151;
     cursor: pointer;
 }
@@ -689,7 +689,7 @@
 
 .form-field label {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #374151;
 }
 
@@ -736,13 +736,13 @@
     margin-bottom: 8px;
     font-size: 12px;
     color: #6b7280;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-info-box strong {
     font-size: 14px;
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-content-box p {
@@ -765,13 +765,13 @@
     margin: 0;
     font-size: 16px;
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-progress-title-row strong {
     font-size: 28px;
     color: #117554;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .big-progress-bar {
@@ -808,12 +808,12 @@
     margin-bottom: 8px;
     font-size: 12px;
     color: #6b7280;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .progress-summary-card strong {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .green-text {
@@ -836,7 +836,7 @@
     margin: 0 0 12px;
     font-size: 16px;
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .student-submission-list {
@@ -872,7 +872,7 @@
     align-items: center;
     justify-content: center;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
@@ -905,7 +905,7 @@
     display: block;
     font-size: 14px;
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .submission-meta p {
@@ -926,7 +926,7 @@
     padding: 0 10px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -959,7 +959,7 @@
     padding: 0 8px;
     border-radius: 8px;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1002,7 +1002,7 @@
     background: #eef4ff;
     color: #3563e9;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .search-empty {
@@ -1037,7 +1037,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-weight: 600;
     flex: 0 0 auto;
 }
 
@@ -1061,7 +1061,7 @@
     padding: 3px 7px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .feedback-mini-badge.done {
@@ -1091,7 +1091,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .submission-status-pill.green {
@@ -1158,7 +1158,7 @@
     padding: 0 14px !important;
     border-radius: 999px !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     line-height: 1 !important;
     white-space: nowrap !important;
     border: none !important;
@@ -1216,7 +1216,7 @@
 
 .assignment-detail-header-v2 h3 {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.3;
 }
 
@@ -1231,14 +1231,14 @@
     background: transparent;
     color: #6b7280;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-badge-row-v2 .status-badge {
     min-height: 22px;
     padding: 0 8px;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .assignment-detail-body-v2 {
@@ -1278,7 +1278,7 @@
     margin-bottom: 8px;
     font-size: 12px;
     color: #8a94a6;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-content-box-v2 p {
@@ -1296,7 +1296,7 @@
 .detail-deadline-box-v2 strong {
     color: #ef4444;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-feedback-box-v2 {
@@ -1307,7 +1307,7 @@
 .detail-feedback-box-v2 strong {
     color: #d97706;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .detail-progress-box-v2 {
@@ -1556,7 +1556,7 @@
 .teacher-student-submission-head h3 {
     margin: 0;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 .teacher-student-submission-body {
@@ -1577,7 +1577,7 @@
 .teacher-student-reject-panel h4 {
     margin: 0 0 12px;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 .teacher-student-info-box p {
@@ -1668,7 +1668,7 @@
     background: #eef2ff;
     color: #4f46e5;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1694,7 +1694,7 @@
     border: 0;
     background: transparent;
     color: #2563eb;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 .teacher-student-text-box {
@@ -1711,7 +1711,7 @@
 .teacher-student-submitted-state {
     margin-top: 14px;
     color: #2563eb;
-    font-weight: 700;
+    font-weight: 600;
 }
 .teacher-student-reject-label-row {
     display: flex;
@@ -1725,7 +1725,7 @@
     border-radius: 999px;
     padding: 6px 10px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 .teacher-student-reject-panel textarea {
     width: 100%;
@@ -1764,7 +1764,7 @@
     height: 44px;
     padding: 0 18px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -1781,7 +1781,7 @@
     height: 44px;
     padding: 0 18px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -1803,7 +1803,7 @@
     padding: 0 18px;
     border-radius: 12px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1890,7 +1890,7 @@
     background: #2563eb;
     color: #fff;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1909,7 +1909,7 @@
 .teacher-student-feedback-copy h4 {
     margin: 0 0 8px;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1d4ed8;
 }
 

@@ -15,7 +15,6 @@ a {
 	color: inherit;
 }
 
-
 button {
 	border: none;
 	background: none;
@@ -46,7 +45,7 @@ button {
 	align-items: center;
 	padding: 0 24px;
 	font-size: 32px;
-	font-weight: 700;
+	font-weight: 600;
 	color: #34d399;
 	border-bottom: 1px solid #334155;
 }
@@ -140,7 +139,7 @@ button {
 
 .page-title-box h1 {
 	font-size: 42px;
-	font-weight: 700;
+	font-weight: 600;
 	margin-bottom: 10px;
 }
 
@@ -150,11 +149,19 @@ button {
 }
 
 .stats-grid {
-	margin-top: 24px;
+
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 24px;
+
+}
+.stats-grid-a {
+	margin-top: 24px;
 	margin-bottom: 24px;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 24px;
+
 }
 
 .stat-card {
@@ -163,7 +170,6 @@ button {
 	border: 1px solid #334155;
 	border-radius: 24px;
 	padding: 28px;
-	
 	position: relative;
 }
 
@@ -204,17 +210,15 @@ button {
 	background: rgba(157, 178, 191, 0.15);
 }
 
-
 .icon-box.yellow {
 	background: rgba(255, 235, 0, 0.15);
 }
-
 
 .trend {
 	padding: 6px 12px;
 	border-radius: 999px;
 	font-size: 14px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .trend.positive {
@@ -241,18 +245,14 @@ button {
 
 .stat-value {
 	position: absolute;
-	
 	font-size: 60px;
-	font-weight: 800;
+	font-weight: 600;
 	line-height: 1;
-    text-align: right;
-    
-    right: 50px;
+	text-align: right;
+	right: 50px;
 	top: 50%;
 	transform: translateY(-50%);
-	
 }
-
 
 .dashboard-bottom {
 	display: grid;
@@ -276,7 +276,7 @@ button {
 
 .panel-header h2, .alert-panel h2 {
 	font-size: 30px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .detail-btn {
@@ -384,8 +384,8 @@ button {
 	border-radius: 24px;
 	padding: 20px;
 }
+
 .detail-panel-card {
-	
 	background: #1e293b;
 	border: 1px solid #334155;
 	border-radius: 24px;
@@ -393,16 +393,14 @@ button {
 	margin: 10px;
 }
 
-
 .panel-card.wide {
 	min-height: 100%;
 }
 
 .panel-title {
 	font-size: 20px;
-	font-weight: 700;
+	font-weight: 600;
 	color: #fff;
-	
 	margin-bottom: 24px;
 }
 
@@ -418,7 +416,7 @@ button {
 }
 
 .chart-wrap {
-	height: 220px;
+	
 	margin-bottom: 20px;
 }
 
@@ -607,7 +605,7 @@ button {
 	padding: 5px 10px;
 	border-radius: 8px;
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .badge.active {
@@ -632,7 +630,7 @@ button {
 .class-card-body h3 {
 	color: #fff;
 	font-size: 18px;
-	font-weight: 700;
+	font-weight: 600;
 	margin-bottom: 8px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -774,7 +772,7 @@ button {
 .class-detail-header h3 {
 	color: #fff;
 	font-size: 24px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .close-modal-btn {
@@ -803,7 +801,7 @@ button {
 .detail-title-row h4 {
 	color: #fff;
 	font-size: 28px;
-	font-weight: 800;
+	font-weight: 600;
 }
 
 .detail-main-title p {
@@ -861,7 +859,7 @@ button {
 	flex: 1;
 	padding: 14px 16px;
 	border-radius: 14px;
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 15px;
 	cursor: pointer;
 }
@@ -952,6 +950,7 @@ button {
 	flex-direction: column;
 	gap: 24px;
 }
+
 p.c {
 	font-size: 14px;
 	color: #fff;
@@ -978,17 +977,17 @@ p.c {
 }
 
 .teacher-profile-avatar i {
-	left:50px;
+	left: 50px;
 	width: 1em;
 	height: 1em;
 	line-height: 1;
 	vertical-align: middle;
-	
 }
+
 .teacher-profile-name {
 	color: #f8fafc;
 	font-size: 28px;
-	font-weight: 800;
+	font-weight: 600;
 	margin-bottom: 12px;
 }
 
@@ -1040,7 +1039,7 @@ p.c {
 	border: none;
 	border-radius: 12px;
 	font-size: 15px;
-	font-weight: 700;
+	font-weight: 600;
 	cursor: pointer;
 }
 
@@ -1112,7 +1111,7 @@ p.c {
 	background: #334155;
 	color: #cbd5e1;
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .teacher-class-table-wrap {
@@ -1131,7 +1130,7 @@ p.c {
 	padding: 6px 10px;
 	border-radius: 999px;
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1;
 }
 
@@ -1202,7 +1201,7 @@ p.c {
 
 .teacher-total-count {
 	font-size: 46px;
-	font-weight: 800;
+	font-weight: 600;
 	color: #fff;
 	margin-bottom: 24px;
 }
@@ -1343,7 +1342,7 @@ p.c {
 	padding: 6px 10px;
 	border-radius: 999px;
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 500;
 }
 
 .status-pill.active {
@@ -1525,7 +1524,7 @@ p.c {
 .teacher-modal-header h3 {
 	color: #fff;
 	font-size: 22px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .teacher-modal-form {
@@ -1579,7 +1578,7 @@ p.c {
 	flex: 1;
 	padding: 13px 16px;
 	border-radius: 14px;
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 15px;
 	cursor: pointer;
 }
@@ -1631,17 +1630,13 @@ p.c {
 	gap: 32px;
 }
 
-.users-top-grid {
-	
-	display: grid;
-	grid-template-columns: 2fr 1fr;
-	gap: 24px;
-}
-
 .user-stat-box {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 14px;
+	color: #94a3b8;
+	flex: 0 0 88px;
 }
 
 .user-stat-row {
@@ -1711,7 +1706,7 @@ p.c {
 	text-align: left;
 	color: #94a3b8;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 500;
 	text-transform: uppercase;
 	border-bottom: 1px solid #334155;
 }
@@ -1730,24 +1725,6 @@ p.c {
 	color: #e2e8f0;
 }
 
-.role-pill {
-	display: inline-block;
-	padding: 6px 10px;
-	border-radius: 999px;
-	font-size: 12px;
-	font-weight: 700;
-}
-
-.role-pill.student {
-	background: rgba(67, 121, 242, 0.15);
-	color: #4379F2;
-}
-
-.role-pill.parent {
-	background: rgba(157, 178, 191, 0.15);
-	color: #9DB2BF;
-}
-
 .users-board-footer {
 	padding: 16px;
 	border-top: 1px solid #334155;
@@ -1763,7 +1740,7 @@ p.c {
 
 .user-detail-grid {
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1.5fr 2fr;
 	gap: 10px;
 }
 
@@ -1774,7 +1751,7 @@ p.c {
 .user-profile-name {
 	color: #f8fafc;
 	font-size: 28px;
-	font-weight: 800;
+	font-weight: 600;
 	margin-bottom: 12px;
 }
 
@@ -1796,14 +1773,17 @@ p.c {
 
 .users-top-grid {
 	display: grid;
-	grid-template-columns: 2fr 1fr;
-	gap: 24px;
+	grid-template-columns: 1fr 1fr;
+	gap: 36px;
 }
 
 .user-stat-box {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 14px;
+	color: #94a3b8;
+	flex: 0 0 88px;
 }
 
 .user-stat-row {
@@ -1812,6 +1792,54 @@ p.c {
 	align-items: center;
 	color: #cbd5e1;
 	font-size: 15px;
+}
+.user-stat-box-a {
+	display: inline-flex;
+	justify-content: space-between;
+	flex-direction: space-between;
+	gap: 10px;
+	margin-top: 12px;
+	margin-left: 12px;
+}
+
+.user-stat-row-a {
+	display: flex;
+	align-items: center;
+	
+}
+
+.admin-stats-legend-dot-a {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	color: #cbd5e1;
+	font-weight: 500;
+}
+
+.admin-stats-legend-dot-a::before {
+	content: "";
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	background: #64748b;
+}
+
+.admin-stats-legend-dot-a.student::before {
+	background: #4379F2;
+}
+
+.admin-stats-legend-dot-a.parent::before {
+	background: #FF7777;
+}
+
+.admin-stats-legend-dot-a.teacher::before {
+	background: #00d37a;
+}
+
+.admin-stats-legend-dot-a.total::before {
+	background: #9CA3AF;
 }
 
 .users-board {
@@ -1897,20 +1925,18 @@ p.c {
 	padding: 6px 10px;
 	border-radius: 999px;
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 500;
 }
 
 .role-pill.student {
-	background: rgba(67, 121, 242, 0.15);
-	color: #4379F2;
+	background: rgba(0, 139, 255, 0.25);
+	border-color: #4379F2;
 }
 
 .role-pill.parent {
-	background: rgba(157, 178, 191, 0.15);
-	color: #9DB2BF;
+	background: rgba(255, 119, 119, 0.21);
+	border-color: #FF7777;
 }
-
-
 
 .admin-user-detail-page {
 	display: flex;
@@ -1920,7 +1946,7 @@ p.c {
 
 .user-detail-grid {
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1.2fr 2fr;
 	gap: 2px;
 }
 
@@ -1931,7 +1957,7 @@ p.c {
 .user-profile-name {
 	color: #f8fafc;
 	font-size: 28px;
-	font-weight: 800;
+	font-weight: 600;
 	margin-bottom: 12px;
 }
 
@@ -1944,10 +1970,19 @@ p.c {
 		align-items: stretch;
 	}
 }
+canvas#teacherTrendChart {
+    height: 200px;
+}
 
 canvas#userWeeklyChart {
 	margin-top: 12px;
-    margin-bottom: 12px;
+	margin-bottom: 12px;
+}
+canvas#userRoleLoginTrendChart{
+	height: 300px;
+}
+canvas#userRoleChart{
+	height: 260px;
 }
 /* =========================
    사용자 상세 - 계정 정보 카드
@@ -1982,8 +2017,51 @@ canvas#userWeeklyChart {
 	align-items: center;
 	justify-content: center;
 	font-size: 28px;
-	color: #94a3b8;
 	flex-shrink: 0;
+}
+
+.user-profile-avatar i {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 30px;
+	line-height: 1;
+	position: static;
+}
+
+.user-profile-avatar i::before {
+	display: block;
+	line-height: 1;
+}
+
+.user-profile-avatar.student {
+	background: rgba(0, 139, 255, 0.12);
+	border-color: #4379F2;
+}
+
+.user-profile-avatar.student i {
+	color: #60a5fa;
+}
+
+.user-profile-avatar.parent {
+	left: 50px;
+	background: rgba(255, 119, 119, 0.12);
+	border-color: #FF7777;
+}
+
+.user-profile-avatar.parent i {
+	color: #fda4af;
+}
+
+.user-profile-avatar.teacher {
+	background: rgba(0, 211, 122, 0.12);
+	border-color: #00d37a;
+}
+
+.user-profile-avatar.teacher i {
+	color: #34d399;
 }
 
 .user-profile-main {
@@ -1995,7 +2073,7 @@ canvas#userWeeklyChart {
 .user-profile-name {
 	font-size: 28px;
 	text-align: left;
-	font-weight: 700;
+	font-weight: 600;
 	color: #f8fafc;
 	margin: 0;
 }
@@ -2020,7 +2098,6 @@ canvas#userWeeklyChart {
 	gap: 16px;
 	min-height: 44px;
 	padding: 8px 0;
-	
 }
 
 .user-profile-info-item:last-child {
@@ -2030,14 +2107,14 @@ canvas#userWeeklyChart {
 .user-profile-label {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
-	font-size: 16px;
+	gap: 5px;
+	font-size: 14px;
 	color: #94a3b8;
 	flex: 0 0 88px;
 }
 
 .user-profile-value {
-	font-size: 14px;
+	font-size: 12px;
 	color: #e2e8f0;
 	text-align: right;
 }
@@ -2045,7 +2122,6 @@ canvas#userWeeklyChart {
 .user-profile-value-multi {
 	flex: 1;
 	min-width: 0;
-
 	margin-left: auto;
 	white-space: normal;
 	word-break: keep-all;
@@ -2069,17 +2145,15 @@ canvas#userWeeklyChart {
 	color: #FF7777;
 }
 
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.user-profile-summary {
 		flex-direction: column;
 		align-items: flex-start;
 	}
-
 	.user-profile-info-item {
 		flex-direction: column;
 		align-items: flex-start;
 	}
-
 	.user-profile-value {
 		text-align: left;
 	}

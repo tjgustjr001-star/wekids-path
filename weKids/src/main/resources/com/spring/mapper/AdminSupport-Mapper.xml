@@ -102,7 +102,12 @@
     FROM support_file
     WHERE support_id = #{supportNo}
 </select>
+<select id="selectPendingSupportCount" resultType="int">
+    SELECT COUNT(*)
+    FROM support
+    WHERE status = '대기중'
 
+</select>
 
     
     

@@ -23,7 +23,7 @@
 .learning-page-title {
     margin: 0;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-tab-group {
@@ -41,7 +41,7 @@
     padding: 10px 18px;
     border-radius: 10px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -235,7 +235,7 @@
     padding: 4px 9px;
     border-radius: 8px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-required-badge.required {
@@ -251,7 +251,7 @@
 .learning-title {
     margin: 0;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.4;
 }
 
@@ -329,7 +329,7 @@
 .learning-inline-progress-text {
     color: #00d37a;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-card-right {
@@ -344,7 +344,7 @@
     padding: 7px 14px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-status-badge.done {
@@ -371,7 +371,7 @@
     border-radius: 10px;
     padding: 11px 12px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -443,7 +443,7 @@
     background: rgba(67, 121, 242, 0.10);
     color: #4379F2;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-modal-required-badge {
@@ -452,13 +452,13 @@
     background: #fef2f2;
     color: #dc2626;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-modal-title {
     margin: 0;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-modal-close-btn {
@@ -569,7 +569,7 @@
 .text-content h3 {
     margin-top: 0;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .text-content p {
@@ -670,7 +670,7 @@ button.learning-text-complete-btn {
     background: #477f5b;
     color: #ffffff;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1;
     cursor: pointer;
     appearance: none;
@@ -701,7 +701,7 @@ button.learning-text-complete-btn:disabled {
 
 .learning-link-anchor {
     color: #4379F2;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-modal-side {
@@ -721,7 +721,7 @@ button.learning-text-complete-btn:disabled {
 .learning-side-section h3 {
     margin: 0 0 18px;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-side-progress-head {
@@ -766,7 +766,7 @@ button.learning-text-complete-btn:disabled {
 .learning-difficulty-form h4 {
     margin: 0 0 10px;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-difficulty-panel p {
@@ -783,7 +783,7 @@ button.learning-text-complete-btn:disabled {
     border-radius: 12px;
     padding: 13px 16px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -844,7 +844,7 @@ button.learning-text-complete-btn:disabled {
     border-color: #4379F2;
     background: rgba(67, 121, 242, 0.06);
     color: #4379F2;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .difficulty-message-input {
@@ -876,7 +876,7 @@ button.learning-text-complete-btn:disabled {
     border-radius: 14px;
     padding: 14px 18px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -907,7 +907,7 @@ button.learning-text-complete-btn:disabled {
     text-align: center;
     color: #9ca3af;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-toast-container {
@@ -928,7 +928,7 @@ button.learning-text-complete-btn:disabled {
     border-radius: 14px;
     color: #fff;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     box-shadow: 0 12px 30px rgba(17, 24, 39, 0.18);
     opacity: 0;
     transform: translateY(10px);
@@ -1031,7 +1031,7 @@ button.learning-text-complete-btn:disabled {
     padding: 4px 9px;
     border-radius: 8px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-open-badge.open {

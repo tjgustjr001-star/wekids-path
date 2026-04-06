@@ -16,6 +16,7 @@
 		<result property="connectionStatus" column="connection_status" />
 		<result property="lastLoginAt" column="last_login_at" />
 		<result property="accountStatus" column="account_status" />
+		
 	</resultMap>
 
 	<resultMap id="AdminUserDetailResultMap"
@@ -27,164 +28,180 @@
 		<result property="roleCode" column="role_code" />
 		<result property="roleName" column="role_name" />
 		<result property="accountStatus" column="account_status" />
+		<result property="connectionStatus" column="connection_status" />
 		<result property="lastLoginAt" column="last_login_at" />
 		<result property="createdAt" column="created_at" />
 		<result property="classInfo" column="class_info" />
-		<result property="connectionStatus" column="connection_status" />
 		<result property="deviceInfo" column="device_info" />
 		<result property="accessLocation" column="access_location" />
 	</resultMap>
 
 	<select id="selectUserList" resultMap="AdminUserListResultMap">
-		SELECT *
-		FROM (
+	SELECT *
+	FROM (
 		SELECT
-		m.member_id,
-		s.student_name AS name,
-		m.login_id,
-		m.email,
-		'STUDENT' AS
-		role_code,
-		'학생' AS role_name,
-		CASE
-		WHEN EXISTS (
-		SELECT 1
-		FROM
-		student_parent sp
-		WHERE sp.student_id = s.student_id
-		AND sp.link_status
-		= 1
-		) THEN '연결'
-		ELSE '미연결'
-		END AS connection_status,
-		TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
-		m.account_status
+			m.member_id,
+			s.student_name AS name,
+			m.login_id,
+			m.email,
+			'STUDENT' AS role_code,
+			'학생' AS role_name,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.student_id = s.student_id
+					AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			m.account_status
 		FROM member m
-		JOIN student s ON m.member_id =
-		s.student_id
-		WHERE m.account_status !=
-		'DELETED'
+		JOIN student s
+			ON m.member_id = s.student_id
+		WHERE m.account_status != 'DELETED'
 
 		UNION ALL
 
 		SELECT
-		m.member_id,
-		p.parent_name AS name,
-		m.login_id,
-		m.email,
-		'PARENT' AS
-		role_code,
-		'학부모' AS role_name,
-		CASE
-		WHEN EXISTS (
-		SELECT 1
-		FROM
-		student_parent sp
-		WHERE sp.parent_id = p.parent_id
-		AND sp.link_status =
-		1
-		) THEN '연결'
-		ELSE '미연결'
-		END AS connection_status,
-		TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
-		m.account_status
+			m.member_id,
+			p.parent_name AS name,
+			m.login_id,
+			m.email,
+			'PARENT' AS role_code,
+			'학부모' AS role_name,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.parent_id = p.parent_id
+					AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			m.account_status
 		FROM member m
-		JOIN parent p ON m.member_id =
-		p.parent_id
-		WHERE m.account_status !=
-		'DELETED'
-		)
-		ORDER BY member_id
-	</select>
-<select id="selectUserDetailById" parameterType="int" resultMap="AdminUserDetailResultMap">
-    SELECT *
-    FROM (
-        SELECT
-            m.member_id,
-            s.student_name AS name,
-            m.login_id,
-            m.email,
-            'STUDENT' AS role_code,
-            '학생' AS role_name,
-            m.account_status,
-            TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
-            TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
-            NVL((
-                SELECT LISTAGG(c.class_name, ', ') WITHIN GROUP (ORDER BY c.class_id)
-                FROM student_class sc
-                JOIN class c ON sc.class_id = c.class_id
-                WHERE sc.student_id = s.student_id
-            ), '-') AS class_info,
-            CASE
-                WHEN EXISTS (
-                    SELECT 1
-                    FROM student_parent sp
-                    WHERE sp.student_id = s.student_id
-                      AND sp.link_status = 1
-                ) THEN '연결'
-                ELSE '미연결'
-            END AS connection_status,
-            NVL((
-                SELECT MAX(ll.user_agent) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
-                FROM login_log ll
-                WHERE ll.member_id = m.member_id
-                  AND ll.login_result = 'SUCCESS'
-            ), '-') AS device_info,
-            NVL((
-                SELECT MAX(ll.ip_address) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
-                FROM login_log ll
-                WHERE ll.member_id = m.member_id
-                  AND ll.login_result = 'SUCCESS'
-            ), '-') AS access_location
-        FROM member m
-        JOIN student s ON m.member_id = s.student_id
-        WHERE m.member_id = #{memberId}
+		JOIN parent p
+			ON m.member_id = p.parent_id
+		WHERE m.account_status != 'DELETED'
 
-        UNION ALL
+		UNION ALL
 
-        SELECT
-            m.member_id,
-            p.parent_name AS name,
-            m.login_id,
-            m.email,
-            'PARENT' AS role_code,
-            '학부모' AS role_name,
-            m.account_status,
-            TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
-            TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
-            NVL((
-                SELECT LISTAGG(c.class_name, ', ') WITHIN GROUP (ORDER BY c.class_id)
-                FROM student_parent sp
-                JOIN student_class sc ON sp.student_id = sc.student_id
-                JOIN class c ON sc.class_id = c.class_id
-                WHERE sp.parent_id = p.parent_id
-                  AND sp.link_status = 1
-            ), '-') AS class_info,
-            CASE
-                WHEN EXISTS (
-                    SELECT 1
-                    FROM student_parent sp
-                    WHERE sp.parent_id = p.parent_id
-                      AND sp.link_status = 1
-                ) THEN '연결'
-                ELSE '미연결'
-            END AS connection_status,
-            NVL((
-                SELECT MAX(ll.user_agent) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
-                FROM login_log ll
-                WHERE ll.member_id = m.member_id
-                  AND ll.login_result = 'SUCCESS'
-            ), '-') AS device_info,
-            NVL((
-                SELECT MAX(ll.ip_address) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
-                FROM login_log ll
-                WHERE ll.member_id = m.member_id
-                  AND ll.login_result = 'SUCCESS'
-            ), '-') AS access_location
-        FROM member m
-        JOIN parent p ON m.member_id = p.parent_id
-        WHERE m.member_id = #{memberId}
-    )
+		SELECT
+			m.member_id,
+			t.teacher_name AS name,
+			m.login_id,
+			m.email,
+			'TEACHER' AS role_code,
+			'교사' AS role_name,
+			'-' AS connection_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			m.account_status
+		FROM member m
+		JOIN teacher t
+			ON m.member_id = t.teacher_id
+		WHERE m.account_status != 'DELETED'
+	)
+	ORDER BY member_id
+</select>
+<select id="selectUserDetailById" parameterType="int"
+	resultMap="AdminUserDetailResultMap">
+	SELECT *
+	FROM (
+		SELECT
+			m.member_id,
+			s.student_name AS name,
+			m.login_id,
+			m.email,
+			'STUDENT' AS role_code,
+			'학생' AS role_name,
+			m.account_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
+			NVL((
+				SELECT LISTAGG(x.class_name, ', ') WITHIN GROUP (ORDER BY x.class_id)
+				FROM (
+					SELECT DISTINCT sc.student_id, c.class_id, c.class_name
+					FROM student_class sc
+					JOIN class c ON sc.class_id = c.class_id
+				) x
+				WHERE x.student_id = s.student_id
+			), '-') AS class_info,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.student_id = s.student_id
+					AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			NVL((
+				SELECT MAX(ll.user_agent) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
+				FROM login_log ll
+				WHERE ll.member_id = m.member_id
+				AND ll.login_result = 'SUCCESS'
+			), '-') AS device_info,
+			NVL((
+				SELECT MAX(ll.ip_address) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
+				FROM login_log ll
+				WHERE ll.member_id = m.member_id
+				AND ll.login_result = 'SUCCESS'
+			), '-') AS access_location
+		FROM member m
+		JOIN student s ON m.member_id = s.student_id
+		WHERE m.member_id = #{memberId}
+
+		UNION ALL
+
+		SELECT
+			m.member_id,
+			p.parent_name AS name,
+			m.login_id,
+			m.email,
+			'PARENT' AS role_code,
+			'학부모' AS role_name,
+			m.account_status,
+			TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+			TO_CHAR(m.created_at, 'YY/MM/DD') AS created_at,
+			NVL((
+				SELECT LISTAGG(x.class_name, ', ') WITHIN GROUP (ORDER BY x.class_id)
+				FROM (
+					SELECT DISTINCT sp.parent_id, c.class_id, c.class_name
+					FROM student_parent sp
+					JOIN student_class sc ON sp.student_id = sc.student_id
+					JOIN class c ON sc.class_id = c.class_id
+					WHERE sp.link_status = 1
+				) x
+				WHERE x.parent_id = p.parent_id
+			), '-') AS class_info,
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM student_parent sp
+					WHERE sp.parent_id = p.parent_id
+					AND sp.link_status = 1
+				) THEN '연결'
+				ELSE '미연결'
+			END AS connection_status,
+			NVL((
+				SELECT MAX(ll.user_agent) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
+				FROM login_log ll
+				WHERE ll.member_id = m.member_id
+				AND ll.login_result = 'SUCCESS'
+			), '-') AS device_info,
+			NVL((
+				SELECT MAX(ll.ip_address) KEEP (DENSE_RANK LAST ORDER BY ll.created_at)
+				FROM login_log ll
+				WHERE ll.member_id = m.member_id
+				AND ll.login_result = 'SUCCESS'
+			), '-') AS access_location
+		FROM member m
+		JOIN parent p ON m.member_id = p.parent_id
+		WHERE m.member_id = #{memberId}
+	)
 </select>
 	<update id="updateUserStatus" parameterType="map">
 		UPDATE member
@@ -370,5 +387,38 @@
 		ORDER BY
 		day_list.day_key
 	</select>
+	<select id="selectUserRoleLoginTrend"
+        resultType="com.spring.dto.admin.UserRoleLoginTrendDTO">
+    SELECT
+        day_list.day_label AS dayLabel,
+        NVL(SUM(CASE WHEN login_data.role_code = 'STUDENT' THEN login_data.login_count ELSE 0 END), 0) AS studentCount,
+        NVL(SUM(CASE WHEN login_data.role_code = 'PARENT' THEN login_data.login_count ELSE 0 END), 0) AS parentCount,
+        NVL(SUM(CASE WHEN login_data.role_code = 'TEACHER' THEN login_data.login_count ELSE 0 END), 0) AS teacherCount
+    FROM (
+        SELECT
+            TO_CHAR(TRUNC(SYSDATE) - (7 - LEVEL), 'YYYY-MM-DD') AS day_key,
+            TO_CHAR(TRUNC(SYSDATE) - (7 - LEVEL), 'MM/DD') AS day_label
+        FROM dual
+        CONNECT BY LEVEL &lt;= 7
+    ) day_list
+    LEFT JOIN (
+        SELECT
+            TO_CHAR(ll.created_at, 'YYYY-MM-DD') AS day_key,
+            a.role_code,
+            COUNT(*) AS login_count
+        FROM login_log ll
+        JOIN authority a
+          ON ll.member_id = a.member_id
+        WHERE ll.login_result = 'SUCCESS'
+          AND ll.created_at &gt;= TRUNC(SYSDATE) - 6
+          AND ll.created_at &lt; TRUNC(SYSDATE) + 1
+        GROUP BY
+            TO_CHAR(ll.created_at, 'YYYY-MM-DD'),
+            a.role_code
+    ) login_data
+      ON day_list.day_key = login_data.day_key
+    GROUP BY day_list.day_key, day_list.day_label
+    ORDER BY day_list.day_key
+</select>
 
 </mapper>

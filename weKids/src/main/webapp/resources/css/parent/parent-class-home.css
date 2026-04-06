@@ -37,7 +37,7 @@
 .parent-class-home-hero__title {
     margin: 0 0 16px;
     font-size: 54px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.1;
     letter-spacing: -1.5px;
     color: #ffffff;
@@ -111,7 +111,7 @@
 .summary-card__label {
     margin: 0 0 12px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     color: #6b7280;
     line-height: 1.5;
     word-break: keep-all;
@@ -120,7 +120,7 @@
 .summary-card__value {
     margin: 0;
     font-size: 26px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.35;
     color: #111827;
     letter-spacing: -0.8px;
@@ -145,7 +145,7 @@
     justify-content: center;
     box-shadow: 0 6px 16px rgba(17, 24, 39, 0.1);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
@@ -218,7 +218,7 @@
 .parent-home-section__title {
     margin: 0 0 20px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     letter-spacing: -0.5px;
 }
@@ -263,7 +263,7 @@
     background: #4379F2;
     color: #ffffff;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -271,7 +271,7 @@
 
 .message-card__author {
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1f2937;
 }
 
@@ -331,7 +331,7 @@
     background: #fee2e2;
     color: #dc2626;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
@@ -412,9 +412,9 @@
 
 .parent-class-home { gap: 24px; }
 .parent-class-home-hero { min-height: 208px; padding: 34px 38px; border-radius: 28px; }
-.parent-class-home-hero__title { font-size: 40px; font-weight: 700; letter-spacing: -0.04em; }
+.parent-class-home-hero__title { font-size: 40px; font-weight: 600; letter-spacing: -0.04em; }
 .parent-class-home-hero__desc { font-size: 16px; }
 .summary-card { min-height: 188px; border-radius: 24px; padding: 24px; }
 .summary-card__label { font-size: 14px; font-weight: 600; }
-.summary-card__value { font-size: 24px; font-weight: 700; }
+.summary-card__value { font-size: 24px; font-weight: 600; }
 .summary-card__icon { width: 50px; height: 50px; }

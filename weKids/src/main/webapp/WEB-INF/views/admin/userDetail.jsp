@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <div class="admin-user-detail-page">
 
@@ -14,8 +16,7 @@
 				<div class="user-profile-top-row">
 					<h2 class="panel-title no-margin">계정 정보</h2>
 
-					<span
-						class="role-pill
+					<span class="role-pill
             ${user.roleCode eq 'STUDENT' ? 'student' : ''}
             ${user.roleCode eq 'PARENT' ? 'parent' : ''}
             ${user.roleCode eq 'TEACHER' ? 'teacher' : ''}
@@ -30,8 +31,27 @@
 				</div>
 
 				<div class="user-profile-summary">
-					<div class="user-profile-avatar">
-						<i class="fa-solid fa-user"></i>
+					<div class="user-profile-avatar"
+						${user.roleCode eq 'ROLE_STUDENT' or user.roleCode eq 'STUDENT' ? 'student' : ''}
+						${user.roleCode eq 'ROLE_PARENT' or user.roleCode eq 'PARENT' ? 'parent' : ''}${user.roleCode eq 'ROLE_TEACHER' or user.roleCode eq 'TEACHER' ? 'teacher' : ''}">
+
+						<c:choose>
+							<c:when
+								test="${user.roleCode eq 'ROLE_STUDENT' or user.roleCode eq 'STUDENT'}">
+								<i class="fa-solid fa-user-graduate"></i>
+							</c:when>
+							<c:when
+								test="${user.roleCode eq 'ROLE_PARENT' or user.roleCode eq 'PARENT'}">
+								<i class="fa-solid fa-people-roof"></i>
+							</c:when>
+							<c:when
+								test="${user.roleCode eq 'ROLE_TEACHER' or user.roleCode eq 'TEACHER'}">
+								<i class="fa-solid fa-user-pen"></i>
+							</c:when>
+							<c:otherwise>
+								<i class="fa-solid fa-user-astronaut"></i>
+							</c:otherwise>
+						</c:choose>
 					</div>
 
 					<div class="user-profile-main">

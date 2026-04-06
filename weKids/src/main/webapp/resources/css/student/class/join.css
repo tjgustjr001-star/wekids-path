@@ -40,7 +40,7 @@
 .class-join-card h1 {
     margin: 0 0 14px;
     font-size: 34px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.2;
     text-align: center;
     color: #111827;
@@ -68,7 +68,7 @@
 
 .form-group label {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -98,7 +98,7 @@
     border-radius: 24px;
     background: #f9fafb;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     text-align: center;
     letter-spacing: 1px;
@@ -108,7 +108,7 @@
 
 .invite-input-wrap input::placeholder {
     color: #9ca3af;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .invite-input-wrap input:focus {
@@ -121,7 +121,7 @@
     margin: 0;
     font-size: 14px;
     color: #dc2626;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
 }
 
@@ -134,7 +134,7 @@
 .join-guide-box h3 {
     margin: 0 0 16px;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     position: relative;
     padding-left: 14px;
@@ -167,7 +167,7 @@
     background: #a9b8f8;
     color: #ffffff;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     box-shadow: 0 10px 20px rgba(92, 124, 250, 0.18);
 }

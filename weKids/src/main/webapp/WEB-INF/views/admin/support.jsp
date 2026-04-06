@@ -4,6 +4,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 <%-- 상태별 카운트 집계 --%>
 <c:set var="pendingCount" value="0" />
 <c:set var="answeredCount" value="0" />
@@ -34,41 +37,64 @@
 			<p class="page-desc">사용자 문의 및 신고 내역을 확인하고 답변을 등록합니다.</p>
 		</div>
 		<div class="page-header-actions">
-			<button type="button" class="primary-btn" onclick="location.href='${pageContext.request.contextPath}/admin/supportFaq'">FAQ 관리</button>
-				
+			<button type="button" class="primary-btn"
+				onclick="location.href='${pageContext.request.contextPath}/support/faq'">FAQ
+				등록</button>
+
 		</div>
 	</div>
 
 	<%-- ── 통계 카드 ── --%>
-	<div class="support-stat-grid">
-		<section class="panel-card">
-			<div class="support-stat-item">
-				<span class="support-stat-label">전체 문의</span> <strong
-					class="support-stat-value">${totalCount}<span
-					class="support-stat-unit">건</span></strong>
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box blue">
+					<i class="fa-regular fa-message"></i>
+				</div>
 			</div>
-		</section>
-		<section class="panel-card">
-			<div class="support-stat-item">
-				<span class="support-stat-label">답변 대기</span> <strong
-					class="support-stat-value pending">${pendingCount}<span
-					class="support-stat-unit">건</span></strong>
+			<div class="stat-label">전체 문의</div>
+			<div class="stat-value">
+				<span class="support-stat-value-a">${totalCount} </span>
 			</div>
-		</section>
-		<section class="panel-card">
-			<div class="support-stat-item">
-				<span class="support-stat-label">답변 완료</span> <strong
-					class="support-stat-value answered">${answeredCount}<span
-					class="support-stat-unit">건</span></strong>
+		</div>
+
+		<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box yellow">
+					<i class="fa-regular fa-clock"></i>
+				</div>
+
 			</div>
-		</section>
-		<section class="panel-card">
-			<div class="support-stat-item">
-				<span class="support-stat-label">신고</span> <strong
-					class="support-stat-value report">${reportCount}<span
-					class="support-stat-unit">건</span></strong>
+			<div class="stat-label">답변 대기</div>
+			<div class="stat-value">
+				<span class="support-stat-value-b">${pendingCount} </span>
 			</div>
-		</section>
+		</div>
+
+		<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box green">
+					<i class="fa-regular fa-circle-check"></i>
+				</div>
+			</div>
+			<div class="stat-label">답변 완료</div>
+			<div class="stat-value">
+				<span class="support-stat-value-c">${answeredCount} </span>
+			</div>
+		</div>
+
+
+		<div class="stat-card">
+			<div class="stat-top">
+				<div class="icon-box pink">
+					<i class="fa-solid fa-exclamation"></i>
+				</div>
+			</div>
+			<div class="stat-label">신고</div>
+			<div class="stat-value">
+				<span class="support-stat-value-d">${reportCount} </span>
+			</div>
+		</div>
 	</div>
 
 	<%-- ── 주간 차트 ── --%>
@@ -180,7 +206,8 @@
 		</div>
 
 		<div class="users-board-footer">
-			<span>총 <span id="supportCountText">${totalCount}</span>건</span>
+			<span>총 <span id="supportCountText">${totalCount}</span>건
+			</span>
 			<div class="support-pagination" id="paginationWrap"></div>
 		</div>
 	</section>
@@ -192,21 +219,26 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     /* 1. 주간 차트 생성 */
-    const ctx = document.getElementById('supportWeeklyChart');
-    if (ctx) {
+    const supportChartCanvas = document.getElementById('supportWeeklyChart');
+
+    if (supportChartCanvas && typeof Chart !== 'undefined') {
         const labels = [];
         const completedData = [];
         const pendingData = [];
 
-        // 데이터 바인딩 (별칭 대소문자 주의)
         <c:forEach var="stat" items="${weeklyStats}">
-            labels.push("${stat.TARGETDATE}"); 
-            completedData.push(${stat.COMPLETEDCOUNT});
-            pendingData.push(${stat.PENDINGCOUNT});
+            labels.push("${stat.TARGETDATE}");
+            completedData.push(${empty stat.COMPLETEDCOUNT ? 0 : stat.COMPLETEDCOUNT});
+            pendingData.push(${empty stat.PENDINGCOUNT ? 0 : stat.PENDINGCOUNT});
         </c:forEach>
 
         if (labels.length > 0) {
-            new Chart(ctx, {
+            const oldChart = Chart.getChart(supportChartCanvas);
+            if (oldChart) {
+                oldChart.destroy();
+            }
+
+            new Chart(supportChartCanvas, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -215,32 +247,115 @@ document.addEventListener("DOMContentLoaded", function () {
                             label: '답변 완료',
                             data: completedData,
                             borderColor: '#4ade80',
-                            backgroundColor: 'rgba(74,222,128,0.07)',
-                            tension: 0.45, fill: true, borderWidth: 2.5, pointBackgroundColor: '#4ade80'
+                            backgroundColor: 'rgba(74, 222, 128, 0.07)',
+                            borderWidth: 3,
+                            tension: 0.38,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#4ade80',
+                            pointBorderWidth: 2,
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: '#4ade80'
                         },
                         {
                             label: '답변 대기',
                             data: pendingData,
                             borderColor: '#facc15',
-                            backgroundColor: 'rgba(250,204,21,0.05)',
-                            tension: 0.45, fill: true, borderWidth: 2.5, pointBackgroundColor: '#facc15'
+                            backgroundColor: 'rgba(250, 204, 21, 0.05)',
+                            borderWidth: 3,
+                            tension: 0.38,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#facc15',
+                            pointBorderWidth: 2,
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: '#facc15'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            right: 18,
+                            left: 18,
+                            bottom: 0
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                padding: 16,
+                                font: {
+                                    size: 15
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            borderColor: 'rgba(148, 163, 184, 0.25)',
+                            borderWidth: 1,
+                            titleColor: '#f8fafc',
+                            bodyColor: '#dbeafe',
+                            displayColors: true,
+                            padding: 12,
+                            cornerRadius: 10
+                        }
+                    },
                     scales: {
-                        y: {  beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' },
+                    	
+                        x: {
+                        
                             ticks: {
-                                font: { size: 12 },
-                                stepSize: 1,      // ← ticks 안으로
-                                precision: 0      // ← ticks 안으로
+                                color: '#94a3b8',
+                                font: {
+                                    size: 12
+                                },
+                                padding: 12
                             },
-                            min: 0},
-                        x: { grid: { color: 'rgba(0,0,0,0.05)' } }
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.25)'
+                            },
+                            border: {
+                                color: 'rgba(71, 85, 105, 0.35)'
+                            }
+                        },
+                        y: {
+                        	offset: true,
+                            beginAtZero: true,
+                            min: 0,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 12
+                                },
+                                padding: 8,
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.25)'
+                            },
+                            border: {
+                                color: 'rgba(71, 85, 105, 0.35)'
+                            }
+                        }
                     }
                 }
             });
@@ -249,84 +364,96 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* 2. 필터 및 페이징 */
     const tabBtns = document.querySelectorAll(".support-tab-btn");
-    const catEl   = document.getElementById('supportCategoryFilter');
+    const catEl = document.getElementById('supportCategoryFilter');
     const searchEl = document.getElementById('supportSearchInput');
 
-    const PAGE_SIZE = 10;   // 페이지당 행 수
+    const PAGE_SIZE = 10;
     let currentPage = 1;
-    let filteredRows = [];  // 필터 통과한 행 목록
+    let filteredRows = [];
 
     function applyFilter() {
         const activeBtn = document.querySelector(".support-tab-btn.active");
-        const status    = activeBtn ? activeBtn.dataset.filter : '전체';
-        const category  = catEl    ? catEl.value               : '';
-        const keyword   = searchEl ? searchEl.value.toLowerCase().trim() : '';
+        const status = activeBtn ? activeBtn.dataset.filter : '전체';
+        const category = catEl ? catEl.value : '';
+        const keyword = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-        // 필터 통과한 행만 추려서 저장
         filteredRows = [];
-        document.querySelectorAll('.support-row').forEach(function(row) {
-            const matchStatus   = status === '전체' || row.dataset.status === status;
-            const matchCategory = !category || row.dataset.category.includes(category);
-            const matchKeyword  = !keyword  ||
-                row.dataset.title.toLowerCase().includes(keyword) ||
-                (row.dataset.writer || '').toLowerCase().includes(keyword);
 
-            row.style.display = 'none'; // 일단 전부 숨김
+        document.querySelectorAll('.support-row').forEach(function(row) {
+            const rowStatus = row.dataset.status || '';
+            const rowCategory = row.dataset.category || '';
+            const rowTitle = (row.dataset.title || '').toLowerCase();
+            const rowWriter = (row.dataset.writer || '').toLowerCase();
+
+            const matchStatus = status === '전체' || rowStatus === status;
+            const matchCategory = !category || rowCategory.includes(category);
+            const matchKeyword =
+                !keyword ||
+                rowTitle.includes(keyword) ||
+                rowWriter.includes(keyword);
+
+            row.style.display = 'none';
+
             if (matchStatus && matchCategory && matchKeyword) {
                 filteredRows.push(row);
             }
         });
 
-        currentPage = 1;  // 필터 바뀌면 1페이지로
+        currentPage = 1;
         renderPage();
     }
 
     function renderPage() {
         const start = (currentPage - 1) * PAGE_SIZE;
-        const end   = start + PAGE_SIZE;
+        const end = start + PAGE_SIZE;
 
-        // 필터된 행만 현재 페이지 범위만 보이게
         filteredRows.forEach(function(row, i) {
             row.style.display = (i >= start && i < end) ? '' : 'none';
         });
 
-        // 총 건수 업데이트
         const countText = document.getElementById('supportCountText');
-        if (countText) countText.textContent = filteredRows.length;
+        if (countText) {
+            countText.textContent = filteredRows.length;
+        }
 
         renderPagination();
     }
 
     function renderPagination() {
-        const wrap      = document.getElementById('paginationWrap');
+        const wrap = document.getElementById('paginationWrap');
         if (!wrap) return;
 
         const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
-        wrap.innerHTML   = '';
+        wrap.innerHTML = '';
 
         if (totalPages <= 1) return;
 
-        // 이전 버튼
         const prevBtn = makePageBtn('이전', currentPage === 1, function() {
-            if (currentPage > 1) { currentPage--; renderPage(); }
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage();
+            }
         });
         wrap.appendChild(prevBtn);
 
-        // 페이지 번호
-        for (var p = 1; p <= totalPages; p++) {
-            (function(page) {
-                const btn = makePageBtn(page, false, function() {
-                    currentPage = page;
-                    renderPage();
-                });
-                if (page === currentPage) btn.classList.add('active');
-                wrap.appendChild(btn);
-            })(p);
+        for (let p = 1; p <= totalPages; p++) {
+            const btn = makePageBtn(String(p), false, function() {
+                currentPage = p;
+                renderPage();
+            });
+
+            if (p === currentPage) {
+                btn.classList.add('active');
+            }
+
+            wrap.appendChild(btn);
         }
 
-        // 다음 버튼
         const nextBtn = makePageBtn('다음', currentPage === totalPages, function() {
-            if (currentPage < totalPages) { currentPage++; renderPage(); }
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage();
+            }
         });
         wrap.appendChild(nextBtn);
     }
@@ -334,23 +461,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function makePageBtn(label, disabled, onClick) {
         const btn = document.createElement('button');
         btn.textContent = label;
-        btn.className   = 'support-page-btn';
-        btn.disabled    = disabled;
+        btn.className = 'support-page-btn';
+        btn.disabled = disabled;
         btn.addEventListener('click', onClick);
         return btn;
     }
-
-    // 이벤트 등록
-    tabBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            tabBtns.forEach(function(b) { b.classList.remove('active'); });
-            this.classList.add('active');
-            applyFilter();
-        });
-    });
-
-    if (catEl)    catEl.addEventListener('change', applyFilter);
-    if (searchEl) searchEl.addEventListener('input', debounce(applyFilter, 250));
 
     function debounce(fn, ms) {
         let timer;
@@ -360,11 +475,27 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
-    // 초기 실행
+    tabBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(function(b) {
+                b.classList.remove('active');
+            });
+            this.classList.add('active');
+            applyFilter();
+        });
+    });
+
+    if (catEl) {
+        catEl.addEventListener('change', applyFilter);
+    }
+
+    if (searchEl) {
+        searchEl.addEventListener('input', debounce(applyFilter, 250));
+    }
+
     applyFilter();
 });
 </script>
-
 <style>
 /* 기존 스타일 그대로 유지 */
 .support-tab-btn {
@@ -417,18 +548,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	line-height: 1.1;
 }
 
-.support-stat-value.pending {
-	color: #d97706;
-}
-
-.support-stat-value.answered {
-	color: #16a34a;
-}
-
-.support-stat-value.report {
-	color: #dc2626;
-}
-
 .support-stat-unit {
 	font-size: 14px;
 	font-weight: 500;
@@ -437,11 +556,12 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
 .support-chart-panel {
-	margin-bottom: 20px;
+	margin-top: 24px;
+	margin-bottom: 24px;
 }
 
 .support-chart-panel .chart-wrap {
-	height: 220px;
+	height: 300px;
 }
 
 .support-board-right {
@@ -493,10 +613,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	margin-bottom: 24px; /* ← 원하는 간격으로 조정 */
 }
 
-.admin-support-page {
-	padding-top: 24px !important;
-}
-
 #supportTable th, #supportTable td {
 	text-align: center;
 }
@@ -526,53 +642,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* ── 페이지네이션 ── */
 .users-board-footer {
-   display: grid;
-    grid-template-columns: 1fr auto 1fr; /* 3분할 레이아웃 */
-    align-items: center;
-    padding-top: 16px;
-    margin-top: 10px;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr; /* 3분할 레이아웃 */
+	align-items: center;
+	padding-top: 26px;
+	padding-top: 10px;
 }
 
 .support-pagination {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
 }
 
 .support-page-btn {
-    min-width: 34px;
-    height: 34px;
-    padding: 0 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-card, #1a1e2b);
-    border: 1px solid var(--border, rgba(255,255,255,0.08));
-    border-radius: 6px;
-    color: var(--text-secondary, #9ca3af);
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.15s;
+	min-width: 34px;
+	height: 34px;
+	padding: 0 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--bg-card, #1a1e2b);
+	border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+	border-radius: 6px;
+	color: var(--text-secondary, #9ca3af);
+	font-size: 13px;
+	font-weight: 500;
+	font-family: inherit;
+	cursor: pointer;
+	transition: all 0.15s;
 }
 
 .support-page-btn:hover:not(:disabled) {
-    background: var(--bg-card-hover, #1f2435);
-    color: var(--text-primary, #f9fafb);
-    border-color: rgba(255,255,255,0.15);
+	background: var(--bg-card-hover, #1f2435);
+	color: var(--text-primary, #f9fafb);
+	border-color: rgba(255, 255, 255, 0.15);
 }
 
 .support-page-btn.active {
-    background: #4a9eff;
-    border-color: #4a9eff;
-    color: #fff;
-    font-weight: 700;
+	background: #4a9eff;
+	border-color: #4a9eff;
+	color: #fff;
+	font-weight: 700;
 }
 
 .support-page-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+	opacity: 0.35;
+	cursor: not-allowed;
 }
 </style>
 

@@ -149,17 +149,17 @@ window.addEventListener('DOMContentLoaded', function() {
                 {
                     label: '학부모',
                     data: userGrowthData.map(function(item) { return item.parentCount; }),
-                    borderColor: '#A844FF',
-                    backgroundColor: '#A844FF',
+                    borderColor: '#ff7878',
+                    backgroundColor: '#ff7878',
                     borderWidth: 3,
                     tension: 0.38,
                     pointRadius: 4,
                     pointHoverRadius: 5,
                     pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#A844FF',
+                    pointBorderColor: '#ff7878',
                     pointBorderWidth: 2,
                     pointHoverBackgroundColor: '#ffffff',
-                    pointHoverBorderColor: '#A844FF',
+                    pointHoverBorderColor: '#ff7878',
                     fill: false
                 }
             ]
@@ -211,45 +211,32 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-	const roleLabelMap = {
-	    role_student: '학생',
-	    role_teacher: '교사',
-	    role_parent: '학부모',
-	    role_admin: '관리자',
-	    STUDENT: '학생',
-	    TEACHER: '교사',
-	    PARENT: '학부모',
-	    ADMIN: '관리자'
-	};
-
-	createChart(getEl('adminUserTypeChart'), {
-	    type: 'pie',
-	    data: {
-	        labels: userTypeData.map(function(item) {
-	            return roleLabelMap[item.name] || item.name;
-	        }),
-	        datasets: [{
-	            data: userTypeData.map(function(item) { return item.value; }),
-	            backgroundColor: userTypeData.map(function(item) { return item.color; }),
-	            borderColor: '#1e293b',
-	            borderWidth: 2
-	        }]
-	    },
-	    options: {
-	        responsive: true,
-	        maintainAspectRatio: false,
-	        plugins: {
-	            legend: { display: false },
-	            tooltip: {
-	                backgroundColor: '#0f172a',
-	                borderColor: '#334155',
-	                borderWidth: 1,
-	                titleColor: '#94a3b8',
-	                bodyColor: '#e2e8f0'
-	            }
-	        }
-	    }
-	});
+    createChart(getEl('adminUserTypeChart'), {
+        type: 'pie',
+        data: {
+            labels: userTypeData.map(function(item) { return item.name; }),
+            datasets: [{
+                data: userTypeData.map(function(item) { return item.value; }),
+                backgroundColor: userTypeData.map(function(item) { return item.color; }),
+                borderColor: '#1e293b',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    titleColor: '#94a3b8',
+                    bodyColor: '#e2e8f0'
+                }
+            }
+        }
+    });
 
 	createChart(getEl('adminAssignmentRateChart'), {
 	    type: 'bar',

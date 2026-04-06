@@ -46,7 +46,7 @@
 .parent-hero-card h1 {
     margin: 0 0 14px;
     font-size: 36px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.15;
 }
 
@@ -87,13 +87,13 @@
 
 .summary-title {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #374151;
 }
 
 .summary-value {
     font-size: 36px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -136,14 +136,14 @@
 .section-header h2 {
     margin: 0;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
 .detail-link {
     color: #4f46e5;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
 }
 
@@ -186,7 +186,7 @@
     background: #ffe1e1;
     color: #d92d20;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 

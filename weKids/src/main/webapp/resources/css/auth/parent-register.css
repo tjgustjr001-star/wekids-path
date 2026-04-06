@@ -36,7 +36,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-weight: 800;
+    font-weight: 600;
     color: #1f2937;
 }
 
@@ -72,7 +72,7 @@
 .title-section h1 {
     margin: 0 0 8px;
     font-size: 2rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -107,7 +107,7 @@
     background: #e5e7eb;
     color: #9ca3af;
     font-size: 0.8rem;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .step.active .step-circle {
@@ -121,7 +121,7 @@
 
 .step-text {
     font-size: 0.88rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #9ca3af;
 }
 
@@ -193,7 +193,7 @@
 .card-title-wrap h3 {
     margin: 0;
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -215,7 +215,7 @@
     border: 2px solid #e5e7eb;
     text-align: center;
     font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0.25em;
     color: #111827;
     padding: 0 16px;
@@ -244,7 +244,7 @@
     margin-bottom: 8px;
     color: #374151;
     font-size: 0.92rem;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .optional {
@@ -289,7 +289,7 @@
     border: none;
     cursor: pointer;
     border-radius: 14px;
-    font-weight: 800;
+    font-weight: 600;
     transition: all 0.2s ease;
 }
 
@@ -321,7 +321,7 @@
     padding: 10px 12px;
     border-radius: 12px;
     font-size: 0.84rem;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .inline-check-result.show {
@@ -348,7 +348,7 @@
     background: #ff7777;
     color: #ffffff;
     font-size: 1.05rem;
-    font-weight: 800;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -380,7 +380,7 @@
 
 .page-footer a {
     color: var(--color-brand-blue);
-    font-weight: 800;
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {

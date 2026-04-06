@@ -62,11 +62,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     pointRadius: 4,
                     pointHoverRadius: 5,
                     pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#ed4a9b',
-                    pointBorderWidth: 2,
-                    pointHoverBackgroundColor: '#ffffff',
-                    pointHoverBorderColor: '#ed4a9b'
-
+                    pointHoverBackgroundColor: '#ffffff'
                 }]
             },
             options: {
@@ -582,36 +578,153 @@ window.addEventListener('DOMContentLoaded', function() {
     createChart(getEl('userRoleChart'), {
         type: 'bar',
         data: {
-            labels: ['학생', '학부모'],
-            datasets: [{
-                data: [
-                    getValueNumber('studentUserCount'),
-                    getValueNumber('parentUserCount')
-                ],
-                backgroundColor: ['#4379F2', '#9DB2BF'],
-                borderRadius: 6,
-                barThickness: 28
-            }]
+            labels: [ '전체', '학생', '학부모', '교사'],
+			datasets: [{
+			    data: [
+					getValueNumber('totalUserCount'),
+			        getValueNumber('studentUserCount'),
+			        getValueNumber('parentUserCount'),
+			        getValueNumber('teacherUserCount'),
+			    ],
+			    backgroundColor: ['#9CA3AF','#4379F2', '#FF7777', '#00d37a'],
+			    borderRadius: 6,
+			    barThickness: 22,
+			    categoryPercentage: 0.7,
+			    barPercentage: 0.8
+			}]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            indexAxis: 'y',
+            layout: {
+                padding: {
+                    
+                    left: 2,
+                }
+            },
             plugins: {
                 legend: { display: false }
             },
             scales: {
                 x: {
-                    ticks: { color: '#9CA3AF' },
+                    ticks: { color: '#C8D0DE' },
                     grid: { color: 'rgba(55, 65, 81, 0.15)' }
                 },
                 y: {
-                    ticks: { color: '#9CA3AF' },
+                    ticks: { color: '#C8D0DE' },
                     grid: { color: 'rgba(55, 65, 81, 0.35)' }
                 }
             }
         }
     });
 
+    const userRoleLoginTrendCanvas = getEl('userRoleLoginTrendChart');
+
+    if (
+        userRoleLoginTrendCanvas &&
+        typeof Chart !== 'undefined' &&
+        typeof userRoleLoginLabels !== 'undefined' &&
+        typeof studentLoginTrendData !== 'undefined' &&
+        typeof parentLoginTrendData !== 'undefined' &&
+        typeof teacherLoginTrendData !== 'undefined'
+    ) {
+        destroyChartIfExists(userRoleLoginTrendCanvas);
+
+        new Chart(userRoleLoginTrendCanvas, {
+            type: 'line',
+            data: {
+                labels: userRoleLoginLabels,
+                datasets: [
+                    {
+                        label: '학생',
+                        data: studentLoginTrendData,
+                        borderColor: '#4379F2',
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4379F2',
+                        pointBorderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: '학부모',
+                        data: parentLoginTrendData,
+                        borderColor: '#FF7777',
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#FF7777',
+                        pointBorderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: '교사',
+                        data: teacherLoginTrendData,
+                        borderColor: '#00d37a',
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#00d37a',
+                        pointBorderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 20,
+                        right: 8,
+						bottom: 0,
+                        left: 8
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        display: true,
+                        labels: {
+                            color: '#9CA3AF',
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            padding: 12,
+                            font: {
+                                size: 12,
+
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9CA3AF' },
+                        grid: { color: 'rgba(55, 65, 81, 0.15)', drawBorder: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#9CA3AF',
+                            precision: 0,
+                            stepSize: 1
+                        },
+                        grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false }
+                    }
+                }
+            }
+        });
+    }
     if (typeof userWeeklyLoginLabels !== 'undefined' && typeof userWeeklyLoginData !== 'undefined') {
         renderLoginTrendChart('userWeeklyLoginChart', userWeeklyLoginLabels, userWeeklyLoginData, {
             lineColor: '#4379F2',

@@ -139,7 +139,7 @@
     margin: 0;
     margin-left:5px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -188,7 +188,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .report-badge.is-weekly {
@@ -215,7 +215,7 @@
 .report-card-title {
     margin: 0;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     line-height: 1.5;
     word-break: keep-all;
@@ -248,7 +248,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .view-status.is-read {
@@ -330,7 +330,7 @@
 .report-detail-header h3 {
     margin: 0;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -402,7 +402,7 @@
 .detail-block h4 {
     margin: 0;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -429,7 +429,7 @@
 
 .summary-card strong {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #e11d48;
 }
 
@@ -448,7 +448,7 @@
 
 .detail-list-item .item-title {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -542,7 +542,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     background: #eef2ff;
     color: #4338ca;
 }
@@ -570,7 +570,7 @@
 .report-card-title {
     margin: 0;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     line-height: 1.4;
     word-break: keep-all;
@@ -683,7 +683,7 @@
     position: relative;
     z-index: 1;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -726,7 +726,7 @@
 
 .progress-card-top span {
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     color: #4b5563;
 }
 

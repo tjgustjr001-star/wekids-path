@@ -11,7 +11,7 @@
 		</div>
 	</div>
 
-	<div class="stats-grid">
+	<div class="stats-grid-a">
 		<div class="stat-card">
 			<div class="stat-top">
 				<div class="icon-box blue">
@@ -58,7 +58,9 @@
 				</div>
 			</div>
 			<div class="stat-label">미해결 문의</div>
-			<div class="stat-value">15</div>
+			<div class="stat-value">
+				<span class="support-stat-value-b">${pendingSupportCount} </span>
+			</div>
 		</div>
 	</div>
 

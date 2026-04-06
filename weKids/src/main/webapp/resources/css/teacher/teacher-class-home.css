@@ -28,7 +28,7 @@
     background: #eef2ff;
     color: #4f46e5;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,14 +128,14 @@
 .teacher-summary-card__label {
     font-size: 22px;
     line-height: 1.35;
-    font-weight: 700;
+    font-weight: 600;
     color: #374151;
     letter-spacing: -0.02em;
 }
 
 .teacher-summary-card__value {
     font-size: 44px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.05;
     color: #111827;
 }
@@ -213,7 +213,7 @@
 
 .teacher-summary-card { min-height: 156px; }
 .teacher-summary-card__label { font-size: 18px; font-weight: 600; }
-.teacher-summary-card__value { font-size: 36px; font-weight: 700; }
-.update-avatar { font-weight: 700; }
-.update-meta strong { font-size: 16px; font-weight: 700; }
+.teacher-summary-card__value { font-size: 36px; font-weight: 600; }
+.update-avatar { font-weight: 600; }
+.update-meta strong { font-size: 16px; font-weight: 600; }
 .update-body p { font-size: 16px; }

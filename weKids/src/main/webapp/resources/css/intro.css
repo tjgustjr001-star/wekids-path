@@ -33,7 +33,7 @@
 
 .logo-text {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #1e293b;
 }
 
@@ -81,7 +81,7 @@
     color: #713f12;
     border-radius: 16px;
     font-size: 1.125rem;
-    font-weight: 700;
+    font-weight: 600;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     transition: all 0.2s ease;
 }
@@ -154,7 +154,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     transition: transform 0.2s ease;
 }
 
@@ -180,7 +180,7 @@
 .card-title {
     margin: 0 0 8px;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #1e293b;
     transition: color 0.2s ease;
 }

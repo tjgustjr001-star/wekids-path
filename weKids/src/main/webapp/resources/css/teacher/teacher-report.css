@@ -13,7 +13,7 @@
 .teacher-report-header h2 {
     margin: 0 0 8px;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -41,7 +41,7 @@
 .section-title-row h3 {
     margin: 0;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -139,7 +139,7 @@
     background: #2563eb;
     color: #ffffff;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
@@ -168,7 +168,7 @@
     border-radius: 14px;
     background: #f3f4f6;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     color: #4b5563;
 }
 
@@ -211,7 +211,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .report-badge.is-personal {
@@ -232,7 +232,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .view-status.is-read {
@@ -309,7 +309,7 @@
 .report-detail-header h3 {
     margin: 0;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -372,7 +372,7 @@
 .detail-block h4 {
     margin: 0;
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -399,7 +399,7 @@
 
 .summary-card strong {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1d4ed8;
 }
 
@@ -418,7 +418,7 @@
 
 .detail-list-item .item-title {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -579,7 +579,7 @@
     position: relative;
     z-index: 1;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -622,7 +622,7 @@
 
 .progress-card-top span {
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     color: #4b5563;
 }
 

@@ -20,7 +20,7 @@
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.2);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     margin-bottom: 18px;
 }
 
@@ -28,7 +28,7 @@
     margin: 0 0 12px;
     font-size: clamp(38px, 4vw, 52px);
     line-height: 1.2;
-    font-weight: 700;
+    font-weight: 600;
     overflow-wrap: anywhere;
 }
 
@@ -88,7 +88,7 @@
     margin: 0;
     font-size: 22px;
     line-height: 1.35;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -184,7 +184,7 @@
     font-size: 28px;
     line-height: 1;
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .learning-stat-box.blue .label,
@@ -213,7 +213,7 @@
 .progress-label-row strong {
     font-size: 18px;
     color: #4ec558c7;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .progress-bar {
@@ -271,7 +271,7 @@
 
 .recent-learning-title-row strong {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -289,7 +289,7 @@
     padding: 0 14px;
     border-radius: 999px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
@@ -317,7 +317,7 @@
     padding: 0 10px;
     border-radius: 10px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
@@ -370,7 +370,7 @@
     margin-bottom: 10px;
     font-size: 18px;
     line-height: 1.45;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -416,7 +416,7 @@
 .parent-class-shortcut-card h3 {
     margin: 0 0 8px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #2f6b4a;
 }
 
@@ -445,7 +445,7 @@
     background: #66cb7a;
     color: #0f172a;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
 }
 
@@ -513,14 +513,14 @@
     padding: 0 14px;
     border-radius: 10px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 32px;
     margin-bottom: 18px;
 }
 
 .parent-home-hero h1 {
     font-size: 34px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.03em;
 }
 
@@ -544,7 +544,7 @@
 .notice-content strong,
 .parent-class-shortcut-card strong {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .child-select-form select {
@@ -567,7 +567,7 @@
 
 .learning-stat-box .value {
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .progress-label-row,
@@ -583,7 +583,7 @@
 .recent-learning-title-row strong,
 .recent-learning-status,
 .class-shortcut-btn {
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .parent-class-shortcut-card {

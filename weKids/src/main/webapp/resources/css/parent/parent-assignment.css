@@ -19,7 +19,7 @@
     margin: 0;
     margin-left:16px;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -36,7 +36,7 @@
 .parent-assignment-child-select {
     border: 0;
     background: transparent;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
     outline: none;
     cursor: pointer;
@@ -96,7 +96,7 @@
     top: 0;
     color: #fff;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 18px;
 }
 
@@ -201,7 +201,7 @@
 .parent-assignment-info-box .title {
     margin: 0 0 6px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     color: #1e3a8a;
 }
 
@@ -220,7 +220,7 @@
     text-align: center;
     color: #6b7280;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .parent-assignment-grid {
@@ -269,7 +269,7 @@
     display: inline-flex;
     align-items: center;
     border-radius: 10px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .parent-assignment-status-badge,
@@ -322,7 +322,7 @@
 .parent-assignment-modal-title {
     margin: 0 0 14px;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.5;
     color: #111827;
 }
@@ -348,7 +348,7 @@
 
 .parent-assignment-feedback-preview .feedback-title {
     margin: 0 0 4px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .parent-assignment-card-footer {
@@ -368,7 +368,7 @@
     gap: 8px;
     color: #6b7280;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .parent-assignment-submit-state.done,
@@ -382,7 +382,7 @@
     border: 0;
     border-radius: 12px;
     cursor: pointer;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .parent-assignment-detail-btn,
@@ -466,7 +466,7 @@
 .section-title {
     margin: 0 0 14px;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -510,7 +510,7 @@
     background: #eef2ff;
     color: #4f46e5;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -530,7 +530,7 @@
 .parent-assignment-file-meta strong {
     color: #111827;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 600;
     word-break: break-all;
 }
 
