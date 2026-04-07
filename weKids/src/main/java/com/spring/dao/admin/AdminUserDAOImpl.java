@@ -93,7 +93,18 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 	}
 	
 	@Override
+	public int selectInspectionNeedCount() throws SQLException {
+	    Integer count = session.selectOne("AdminUser-Mapper.selectInspectionNeedCount");
+	    return count == null ? 0 : count;
+	}
+
+	@Override
+	public List<AdminUserListDTO> selectInspectionNeedAccountList() throws SQLException {
+	    return session.selectList("AdminUser-Mapper.selectInspectionNeedAccountList");
+	}
+
+	@Override
 	public List<UserRoleLoginTrendDTO> selectUserRoleLoginTrend() throws SQLException {
-	    return session.selectList("\"AdminUser-Mapper.selectUserRoleLoginTrend");
+	    return session.selectList("AdminUser-Mapper.selectUserRoleLoginTrend");
 	}
 }

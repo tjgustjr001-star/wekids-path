@@ -328,6 +328,54 @@
 		FROM MEMBER
 		WHERE ACCOUNT_STATUS != 'DELETED'
 	</select>
+	
+<select id="selectInspectionNeedCount" resultType="int">
+    SELECT COUNT(*)
+    FROM member m
+    WHERE m.account_status != 'DELETED'
+      AND m.member_id NOT IN (
+          SELECT s.student_id FROM student s
+          UNION
+          SELECT p.parent_id FROM parent p
+          UNION
+          SELECT t.teacher_id FROM teacher t
+      )
+      AND NOT EXISTS (
+          SELECT 1
+          FROM authority a
+          WHERE a.member_id = m.member_id
+            AND a.role_code = 'ADMIN'
+      )
+</select>
+
+<select id="selectInspectionNeedAccountList" resultMap="AdminUserListResultMap">
+    SELECT
+        m.member_id,
+        NVL(m.login_id, '-') AS name,
+        m.login_id,
+        m.email,
+        'INSPECTION' AS role_code,
+        '점검 필요' AS role_name,
+        '-' AS connection_status,
+        TO_CHAR(m.last_login_at, 'YY/MM/DD') AS last_login_at,
+        m.account_status
+    FROM member m
+    WHERE m.account_status != 'DELETED'
+      AND m.member_id NOT IN (
+          SELECT s.student_id FROM student s
+          UNION
+          SELECT p.parent_id FROM parent p
+          UNION
+          SELECT t.teacher_id FROM teacher t
+      )
+      AND NOT EXISTS (
+          SELECT 1
+          FROM authority a
+          WHERE a.member_id = m.member_id
+            AND a.role_code = 'ADMIN'
+      )
+    ORDER BY m.member_id
+</select>
 
 	<select id="selectWeeklyLoginTrend"
 		resultType="com.spring.dto.admin.WeeklyLoginTrendDTO">

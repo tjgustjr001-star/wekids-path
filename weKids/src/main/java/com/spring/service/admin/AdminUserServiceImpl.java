@@ -108,4 +108,14 @@ public class AdminUserServiceImpl implements AdminUserService {
 	public List<UserRoleLoginTrendDTO> getUserRoleLoginTrend() throws SQLException {
 	    return adminUserDAO.selectUserRoleLoginTrend();
 	}
+	
+	@Override
+	public int getInspectionNeedCount() throws SQLException {
+	    return adminUserDAO.selectInspectionNeedCount();
+	}
+
+	@Override
+	public List<AdminUserListDTO> getInspectionNeedAccountList() throws SQLException {
+	    return adminUserDAO.selectInspectionNeedAccountList();
+	}
 }

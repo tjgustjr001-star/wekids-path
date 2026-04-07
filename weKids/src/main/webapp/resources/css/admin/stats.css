@@ -14,7 +14,7 @@
 
 .admin-stats-title {
 	font-size: 42px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #f8fafc;
 	margin-bottom: 10px;
 }
@@ -34,7 +34,7 @@
 	height: 52px;
 	border-radius: 16px;
 	font-size: 16px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .admin-stats-period-select {
@@ -137,7 +137,7 @@
 .admin-stats-kpi-value {
 	font-size: 46px;
 	line-height: 1.1;
-	font-weight: 600;
+	font-weight: 800;
 	color: #f8fafc;
 }
 
@@ -168,7 +168,7 @@
 
 .admin-stats-panel-head h2 {
 	font-size: 18px;
-	font-weight: 600;
+	font-weight: 800;
 	color: #f8fafc;
 	letter-spacing: -0.02em;
 }
@@ -253,7 +253,7 @@
 
 .admin-stats-board-head h4 {
 	font-size: 20px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #f8fafc;
 }
 
@@ -263,34 +263,69 @@
 
 .admin-stats-table {
 	width: 100%;
-	min-width: 1040px;
+	min-width: 900px;
 	border-collapse: collapse;
+	color: #cbd5e1;
+	font-size: 14px;
 }
 
 .admin-stats-table thead {
-	background: rgba(51, 65, 85, 0.55);
+	background: rgba(15, 23, 42, 0.5);
 }
 
 .admin-stats-table th {
 	padding: 20px 20px;
 	text-align: left;
 	font-size: 16px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #cbd5e1;
 	white-space: nowrap;
 }
 
+.admin-stats-table td:first-child {
+	text-align: left;
+padding: 16px 20px;
+	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
+
 .admin-stats-table td {
+	text-align: center;
 	padding: 20px;
 	border-top: 1px solid rgba(71, 85, 105, 0.5);
 	color: #e2e8f0;
 	font-size: 14px;
-	vertical-align: middle;
+
 }
 
 .admin-stats-table tbody tr:hover {
 	background: rgba(51, 65, 85, 0.32);
 }
+
+.admin-stats-table th:first-child {
+    padding: 16px 20px;
+	text-align: left;
+	color: #94a3b8;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+	border-bottom: 1px solid #334155;
+}
+
+.admin-stats-table th {
+	padding: 16px 20px;
+	text-align: center;
+	color: #94a3b8;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+	border-bottom: 1px solid #334155;
+}
+
+.admin-stats-table tbody tr:hover {
+	background: rgba(51, 65, 85, 0.5);
+}
+
+
 
 .admin-stats-cell-strong {
 	font-weight: 500;
@@ -299,8 +334,11 @@
 
 .admin-stats-progress-wrap {
 	display: flex;
+	
+	justify-content: center;
 	align-items: center;
 	gap: 12px;
+	padding-left: 20px;
 }
 
 .admin-stats-progress-bar {
@@ -334,7 +372,7 @@
 	justify-content: center;
 	min-width: 90px;
 	padding: 10px 14px;
-	border-radius: 10px;
+	border-radius: 50px;
 	background: #334155;
 	color: #e2e8f0;
 	font-size: 13px;
@@ -368,7 +406,7 @@
 	gap: 8px;
 	color: #94a3b8;
 	font-size: 16px;
-	font-weight: 600;
+	font-weight: 700;
 	text-decoration: none;
 	transition: 0.2s ease;
 }
@@ -387,7 +425,7 @@
 
 .admin-stat-detail-summary-left h1 {
 	font-size: 34px;
-	font-weight: 600;
+	font-weight: 800;
 	color: #f8fafc;
 	margin-bottom: 10px;
 }
@@ -404,7 +442,7 @@
 	padding: 7px 14px;
 	border-radius: 999px;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 800;
 	vertical-align: middle;
 }
 
@@ -450,13 +488,13 @@
 	color: #94a3b8;
 	font-size: 13px;
 	margin-bottom: 10px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .admin-stat-detail-summary-value {
 	color: #f8fafc;
 	font-size: 22px;
-	font-weight: 600;
+	font-weight: 800;
 }
 
 .admin-stat-detail-grid {
@@ -480,7 +518,7 @@
 .admin-stat-detail-panel-head h2 {
 	color: #f8fafc;
 	font-size: 20px;
-	font-weight: 600;
+	font-weight: 800;
 }
 
 .admin-stat-detail-panel-meta {
@@ -507,7 +545,7 @@
 .admin-stat-detail-board-head h2 {
 	color: #f8fafc;
 	font-size: 20px;
-	font-weight: 600;
+	font-weight: 800;
 }
 
 .admin-stat-detail-table-wrap {
@@ -529,7 +567,7 @@
 	text-align: left;
 	color: #cbd5e1;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 800;
 	white-space: nowrap;
 }
 
@@ -545,7 +583,7 @@
 }
 
 .admin-stat-detail-name {
-	font-weight: 600;
+	font-weight: 800;
 	color: #f8fafc;
 }
 
@@ -592,7 +630,7 @@
 	padding: 8px 12px;
 	border-radius: 999px;
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 800;
 }
 
 .admin-stat-detail-status-pill.good {

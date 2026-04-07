@@ -45,7 +45,7 @@ button {
 	align-items: center;
 	padding: 0 24px;
 	font-size: 32px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #34d399;
 	border-bottom: 1px solid #334155;
 }
@@ -139,7 +139,7 @@ button {
 
 .page-title-box h1 {
 	font-size: 42px;
-	font-weight: 600;
+	font-weight: 700;
 	margin-bottom: 10px;
 }
 
@@ -218,7 +218,7 @@ button {
 	padding: 6px 12px;
 	border-radius: 999px;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .trend.positive {
@@ -246,7 +246,7 @@ button {
 .stat-value {
 	position: absolute;
 	font-size: 60px;
-	font-weight: 600;
+	font-weight: 800;
 	line-height: 1;
 	text-align: right;
 	right: 50px;
@@ -276,7 +276,7 @@ button {
 
 .panel-header h2, .alert-panel h2 {
 	font-size: 30px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .detail-btn {
@@ -399,7 +399,7 @@ button {
 
 .panel-title {
 	font-size: 20px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #fff;
 	margin-bottom: 24px;
 }
@@ -605,7 +605,7 @@ button {
 	padding: 5px 10px;
 	border-radius: 8px;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .badge.active {
@@ -630,7 +630,7 @@ button {
 .class-card-body h3 {
 	color: #fff;
 	font-size: 18px;
-	font-weight: 600;
+	font-weight: 700;
 	margin-bottom: 8px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -772,7 +772,7 @@ button {
 .class-detail-header h3 {
 	color: #fff;
 	font-size: 24px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .close-modal-btn {
@@ -801,7 +801,7 @@ button {
 .detail-title-row h4 {
 	color: #fff;
 	font-size: 28px;
-	font-weight: 600;
+	font-weight: 800;
 }
 
 .detail-main-title p {
@@ -859,7 +859,7 @@ button {
 	flex: 1;
 	padding: 14px 16px;
 	border-radius: 14px;
-	font-weight: 600;
+	font-weight: 700;
 	font-size: 15px;
 	cursor: pointer;
 }
@@ -987,7 +987,7 @@ p.c {
 .teacher-profile-name {
 	color: #f8fafc;
 	font-size: 28px;
-	font-weight: 600;
+	font-weight: 800;
 	margin-bottom: 12px;
 }
 
@@ -1039,7 +1039,7 @@ p.c {
 	border: none;
 	border-radius: 12px;
 	font-size: 15px;
-	font-weight: 600;
+	font-weight: 700;
 	cursor: pointer;
 }
 
@@ -1111,7 +1111,7 @@ p.c {
 	background: #334155;
 	color: #cbd5e1;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .teacher-class-table-wrap {
@@ -1130,7 +1130,7 @@ p.c {
 	padding: 6px 10px;
 	border-radius: 999px;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 700;
 	line-height: 1;
 }
 
@@ -1201,7 +1201,7 @@ p.c {
 
 .teacher-total-count {
 	font-size: 46px;
-	font-weight: 600;
+	font-weight: 800;
 	color: #fff;
 	margin-bottom: 24px;
 }
@@ -1309,28 +1309,41 @@ p.c {
 	background: rgba(15, 23, 42, 0.5);
 }
 
-.teacher-table thead th {
-	padding: 16px 20px;
+
+.teacher-table thead th:first-child {
+
 	text-align: left;
 	color: #94a3b8;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 600;
 	text-transform: uppercase;
 	border-bottom: 1px solid #334155;
 }
 
-.teacher-table tbody tr {
-	transition: background 0.2s;
+.teacher-table thead th {
+	padding: 16px 20px;
+	text-align: center;
+	color: #94a3b8;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+	border-bottom: 1px solid #334155;
 }
 
 .teacher-table tbody tr:hover {
 	background: rgba(51, 65, 85, 0.5);
 }
-
+.teacher-table tbody td:first-child {
+	text-align: left;
+padding: 16px 20px;
+	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
 .teacher-table tbody td {
+	text-align: center;
 	padding: 16px 20px;
 	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
 }
+
 
 .teacher-name-cell {
 	font-weight: 600;
@@ -1370,18 +1383,28 @@ p.c {
 }
 
 .table-action-wrap {
+	width: 30px;
+	left:35%;
 	position: relative;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 0px;
 }
+.table-action-wrap-a {
 
+width: 100px;
+	left:35%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0px;
+}
 .detail-link-btn {
 	display: inline-block;
 	padding: 7px 12px;
 	background: #334155;
 	color: #e2e8f0;
-	border-radius: 8px;
+	border-radius: 50px;
 	font-size: 12px;
 	font-weight: 600;
 }
@@ -1391,6 +1414,7 @@ p.c {
 }
 
 .row-menu-toggle-btn {
+	
 	width: 30px;
 	height: 30px;
 	border: none;
@@ -1524,7 +1548,7 @@ p.c {
 .teacher-modal-header h3 {
 	color: #fff;
 	font-size: 22px;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .teacher-modal-form {
@@ -1578,7 +1602,7 @@ p.c {
 	flex: 1;
 	padding: 13px 16px;
 	border-radius: 14px;
-	font-weight: 600;
+	font-weight: 700;
 	font-size: 15px;
 	cursor: pointer;
 }
@@ -1647,136 +1671,39 @@ p.c {
 	font-size: 15px;
 }
 
-.users-board {
-	background: #1e293b;
-	border: 1px solid #334155;
-	border-radius: 24px;
-	overflow: hidden;
-}
-
-.users-board-top {
-	padding: 16px;
-	border-bottom: 1px solid #334155;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 16px;
-	background: rgba(30, 41, 59, 0.7);
-}
-
-.user-tab-btn {
-	padding: 10px 16px;
-	border: none;
-	border-radius: 10px;
-	background: transparent;
-	color: #94a3b8;
-	cursor: pointer;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.user-tab-btn:hover {
-	background: #334155;
-	color: #fff;
-}
-
-.user-tab-btn.active {
-	background: #4379F2;
-	color: #fff;
-}
-
-.user-table-wrap {
-	overflow-x: auto;
-}
-
-.user-table {
-	width: 100%;
-	min-width: 900px;
-	border-collapse: collapse;
-	color: #cbd5e1;
-	font-size: 14px;
-}
-
-.user-table thead {
-	background: rgba(15, 23, 42, 0.5);
-}
-
-.user-table thead th {
-	padding: 16px 20px;
-	text-align: left;
-	color: #94a3b8;
-	font-size: 12px;
-	font-weight: 500;
-	text-transform: uppercase;
-	border-bottom: 1px solid #334155;
-}
-
-.user-table tbody tr:hover {
-	background: rgba(51, 65, 85, 0.5);
-}
-
-.user-table tbody td {
-	padding: 16px 20px;
-	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-}
-
-.user-name-cell {
-	font-weight: 600;
-	color: #e2e8f0;
-}
-
-.users-board-footer {
-	padding: 16px;
-	border-top: 1px solid #334155;
-	color: #94a3b8;
-	font-size: 14px;
-}
-
-.admin-user-detail-page {
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
-}
-
-.user-detail-grid {
-	display: grid;
-	grid-template-columns: 1.5fr 2fr;
-	gap: 10px;
-}
-
-.user-profile-card {
-	text-align: center;
-}
-
-.user-profile-name {
-	color: #f8fafc;
-	font-size: 28px;
-	font-weight: 600;
-	margin-bottom: 12px;
-}
-
-@media ( max-width : 900px) {
-	.users-top-grid, .user-detail-grid {
-		grid-template-columns: 1fr;
-	}
-	.users-board-top {
-		flex-direction: column;
-		align-items: stretch;
-	}
-}
 /* 관리자 */
 .admin-users-page {
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
 }
-
-.users-top-grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 36px;
+.main-area,
+.content-area,
+.admin-users-page {
+    min-width: 0;
 }
 
+.users-top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+.panel-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-wrap,
+.chart-box {
+    min-width: 0;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
 .user-stat-box {
 	display: inline-flex;
 	align-items: center;
@@ -1841,7 +1768,9 @@ p.c {
 .admin-stats-legend-dot-a.total::before {
 	background: #9CA3AF;
 }
-
+.admin-stats-legend-dot-a.insepect::before {
+	background:#F59E0B
+}
 .users-board {
 	background: #1e293b;
 	border: 1px solid #334155;
@@ -1895,12 +1824,21 @@ p.c {
 .user-table thead {
 	background: rgba(15, 23, 42, 0.5);
 }
+.user-table thead th:first-child {
+    padding: 16px 20px;
+	text-align: left;
+	color: #94a3b8;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+	border-bottom: 1px solid #334155;
+}
 
 .user-table thead th {
 	padding: 16px 20px;
-	text-align: left;
+	text-align: center;
 	color: #94a3b8;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 600;
 	text-transform: uppercase;
 	border-bottom: 1px solid #334155;
@@ -1909,8 +1847,13 @@ p.c {
 .user-table tbody tr:hover {
 	background: rgba(51, 65, 85, 0.5);
 }
-
+.user-table tbody td:first-child {
+	text-align: left;
+padding: 16px 20px;
+	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
 .user-table tbody td {
+	text-align: center;
 	padding: 16px 20px;
 	border-bottom: 1px solid rgba(51, 65, 85, 0.5);
 }
@@ -1957,18 +1900,30 @@ p.c {
 .user-profile-name {
 	color: #f8fafc;
 	font-size: 28px;
-	font-weight: 600;
+	font-weight: 800;
 	margin-bottom: 12px;
 }
 
-@media ( max-width : 900px) {
-	.users-top-grid, .user-detail-grid {
-		grid-template-columns: 1fr;
-	}
-	.users-board-top {
-		flex-direction: column;
-		align-items: stretch;
-	}
+@media (max-width: 1280px) {
+    .users-top-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .users-top-grid > .panel-card:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 900px) {
+    .users-top-grid,
+    .user-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .users-board-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 canvas#teacherTrendChart {
     height: 200px;
@@ -2073,7 +2028,7 @@ canvas#userRoleChart{
 .user-profile-name {
 	font-size: 28px;
 	text-align: left;
-	font-weight: 600;
+	font-weight: 700;
 	color: #f8fafc;
 	margin: 0;
 }
@@ -2157,4 +2112,262 @@ canvas#userRoleChart{
 	.user-profile-value {
 		text-align: left;
 	}
+}
+/* =========================
+   점검 필요 계정 모달
+========================= */
+.class-detail-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.class-detail-modal.show {
+    display: flex;
+}
+
+.class-detail-dialog.inspection-dialog {
+    width: min(760px, calc(100vw - 48px));
+    max-height: 82vh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1e293b 0%, #162033 100%);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 24px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+}
+
+.class-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.class-detail-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.close-modal-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+}
+
+.close-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.class-detail-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(82vh - 84px);
+}
+
+.panel-subtext {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* 테이블 박스: 가로 스크롤 제거, 세로만 허용 */
+.table-wrap {
+    width: 100%;
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.52);
+}
+
+/* 테이블: 모달 폭에 맞춤 */
+.inspection-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+/* 헤더 */
+.inspection-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #243246;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+/* 바디 */
+.inspection-table tbody td {
+    padding: 14px 12px;
+    font-size: 14px;
+    color: #e2e8f0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    vertical-align: middle;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.inspection-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.inspection-table tbody tr:hover {
+    background: rgba(67, 121, 242, 0.08);
+}
+
+/* 열 비율만 주고 고정 폭은 최소화 */
+.inspection-table th:nth-child(1),
+.inspection-table td:nth-child(1) {
+    width: 14%;
+}
+
+.inspection-table th:nth-child(2),
+.inspection-table td:nth-child(2) {
+    width: 20%;
+}
+
+.inspection-table th:nth-child(3),
+.inspection-table td:nth-child(3) {
+    width: 30%;
+}
+
+.inspection-table th:nth-child(4),
+.inspection-table td:nth-child(4) {
+    width: 16%;
+    text-align: center;
+}
+
+.inspection-table th:nth-child(5),
+.inspection-table td:nth-child(5) {
+    width: 20%;
+    text-align: center;
+}
+
+/* 비어 있을 때 */
+.empty-cell {
+    text-align: center;
+    color: #94a3b8;
+    padding: 28px 16px !important;
+    font-size: 14px;
+}
+
+/* 하단 버튼 */
+.detail-action-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.modal-action-btn {
+    min-width: 110px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.18s ease;
+}
+
+.modal-action-btn.active-btn {
+    background: linear-gradient(135deg, #4379F2 0%, #5b8cff 100%);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(67, 121, 242, 0.28);
+}
+
+.modal-action-btn.active-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* 스크롤바 */
+.table-wrap::-webkit-scrollbar,
+.class-detail-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb,
+.class-detail-body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.24);
+    border-radius: 999px;
+}
+
+.table-wrap::-webkit-scrollbar-track,
+.class-detail-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .class-detail-modal {
+        padding: 14px;
+    }
+
+    .class-detail-dialog.inspection-dialog {
+        width: min(100%, calc(100vw - 28px));
+        max-height: 88vh;
+        border-radius: 20px;
+    }
+
+    .class-detail-header {
+        padding: 18px 18px 16px;
+    }
+
+    .class-detail-header h3 {
+        font-size: 20px;
+    }
+
+    .class-detail-body {
+        padding: 18px;
+        max-height: calc(88vh - 76px);
+    }
+
+    .table-wrap {
+        max-height: 280px;
+    }
+
+    .inspection-table thead th,
+    .inspection-table tbody td {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+
+    .modal-action-btn {
+        width: 100%;
+    }
+
+    .detail-action-row {
+        justify-content: stretch;
+    }
 }

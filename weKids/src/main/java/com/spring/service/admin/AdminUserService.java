@@ -27,4 +27,7 @@ public interface AdminUserService {
 	
 	List<UserRoleLoginTrendDTO> getUserRoleLoginTrend() throws SQLException;
 	
+	int getInspectionNeedCount() throws SQLException;
+
+	List<AdminUserListDTO> getInspectionNeedAccountList() throws SQLException;
 }

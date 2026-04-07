@@ -27,6 +27,7 @@ window.addEventListener('DOMContentLoaded', function() {
         destroyChartIfExists(canvas);
         return new Chart(canvas, config);
     }
+	
 
     function renderLoginTrendChart(canvasId, labels, data, options) {
         const canvas = getEl(canvasId);
@@ -575,49 +576,99 @@ window.addEventListener('DOMContentLoaded', function() {
     /* =========================
        사용자 관리
     ========================= */
-    createChart(getEl('userRoleChart'), {
-        type: 'bar',
-        data: {
-            labels: [ '전체', '학생', '학부모', '교사'],
-			datasets: [{
-			    data: [
-					getValueNumber('totalUserCount'),
-			        getValueNumber('studentUserCount'),
-			        getValueNumber('parentUserCount'),
-			        getValueNumber('teacherUserCount'),
-			    ],
-			    backgroundColor: ['#9CA3AF','#4379F2', '#FF7777', '#00d37a'],
-			    borderRadius: 6,
-			    barThickness: 22,
-			    categoryPercentage: 0.7,
-			    barPercentage: 0.8
-			}]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            layout: {
-                padding: {
-                    
-                    left: 2,
-                }
-            },
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#C8D0DE' },
-                    grid: { color: 'rgba(55, 65, 81, 0.15)' }
-                },
-                y: {
-                    ticks: { color: '#C8D0DE' },
-                    grid: { color: 'rgba(55, 65, 81, 0.35)' }
-                }
-            }
-        }
-    });
+	
+	const userRoleChartCanvas = getEl('userRoleChart');
+	const inspectionModal = getEl('inspectionModal');
+	const closeInspectionModalBtn = getEl('closeInspectionModalBtn');
+	const inspectionModalCloseBtn = getEl('inspectionModalCloseBtn');
+
+	if (userRoleChartCanvas) {
+	    createChart(userRoleChartCanvas, {
+	        type: 'bar',
+	        data: {
+	            labels: ['전체', '학생', '학부모', '교사', '점검 필요'],
+	            datasets: [{
+	                data: [
+	                    getValueNumber('totalUserCount'),
+	                    getValueNumber('studentUserCount'),
+	                    getValueNumber('parentUserCount'),
+	                    getValueNumber('teacherUserCount'),
+	                    getValueNumber('inspectionNeedCount')
+	                ],
+	                backgroundColor: ['#9CA3AF', '#4379F2', '#FF7777', '#00d37a', '#F59E0B'],
+	                borderRadius: 6,
+	                barThickness: 22,
+	                categoryPercentage: 0.7,
+	                barPercentage: 0.8
+	            }]
+	        },
+	        options: {
+	            responsive: true,
+	            maintainAspectRatio: false,
+	            indexAxis: 'y',
+	            layout: {
+	                padding: {
+	                    left: 2
+	                }
+	            },
+	            plugins: {
+	                legend: { display: false },
+	                tooltip: {
+	                    callbacks: {
+	                        label: function(context) {
+	                            const label = context.label || '';
+	                            const value = context.raw || 0;
+	                            return label + ' ' + value + (label === '점검 필요' ? '건' : '명');
+	                        }
+	                    }
+	                }
+	            },
+	            onClick: function(evt, elements, chart) {
+	                if (!elements || !elements.length) return;
+
+	                const clickedIndex = elements[0].index;
+	                const clickedLabel = chart.data.labels[clickedIndex];
+
+	                if (clickedLabel === '점검 필요') {
+	                    openModal(inspectionModal);
+	                }
+	            },
+	            scales: {
+	                x: {
+	                    ticks: { color: '#C8D0DE' },
+	                    grid: { color: 'rgba(55, 65, 81, 0.15)' }
+	                },
+	                y: {
+	                    ticks: { color: '#C8D0DE' },
+	                    grid: { color: 'rgba(55, 65, 81, 0.35)' }
+	                }
+	            }
+	        }
+	    });
+
+	    userRoleChartCanvas.addEventListener('mousemove', function (e) {
+	        const chart = Chart.getChart(userRoleChartCanvas);
+	        if (!chart) return;
+
+	        const points = chart.getElementsAtEventForMode(
+	            e,
+	            'nearest',
+	            { intersect: true },
+	            true
+	        );
+
+	        if (!points.length) {
+	            userRoleChartCanvas.style.cursor = 'default';
+	            return;
+	        }
+
+	        const index = points[0].index;
+	        const label = chart.data.labels[index];
+	        userRoleChartCanvas.style.cursor = (label === '점검 필요') ? 'pointer' : 'default';
+	    });
+	}
+
+	bindModalClose(inspectionModal, closeInspectionModalBtn, inspectionModalCloseBtn);
 
     const userRoleLoginTrendCanvas = getEl('userRoleLoginTrendChart');
 
